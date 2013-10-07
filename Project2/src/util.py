@@ -49,21 +49,21 @@ class bodyOrbit:
 	# constructor
 	def __init__(self, name, radius, majorA, eccentricity, inclination, period, rotation, starType, isStar):
 		self.name = name
-		self.radius = radius * rJupiter
-		self.majorA = majorA * AUtoKM
+		self.radius = radius * rJupiter #kms
+		self.majorA = majorA * AUtoKM #kms
 		self.eccentricity = eccentricity
 		self.inclination = inclination
-		self.period = period * DAYtoYEAR
-		self.rotation = rotation
+		self.period = period * DAYtoYEAR #years
+		self.rotation = rotation #days
 		self.starType = starType
-		self.minorA = getOrbitCoords(eccentricity, majorA) * AUtoKM
+		self.minorA = getOrbitCoords(eccentricity, majorA) * AUtoKM #kms
 		self.isStar = isStar
 		
 		
 
 class bodyInfo:
 	name = ""
-	mass = ""
+	mass = 0.0
 	discovered = 0
 	detectionType = ""
 	molecules = ""
@@ -98,15 +98,15 @@ class bodyInfo:
 	# constructor
 	def __init__(self, name, mass, discovered, detectionType, molecules, systemName, starDistance, starAge, starType, isStar):
 		self.name = name
-		self.mass = str(mass) + " Jupiter Mass"
+		self.mass = mass #Jupiter mass
 		self.discovered = discovered
 		self.detectionType = detectionType
 		self.molecules = molecules
 		self.isStar = isStar
 		self.starType = starType
 		self.systemName = systemName
-		self.starDistance = starDistance
-		self.starAge = starAge
+		self.starDistance = starDistance #parsecs
+		self.starAge = starAge #Galactic Year
 	
 # ------------------------------------------------------------------			
 # variables
@@ -143,9 +143,18 @@ overallScaleFactor = 0.00025
 DAYtoYEAR = 1/365
 
 # data variables
-allSystemsOrbital = {}
-allSystemsInfo = {}
-systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "ups And", "CoRoT-11", "XO-3", "Kepler-22", "MOA-2007-BLG-192-L", "Kepler-11", "Kepler-10", "GJ 1214", "GL 581", "WASP-33", "30 Ari B", "Kepler-39", "HR 8799", "Kepler-65", "Fomalhaut", "KOI-142", "HD 10180", "Kepler-68", "Kepler-20", "24 Sex", "Kepler-42", "HD 39194", "HD 134987", "HD 60532", "HD 96700", "HD 142", "HD 134060", "HD 215152", "HD 217107", "HD 99492", "GJ 676A", "HD 20794", "HD 128311", "14 Her", "HD 136352", "HD 113538", "HD 190360", "mu Ara", "47 Uma", "GL 163", "Gliese 876", "55 Cnc", "HD 20003", "GJ 667C", "61 Vir", "HD 69830", "HD 40307"]
+allSystemsOrbital = dict()
+allSystemsInfo = dict()
+systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "ups And", "CoRoT-11", "XO-3", "Kepler-22", "MOA-2007-BLG-192-L", "Kepler-11", "Kepler-10", "GJ 1214", "Gl 581", "WASP-33", "30 Ari B", "Kepler-39", "HR 8799", "Kepler-65", "Fomalhaut", "KOI-142", "HD 10180", "Kepler-68", "Kepler-20", "24 Sex", "Kepler-42", "HD 39194", "HD 134987", "HD 60532", "HD 96700", "HD 142", "HD 134060", "HD 215152", "HD 217107", "HD 99492", "GJ 676A", "HD 20794", "HD 128311", "14 Her", "HD 136352", "HD 113538", "HD 190360", "mu Ara", "47 Uma", "Gl 163", "Gliese 876", "55 Cnc", "HD 20003", "GJ 667C", "61 Vir", "HD 69830", "HD 40307"]
+
+# starColors
+colorO = Color("#3E94D1EE") # blue
+colorB = Color("#A5E5FFEE") # deep blue white
+colorA = Color("#CAF0FFEE") # blue white
+colorF = Color("#FFFFFFEE") # white
+colorG = Color("#FFEFC0EE") # yellowish white
+colorK = Color("#FFD36BEE") # pale yellow orange
+colorM = Color("#FFBF86EE") # yellow orange red
 
 # -----------------------------------------------------------------
 # method definitions
