@@ -1,0 +1,62 @@
+Code snippet to add to main file(chicagoflat.py):
+
+METHODS:
+
+def createGeom(passedCrime, i):
+    global majorCrimeStrings
+    
+    crimeName = passedCrime.primary
+    #print crimeName
+    c1 = Color(majorCrimeStrings[crimeName]) 
+    #print str(c1) 
+    geomModel.addVertex(passedCrime.vector + Vector3(0,0,20))
+    
+    geomModel.addColor(c1)
+
+def load(crimeSet):
+    i = 0
+    
+    for crime in crimeSet:
+        createGeom(crime, i)
+        i += 1
+    
+    global numGeoms
+    numGeoms = i
+    geomModel.addPrimitive(PrimitiveType.Points, 0, numGeoms)
+
+SNIPPET TO ADD TO MAIN SCRIPT:
+
+geomModel = ModelGeometry.create('geoms')
+scene.addModel(geomModel)
+
+crime2013 = dp.popCrimeObjects(2013)
+load(crime2013)
+
+# create the geom shader
+geomProgram = ProgramAsset()
+geomProgram.name = "geoms"
+geomProgram.vertexShaderName = "geom.vert"
+geomProgram.fragmentShaderName = "geom.frag"
+geomProgram.geometryShaderName = "geom.geom"
+geomProgram.geometryOutVertices = 4
+geomProgram.geometryInput = PrimitiveType.Points
+geomProgram.geometryOutput = PrimitiveType.TriangleStrip
+scene.addProgram(geomProgram)
+
+# create the geoms
+sky = StaticObject.create('geoms')
+sky.getMaterial().setProgram('geoms')
+sky.getMaterial().setTransparent(True)
+sky.getMaterial().setAdditive(True)
+sky.getMaterial().setDepthTestEnabled(True)
+
+
+HOW THIS WORKS:
+
+Make sure you have geom.geom, geom.vert, geom.frag  in the root of your project...
+I don't think you need geom.py at all but it is in my directory so I included it as well
+
+Pass set of crime objects for a given year to the load function,
+load function will generate models based on the vector property of each crime object.
+
+To change size of crime model, go into the geom.geom(I think?) file and change the pointscale value to something you want.

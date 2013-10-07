@@ -1,0 +1,14 @@
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+	<channel>
+		<title>Omegalib changelog</title>
+		<link>https://raw.github.com/febret/omegalib-windows/master/omegalib-appcast.xml</link>
+		<description>Most recent changes with links to updates.</description>
+		<language>en</language>
+		<item>
+			<title>Version 4.2.1</title>
+			<pubDate>11 September 2013</pubDate>
+			<sparkle:releaseNotesLink>http://uic-evl.github.io/omegalib/update.html</sparkle:releaseNotesLink>			
+			<enclosure url="https://github.com/uic-evl/omegalib-windows/archive/master.zip" sparkle:version="4.2.1" length="1600000" type="application/octet-stream"/>
+		</item>
+	</channel>
+</rss>

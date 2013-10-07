@@ -1,0 +1,1 @@
+Add the bin folder to your PATH to let OpenSceneGraph application open .earth files.
