@@ -36,6 +36,7 @@ from src.cameraManager import *
 # Variables
 
 skyBox = None
+scene = None
 
 
 # -------------------------------------------------------------------
@@ -45,10 +46,22 @@ def setSkyBox():
 	skyBox = Skybox()
 	skyBox.loadCubeMap("data/stars", "png")
 	getSceneManager().setSkyBox(skyBox)
-	
 
+def initializeScene():
+	global scene
+	scene = getSceneManager()
+	scene.setBackgroundColor(colorBlack)
+	setNearFarZ(0.1, 1000000)
+
+def loadSphereModel():
+	global scene
+	sphereModel = ModelInfo()
+	sphereModel.name = "defaultSphere"
+	sphereModel.path = "data/sphere/sphere.obj"
+	scene.loadModel(sphereModel)
+	
 # Main ----------------------------------------------------------
-# initializing database
+# initialize database
 initDB()
 getData()
 
@@ -87,13 +100,13 @@ for system in systemList:
 	#add lights to the scene Node "everything"
 	everything.addChild(light)
 
+# set light color for each star type
 for name,model in lightsDict.iteritems():
 	color = Color(1,1,1,1)
 	if name == "Solar System":
 		type = allSystemsOrbital[name]["The Sun"].starType
 	else:
 		type = allSystemsOrbital[name][name].starType
-	print type
 	if type.find('O') != -1:
 		color = colorO
 	if type.find('B') != -1:
@@ -108,9 +121,8 @@ for name,model in lightsDict.iteritems():
 		color = colorK
 	if type.find('M') != -1:
 		color = colorK
+	lightsDict[name].setColor(color)
 
-	
-		
 	
 
 # initialize camera
@@ -119,6 +131,13 @@ initCam()
 # make wall systems static. Add "thingsOnTheWall" to the cam
 getDefaultCamera().addChild(thingsOnTheWall)
 
+# initialize the scene
+initializeScene()
+
 # initialize and set skybox
 setSkyBox()
+
+# load sphere into the scene
+loadSphereModel()
+
 
