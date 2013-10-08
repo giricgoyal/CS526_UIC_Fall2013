@@ -32,6 +32,7 @@ from src.util import *
 from src.manageData import *
 from src.cameraManager import *
 
+
 # ---------------------------------------------------------------
 # Variables
 
@@ -50,7 +51,7 @@ def setSkyBox():
 def initializeScene():
 	global scene
 	scene = getSceneManager()
-	scene.setBackgroundColor(colorBlack)
+	scene.setBackgroundColor(colorWhite)
 	setNearFarZ(0.1, 1000000)
 
 def loadSphereModel():
@@ -59,6 +60,76 @@ def loadSphereModel():
 	sphereModel.name = "defaultSphere"
 	sphereModel.path = "data/sphere/sphere.obj"
 	scene.loadModel(sphereModel)
+
+
+# method for creating all the systems in 3D
+def create3DSystems():
+	for system in systemList:
+		if system == "Solar System":
+			lightsDict[system].setEnabled = True
+			star = "The Sun"
+			theSystem = allSystemsOrbital[system]
+			for name, model in theSystem.iteritems():
+				pos = Vector3(0,0,0)
+				model = StaticObject.create("defaultSphere")
+				if theSystem[name].isStar == 0:
+					model.setPosition(Vector3(0.0, 0.0, -theSystem[name].minorA * orbitScaleFactor * userScaleFactor))
+					model.setScale(Vector3(theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor))
+				else:
+					# setHabitableZone() ????
+					pos = Vector3(0.0, 0.0, -theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
+					lightsDict[system].setPosition(pos)
+					model.setPosition(pos)
+					model.setScale(Vector3(theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor))
+					sunDot = StaticObject.create("defaultSphere")
+					sunDot.setPosition(Vector3(0.0, 0.0, -theSystem[name].minorA * orbitScaleFactor * userScaleFactor))
+					sunDot.setScale(Vector3(1, 1, 1))
+					systemNodeDict[system].addChild(sunDot)
+					
+					sunLine = LineSet.create()
+					l = sunLine.addLine()
+					l.setStart(Vector3(0,0,0))
+					l.setEnd(Vector3(0,1000,0))
+					l.setThickness(1)
+					sunLine.setEffect('colored -e white')
+					systemNodeDict[system].addChild(sunLine)
+					
+				model.getMaterial().setProgram("textured")
+				if theSystem[name].isStar == 0:
+					model.setEffect("textured -v emissive -d data/textures/planets/"+str(theSystem[name].name.lower())+".jpg")
+				else:
+					model.setEffect("textured -v emissive -d data/textures/stars/sol.png")
+				activeBodies[name] = model
+				
+				planetCenter = SceneNode.create(str(name) + "PlanetCenter")
+				# deal with the axial tilt of the bodies
+				tiltCenter = SceneNode.create(str(name) + "TiltCenter")
+				planetCenter.addChild(tiltCenter)
+				tiltCenter.addChild(model)
+				tiltCenter.roll(theSystem[name].inclination/180.0*pi)
+				
+				#deal with rotating the planets around the sun
+				rotCenter = SceneNode.create(str(name) + "RotCenter")
+				rotCenter.setPosition(pos)
+				rotCenter.addChild(planetCenter)
+				
+				activeRotCenters[name] = rotCenter
+				#systemNodeDict[system].addChild(rotCenter)
+				
+				
+				
+	
+		else:
+			star = system
+			
+	allSystems.setScale(Vector3(overallScaleFactor, overallScaleFactor, overallScaleFactor))
+	allSystems.setPosition(Vector3(0, 1.5, 1))
+	
+def onUpdate(frame, t, dt):
+    for name,model in allSystemsOrbital["Solar System"].iteritems():
+		activeRotCenters[name].yaw(dt/40*(1.0 / allSystemsOrbital["Solar System"][name].period)) #revolution (year)
+		activeBodies[name].yaw(dt/40*365*(1.0 / allSystemsOrbital["Solar System"][name].rotation)) #rotation (day) 
+
 	
 # Main ----------------------------------------------------------
 # initialize database
@@ -93,6 +164,7 @@ for system in systemList:
 	light.setLightType(LightType.Point)
 	lightsDict[system] = light
 	# call these while creating the systems
+	#light.setPosition(Vector3(0,0,0))
 	#light.setPositionVector3(,,)) ----- set position for each to the position of the star
 	#light.setColor(Color(,,,)) -------- set color for each to the color of the star
 	#light.setEnabled(True)
@@ -140,4 +212,8 @@ setSkyBox()
 # load sphere into the scene
 loadSphereModel()
 
+# now create the systems in 3D space
+create3DSystems()
 
+# set update function
+setUpdateFunction(onUpdate)

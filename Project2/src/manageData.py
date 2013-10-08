@@ -1,3 +1,10 @@
+# #######################################################
+# managing data, populating data structures
+#
+# author: giric goyal
+# #######################################################
+
+
 from sqlite3 import *
 from util import *
 from math import *
@@ -75,7 +82,6 @@ def getData():
 			data2[name] = bodyInfoObj
 		allSystemsOrbital[system] = data
 		allSystemsInfo[system] = data2
-	print allSystemsInfo["Solar System"]["The Sun"].name
 	
 def initDB():
 	print "initializing db"
