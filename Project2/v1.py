@@ -106,6 +106,7 @@ def addOrbit(orbit, col, thick, system):
 			circle.setScale(Vector3(orbit, 10.0, orbit)) # 0.1
 		
 	systemNodeDict[system].addChild(circle)
+	
 
 # method for creating all the systems in 3D
 def create3DSystems():
@@ -300,6 +301,9 @@ loadSphereModel()
 
 # now create the systems in 3D space
 create3DSystems()
+
+# create the systems in 2D space
+create2DSystems()
 
 # set update function
 setUpdateFunction(onUpdate)
