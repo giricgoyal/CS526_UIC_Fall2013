@@ -52,7 +52,6 @@ class bodyOrbit:
 		if isStar == 0:
 			self.radius = radius * rJupiter #kms
 			self.period = period * DAYtoYEAR #years
-			print period
 		else:
 			self.radius = radius * rSun #kms
 			self.period = 1.0 #years
@@ -115,7 +114,96 @@ class bodyInfo:
 		self.systemName = systemName
 		self.starDistance = starDistance #parsecs
 		self.starAge = starAge #Galactic Year
+		
+		
+class habZone:
+	starName = ""
+	starType = ""
+	habInner = 0.0
+	habOuter = 0.0
+	habCenter = 0.0
 	
+	def __getitem__(self, starName):
+		return starName
+	def __getitem__(self, statType):
+		return starType
+	def __getitem__(self, habInner):
+		return habInner
+	def __getitem__(self, habOuter):
+		return habOuter
+	def __getitem__(self, habCenter):
+		return habCenter
+	
+	def __init__(self, starName, starType):
+		self.starName = starName
+		self.starType = starType
+	
+	def calHabitableZone(self):
+		if self.starType.find('A') != -1:	
+			self.habInner = 8.5 * AUtoKM
+			self.habOuter = 12.5 * AUtoKM
+		elif self.starType.find('F') != -1:
+			self.habInner = 1.5 * AUtoKM
+			self.habOuter = 2.2 * AUtoKM
+		elif self.starType.find('G') != -1:
+			self.habInner = 0.95 * AUtoKM
+			self.habOuter = 1.4 * AUtoKM
+		elif self.starType.find('K') != -1:
+			self.habInner = 0.38 * AUtoKM
+			self.habOuter = 0.56 * AUtoKM
+		elif self.starType.find('M') != -1:
+			self.habInner = 0.08 * AUtoKM
+			self.habOuter = 0.12 * AUtoKM
+		else:
+			self.habInner = 0.0
+			self.habOuter = 0.0
+			
+		self.habCenter = (self.habInner + self.habOuter) * 0.5
+
+		
+class starLoc:
+	alpha = 0.0 # right ascension in hh:mm:ss convert to degrees
+	delta = 0.0 # declination in dd:mm:ss convert to degrees
+	distance = 0.0 # distance to star from earth
+	pos = Vector3(0.0,0.0,0.0)
+	name = ""
+	
+	def __getitem__(self, pos):
+		return pos
+	def __getitem__(self, name):
+		return name
+	
+	def __init__(self, name, a, d, dist):
+		self.name = name
+		ahr = 0.0
+		amin = 0.0
+		asec = 0.0
+		dday = 0.0
+		dmin = 0.0
+		dsec = 0.0
+		part = a.strip().split(":")
+		ahr = part[0]
+		amin = part[1]
+		asec = part[2]
+		part = d.strip().split(":")
+		sign = part[0][0]
+		dday = part[0][1:]
+		dmin = part[1]
+		dsec = part[2]
+		if sign == "-":
+			dday = -(float(dday))
+			dmin = -(float(dmin))
+			dsec = -(float(dsec))
+		self.alpha = (float(ahr) * float(HRtoDEG)) + (float(amin) * float(MINtoDEG)) + (float(asec) * float(SECtoDEG))
+		self.delta = (float(dday) * float(DAYtoDEG)) + (float(dmin) * float(MINtoDEG)) + (float(dsec) * float(SECtoDEG))
+		self.distance = dist
+		x = float(self.distance) * float(cos(radians(self.alpha))) * float(cos(radians(self.delta)))
+		y = float(self.distance) * float(cos(radians(self.delta))) * float(sin(radians(self.alpha)))
+		z = float(self.distance) * float(sin(radians(self.delta)))
+		self.pos = Vector3(x * PCtoKM, y * PCtoKM, z * PCtoKM)
+		
+		
+		
 # ------------------------------------------------------------------			
 # variables
 mSun = "1.989E30 kg"
@@ -124,7 +212,14 @@ rSun = 695500 # km
 rJupiter = 71493.5 # Km
 rEarth = 6378 #km
 
+# conversions
 AUtoKM = 149597871
+PCtoKM = 3.08567e-13
+HRtoDEG = 15.0
+DAYtoDEG = 24.0 * HRtoDEG
+MINtoDEG = 15.0/60.0
+SECtoDEG = 15.0/3600.0
+
 
 # computer goldilocks zone based on the type of star
 # for now setting to the Sun
@@ -157,6 +252,8 @@ systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "
 activeSystem = None
 activeBodies = dict()
 activeRotCenters = dict()
+habitableZones = dict()
+starLocations = dict()
 
 # Colors
 colorBlack = Color("#000000FF") # Black

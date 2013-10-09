@@ -61,6 +61,16 @@ def loadSphereModel():
 	sphereModel.path = "data/sphere/sphere.obj"
 	scene.loadModel(sphereModel)
 
+	
+# Calculate habitable zones
+def setHabitableZone(system, starName, starType):
+	print "Setting habitable zone for:"
+	print starName + " : " + starType
+	habObj = habZone(starName, starType)
+	habObj.calHabitableZone()
+	habitableZones[system] = habObj
+	
+	
 
 # method for creating all the systems in 3D
 def create3DSystems():
@@ -76,7 +86,7 @@ def create3DSystems():
 					model.setPosition(Vector3(0.0, 0.0, -theSystem[name].minorA * orbitScaleFactor * userScaleFactor))
 					model.setScale(Vector3(theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor))
 				else:
-					# setHabitableZone() ????
+					setHabitableZone(system, name, theSystem[name].starType)
 					pos = Vector3(0.0, 0.0, -theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 					lightsDict[system].setPosition(pos)
 					model.setPosition(pos)
@@ -102,6 +112,7 @@ def create3DSystems():
 				activeBodies[name] = model
 				
 				planetCenter = SceneNode.create(str(name) + "PlanetCenter")
+				
 				# deal with the axial tilt of the bodies
 				tiltCenter = SceneNode.create(str(name) + "TiltCenter")
 				planetCenter.addChild(tiltCenter)
@@ -114,14 +125,37 @@ def create3DSystems():
 				rotCenter.addChild(planetCenter)
 				
 				activeRotCenters[name] = rotCenter
-				#systemNodeDict[system].addChild(rotCenter)
+				systemNodeDict[system].addChild(rotCenter)
 				
+				# add orbit
+				
+				# deal with labelling everything
 				
 				
 	
 		else:
 			star = system
-			
+		
+		# deal with the goldilocks zones
+		inner = CylinderShape.create(1, habitableZones[system].habInner * orbitScaleFactor * userScaleFactor, habitableZones[system].habInner * orbitScaleFactor * userScaleFactor, 10, 128)
+		inner.setEffect('colored -e #FF000044')
+		inner.getMaterial().setTransparent(True)
+		inner.pitch(-pi * 0.5)
+		inner.setScale(Vector3(1.0,1.0,1.0))
+		
+		outer = CylinderShape.create(1, habitableZones[system].habOuter * orbitScaleFactor * userScaleFactor, habitableZones[system].habOuter * orbitScaleFactor * userScaleFactor, 10, 128)
+		outer.setEffect('colored -e #00FF0044')
+		outer.getMaterial().setTransparent(True)
+		outer.pitch(-pi * 0.5)
+		outer.setScale(Vector3(1.0,1.0,0.1))
+		
+		gZone = SceneNode.create("GZone")
+		gZone.addChild(outer)
+		gZone.addChild(inner)
+		
+		systemNodeDict[system].addChild(gZone)
+		systemNodeDict[system].addChild(lightsDict[system])
+		
 	allSystems.setScale(Vector3(overallScaleFactor, overallScaleFactor, overallScaleFactor))
 	allSystems.setPosition(Vector3(0, 1.5, 1))
 	
@@ -170,7 +204,7 @@ for system in systemList:
 	#light.setEnabled(True)
 	
 	#add lights to the scene Node "everything"
-	everything.addChild(light)
+	#everything.addChild(light)
 
 # set light color for each star type
 for name,model in lightsDict.iteritems():
@@ -195,7 +229,6 @@ for name,model in lightsDict.iteritems():
 		color = colorK
 	lightsDict[name].setColor(color)
 
-	
 
 # initialize camera
 initCam()

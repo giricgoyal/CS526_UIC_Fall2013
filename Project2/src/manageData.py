@@ -82,6 +82,21 @@ def getData():
 			data2[name] = bodyInfoObj
 		allSystemsOrbital[system] = data
 		allSystemsInfo[system] = data2
+		
+	for system in systemList:
+		readFromFile = "Select * from starLoc"
+		rawDataSet = c.execute(readFromFile)
+		name = ""
+		ra = ""
+		sec = ""
+		dist = 0.0
+		for data in rawDataSet:
+			name = data[0]
+			ra = data[1]
+			dec = data[2]
+			dist = data[3]
+			starLocObj = starLoc(name, ra, dec, dist)
+			starLocations[name] = starLocObj
 	
 def initDB():
 	print "initializing db"
