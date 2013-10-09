@@ -51,7 +51,7 @@ def setSkyBox():
 def initializeScene():
 	global scene
 	scene = getSceneManager()
-	scene.setBackgroundColor(colorWhite)
+	scene.setBackgroundColor(colorBlack)
 	setNearFarZ(0.1, 1000000)
 
 def loadSphereModel():
@@ -68,14 +68,51 @@ def setHabitableZone(system, starName, starType):
 	habObj.calHabitableZone()
 	habitableZones[system] = habObj
 	
+def addOrbit(orbit, col, thick, system):
+	circle = LineSet.create()
+	segments = 180
+	radius = 1
+	thickness = thick
 	
+	# need to think about elliptical orbit, for now circular based on minorA
+	a = 0.0
+	while a <= 360:
+		x = cos(radians(a)) * radius
+		y = sin(radians(a)) * radius
+		a += 360.0/segments
+		nx = cos(radians(a)) * radius
+		ny = sin(radians(a)) * radius
+		
+		l = circle.addLine()
+		l.setStart(Vector3(x, 0, y))
+		l.setEnd(Vector3(nx, 0, ny))
+		l.setThickness(thickness)
+		
+		if system == "Solar System":
+			circle.setPosition(Vector3(0,0,0))
+		else:
+			circle.setPosition(starLocations[system].pos)
+		
+		if col == 0:
+			circle.setEffect('colored -e white')
+		else:
+			circle.setEffect('colored -e green')
+			
+        # Squish z to turn the torus into a disc-like shape.
+
+		if col == 0:
+			circle.setScale(Vector3(orbit, 1000.0, orbit))
+		else:
+			circle.setScale(Vector3(orbit, 10.0, orbit)) # 0.1
+		
+	systemNodeDict[system].addChild(circle)
 
 # method for creating all the systems in 3D
 def create3DSystems():
 	for system in systemList:
 		# set the system name 
+		lightsDict[system].setEnabled = True
 		if system == "Solar System":
-			lightsDict[system].setEnabled = True
 			star = "The Sun"	
 		else:
 			star = system
@@ -142,6 +179,7 @@ def create3DSystems():
 			systemNodeDict[system].addChild(rotCenter)
 			
 			# add orbit
+			addOrbit(theSystem[name].minorA*orbitScaleFactor*userScaleFactor, 0, 0.001, system)
 			
 			# deal with labelling everything
 				
@@ -255,7 +293,7 @@ getDefaultCamera().addChild(thingsOnTheWall)
 initializeScene()
 
 # initialize and set skybox
-setSkyBox()
+#setSkyBox()
 
 # load sphere into the scene
 loadSphereModel()
