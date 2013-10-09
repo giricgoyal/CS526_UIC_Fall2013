@@ -64,8 +64,6 @@ def loadSphereModel():
 	
 # Calculate habitable zones
 def setHabitableZone(system, starName, starType):
-	print "Setting habitable zone for:"
-	print starName + " : " + starType
 	habObj = habZone(starName, starType)
 	habObj.calHabitableZone()
 	habitableZones[system] = habObj
@@ -75,66 +73,79 @@ def setHabitableZone(system, starName, starType):
 # method for creating all the systems in 3D
 def create3DSystems():
 	for system in systemList:
+		# set the system name 
 		if system == "Solar System":
 			lightsDict[system].setEnabled = True
-			star = "The Sun"
-			theSystem = allSystemsOrbital[system]
-			for name, model in theSystem.iteritems():
-				pos = Vector3(0,0,0)
-				model = StaticObject.create("defaultSphere")
-				if theSystem[name].isStar == 0:
+			star = "The Sun"	
+		else:
+			star = system
+			
+		# create the objects
+		theSystem = allSystemsOrbital[system]
+		for name, model in theSystem.iteritems():
+			pos = Vector3(0,0,0)
+			model = StaticObject.create("defaultSphere")
+			if theSystem[name].isStar == 0:
+				# set the model position depending on the system
+				if system == "Solar System":
 					model.setPosition(Vector3(0.0, 0.0, -theSystem[name].minorA * orbitScaleFactor * userScaleFactor))
-					model.setScale(Vector3(theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor))
 				else:
-					setHabitableZone(system, name, theSystem[name].starType)
-					pos = Vector3(0.0, 0.0, -theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
-					lightsDict[system].setPosition(pos)
-					model.setPosition(pos)
-					model.setScale(Vector3(theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor))
-					sunDot = StaticObject.create("defaultSphere")
-					sunDot.setPosition(Vector3(0.0, 0.0, -theSystem[name].minorA * orbitScaleFactor * userScaleFactor))
-					sunDot.setScale(Vector3(1, 1, 1))
-					systemNodeDict[system].addChild(sunDot)
+					model.setPosition(starLocations[system].pos * orbitScaleFactor * userScaleFactor )
+				model.setScale(Vector3(theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor))
+			else:
+				setHabitableZone(system, name, theSystem[name].starType)
+				pos = Vector3(0.0, 0.0, -theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
+				# set the model position depending on the system
+				if system != "Solar System":
+					pos += starLocations[system].pos
 					
-					sunLine = LineSet.create()
-					l = sunLine.addLine()
-					l.setStart(Vector3(0,0,0))
-					l.setEnd(Vector3(0,1000,0))
-					l.setThickness(1)
-					sunLine.setEffect('colored -e white')
-					systemNodeDict[system].addChild(sunLine)
-					
-				model.getMaterial().setProgram("textured")
+				lightsDict[system].setPosition(pos)
+				model.setPosition(pos)
+				model.setScale(Vector3(theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor))
+				sunDot = StaticObject.create("defaultSphere")
+				sunDot.setPosition(pos)
+				sunDot.setScale(Vector3(1, 1, 1))
+				systemNodeDict[system].addChild(sunDot)
+				
+				sunLine = LineSet.create()
+				l = sunLine.addLine()
+				l.setStart(Vector3(0,0,0))
+				l.setEnd(Vector3(0,1000,0))
+				l.setThickness(1)
+				sunLine.setEffect('colored -e white')
+				systemNodeDict[system].addChild(sunLine)
+			
+			# set textures
+			model.getMaterial().setProgram("textured")
+			if system == "Solar System":
 				if theSystem[name].isStar == 0:
 					model.setEffect("textured -v emissive -d data/textures/planets/"+str(theSystem[name].name.lower())+".jpg")
 				else:
 					model.setEffect("textured -v emissive -d data/textures/stars/sol.png")
-				activeBodies[name] = model
+			activeBodies[name] = model
+			
+			
+			planetCenter = SceneNode.create(str(name) + "PlanetCenter")
+			
+			# deal with the axial tilt of the bodies
+			tiltCenter = SceneNode.create(str(name) + "TiltCenter")
+			planetCenter.addChild(tiltCenter)
+			tiltCenter.addChild(model)
+			tiltCenter.roll(theSystem[name].inclination/180.0*pi)
+			
+			#deal with rotating the planets around the sun
+			rotCenter = SceneNode.create(str(name) + "RotCenter")
+			rotCenter.setPosition(pos)
+			rotCenter.addChild(planetCenter)
+			
+			activeRotCenters[name] = rotCenter
+			systemNodeDict[system].addChild(rotCenter)
+			
+			# add orbit
+			
+			# deal with labelling everything
 				
-				planetCenter = SceneNode.create(str(name) + "PlanetCenter")
-				
-				# deal with the axial tilt of the bodies
-				tiltCenter = SceneNode.create(str(name) + "TiltCenter")
-				planetCenter.addChild(tiltCenter)
-				tiltCenter.addChild(model)
-				tiltCenter.roll(theSystem[name].inclination/180.0*pi)
-				
-				#deal with rotating the planets around the sun
-				rotCenter = SceneNode.create(str(name) + "RotCenter")
-				rotCenter.setPosition(pos)
-				rotCenter.addChild(planetCenter)
-				
-				activeRotCenters[name] = rotCenter
-				systemNodeDict[system].addChild(rotCenter)
-				
-				# add orbit
-				
-				# deal with labelling everything
-				
-				
-	
-		else:
-			star = system
+			
 		
 		# deal with the goldilocks zones
 		inner = CylinderShape.create(1, habitableZones[system].habInner * orbitScaleFactor * userScaleFactor, habitableZones[system].habInner * orbitScaleFactor * userScaleFactor, 10, 128)
@@ -149,6 +160,10 @@ def create3DSystems():
 		outer.pitch(-pi * 0.5)
 		outer.setScale(Vector3(1.0,1.0,0.1))
 		
+		if system != "Solar System":
+			inner.setPosition(starLocations[system].pos * orbitScaleFactor * userScaleFactor )
+			outer.setPosition(starLocations[system].pos * orbitScaleFactor * userScaleFactor )
+			
 		gZone = SceneNode.create("GZone")
 		gZone.addChild(outer)
 		gZone.addChild(inner)

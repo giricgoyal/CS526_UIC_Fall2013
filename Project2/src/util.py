@@ -214,7 +214,7 @@ rEarth = 6378 #km
 
 # conversions
 AUtoKM = 149597871
-PCtoKM = 3.08567e-13
+PCtoKM = 3.08567e13
 HRtoDEG = 15.0
 DAYtoDEG = 24.0 * HRtoDEG
 MINtoDEG = 15.0/60.0
@@ -239,7 +239,7 @@ user2ScaleFactor = 1
 
 orbitScaleFactor = 0.00001
 planetScaleFactor = 0.01
-sunScaleFactor = 0.01
+sunScaleFactor = 0.001
 overallScaleFactor = 0.00025
 
 # time 
