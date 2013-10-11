@@ -62,8 +62,43 @@ class bodyOrbit:
 		self.starType = starType
 		self.minorA = getOrbitCoords(eccentricity, majorA) * AUtoKM #kms
 		self.isStar = isStar
-		
-		
+		if isStar == 1:
+			if name == "The Sun":
+				self.texture = "data/textures/stars/sol.png"
+			if starType.find('A') != -1:
+				self.texture = "data/textures/stars/astar.jpg"
+			elif starType.find('B') != -1:
+				self.texture = "data/textures/stars/bstar.png"
+			elif starType.find('G') != -1:
+				self.texture = "data/textures/stars/gstar.png"
+			elif starType.find('K') != -1:
+				self.texture = "data/textures/stars/kstar.png"
+			elif starType.find('F') != -1:
+				self.texture = "data/textures/stars/fstar.png"
+			elif starType.find('M') != -1:
+				self.texture = "data/textures/stars/mstar.png"
+			elif starType.find('O') != -1:
+				self.texture = "data/textures/stars/ostar.png"
+		else:
+			if name == "Mercury":
+				self.texture = "data/textures/planets/mercury.jpg"
+			elif name == "Venus":
+				self.texture = "data/textures/planets/venus.jpg"
+			elif name == "Earth":
+				self.texture = "data/textures/planets/earth.jpg"
+			elif name == "Mars":
+				self.texture = "data/textures/planets/mars.jpg"
+			elif name == "Jupiter":
+				self.texture = "data/textures/planets/jupiter.jpg"
+			elif name == "Saturn":
+				self.texture = "data/textures/planets/saturn.jpg"
+			elif name == "Uranus":
+				self.texture = "data/textures/planets/uranus.jpg"
+			elif name == "Neptune":
+				self.texture = "data/textures/planets/neptune.jpg"
+			else:
+				self.texture = "data/textures/planets/mercury.jpg"
+				
 
 class bodyInfo:
 	name = ""
@@ -182,14 +217,14 @@ class starLoc:
 		dmin = 0.0
 		dsec = 0.0
 		part = a.strip().split(":")
-		ahr = part[0]
-		amin = part[1]
-		asec = part[2]
+		ahr = float(part[0])
+		amin = float(part[1])
+		asec = float(part[2])
 		part = d.strip().split(":")
 		sign = part[0][0]
-		dday = part[0][1:]
-		dmin = part[1]
-		dsec = part[2]
+		dday = float(part[0][1:])
+		dmin = float(part[1])
+		dsec = float(part[2])
 		if sign == "-":
 			dday = -(float(dday))
 			dmin = -(float(dmin))
@@ -200,7 +235,7 @@ class starLoc:
 		x = float(self.distance) * float(cos(radians(self.alpha))) * float(cos(radians(self.delta)))
 		y = float(self.distance) * float(cos(radians(self.delta))) * float(sin(radians(self.alpha)))
 		z = float(self.distance) * float(sin(radians(self.delta)))
-		self.pos = Vector3(x * PCtoKM, y * PCtoKM, z * PCtoKM)
+		self.pos = Vector3(x * PCtoKM * orbitScaleFactor * userScaleFactor, y * PCtoKM * orbitScaleFactor * userScaleFactor, z * PCtoKM * orbitScaleFactor * userScaleFactor)
 		
 		
 		
@@ -248,6 +283,7 @@ overallScaleFactor = 0.00025
 XorbitScaleFactor = 320000.0 / wallLimit
 XplanetScaleFactor = 0.2
 
+
 # time 
 DAYtoYEAR = 1.0/365.0
 
@@ -275,6 +311,8 @@ colorK = Color("#FFD36BEE") # pale yellow orange
 colorM = Color("#FFBF86EE") # yellow orange red
 
 
+
+currentSystem = "Solar System"
 
 
 # -----------------------------------------------------------------

@@ -91,6 +91,21 @@ for star in starList:
 		star_mass = 0.0 if singleSet[i_Star_Mass] == "" else singleSet[i_Star_Mass]
 		star_radius = 0.0 if singleSet[i_Star_Radius] == "" else singleSet[i_Star_Radius]
 		star_spec_type = "" if singleSet[i_Star_Spec_Type] == "" else singleSet[i_Star_Spec_Type]
+		if singleSet[i_Star_Radius] == "":
+			star_radius = pow(star_mass, 0.8)
+		if (star_radius == 0.0) and (star_mass == 0.0):
+			if star_spec_type.find("G0") != -1:
+				star_radius = 1.05
+				star_mass = 1.10
+			if star_spec_type.find("G4") != -1:
+				star_radius = 0.93
+				star_mass = 0.93
+			if star_spec_type.find("G8") != -1:
+				star_radius = 0.98
+				star_mass = 0.98
+			if star_spec_type.find("K0") != -1:
+				star_radius = 0.85
+				star_mass = 0.78
 		star_age = 0.0 if singleSet[i_Star_Age] == "" else singleSet[i_Star_Age]
 		star_teff = 0.0 if singleSet[i_Star_Teff] == "" else singleSet[i_Star_Teff]
 		insertPlanetQuery = "insert into exoplanets(name, mass, radius, period, axis, eccentricity, inclination, discovered, detection_type, molecules, star_name, star_distance, star_mass, star_radius, star_spec_type, star_age, star_teff, rotation, star_rotation) values("

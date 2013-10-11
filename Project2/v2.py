@@ -31,6 +31,7 @@ from cyclops import *
 from src.util import *
 from src.manageData import *
 from src.cameraManager import *
+from src.menuManager import *
 
 
 # ---------------------------------------------------------------
@@ -67,6 +68,7 @@ def setHabitableZone(system, starName, starType):
 	habObj = habZone(starName, starType)
 	habObj.calHabitableZone()
 	habitableZones[system] = habObj
+	
 	
 def addOrbit(orbit, col, thick, system):
 	circle = LineSet.create()
@@ -173,35 +175,30 @@ def create2DSystems():
 		
 # method for creating all the systems in 3D
 def create3DSystems():
+	theSystem = dict()
 	for system in systemList:
 		# set the system name 
-		lightsDict[system].setEnabled = True
+		#lightsDict[system].setEnabled = True
 		if system == "Solar System":
-			star = "The Sun"	
+			star = "The Sun"
 		else:
 			star = system
 			
 		# create the objects
 		theSystem = allSystemsOrbital[system]
+		pos2 = starLocations[system].pos
 		for name, model in theSystem.iteritems():
 			pos = Vector3(0,0,0)
 			model = StaticObject.create("defaultSphere")
 			if theSystem[name].isStar == 0:
 				# set the model position depending on the system
-				if system == "Solar System":
-					model.setPosition(Vector3(0.0, 0.0, -theSystem[name].minorA * orbitScaleFactor * userScaleFactor))
-				else:
-					model.setPosition(starLocations[system].pos * orbitScaleFactor * userScaleFactor )
-				model.setScale(Vector3(theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor))
-			else:
-				setHabitableZone(system, name, theSystem[name].starType)
-				pos = Vector3(0.0, 0.0, -theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
-				# set the model position depending on the system
-				if system != "Solar System":
-					pos += starLocations[system].pos
-					
-				lightsDict[system].setPosition(pos)
+				pos = ((Vector3(0.0, 0.0, -theSystem[name].minorA  * orbitScaleFactor * userScaleFactor)))
+				#print name + " :" + str(pos)
 				model.setPosition(pos)
+				model.setScale(Vector3(theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor))
+			elif theSystem[name].isStar == 1:
+				setHabitableZone(system, name, theSystem[name].starType)
+				model.setPosition(Vector3(0,0,0))
 				model.setScale(Vector3(theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor))
 				sunDot = StaticObject.create("defaultSphere")
 				sunDot.setPosition(pos)
@@ -218,15 +215,12 @@ def create3DSystems():
 			
 			# set textures
 			model.getMaterial().setProgram("textured")
-			if system == "Solar System":
-				if theSystem[name].isStar == 0:
-					model.setEffect("textured -v emissive -d data/textures/planets/"+str(theSystem[name].name.lower())+".jpg")
-				else:
-					model.setEffect("textured -v emissive -d data/textures/stars/sol.png")
+			model.setEffect("textured -v emissive -d "+theSystem[name].texture)
 			activeBodies[name] = model
 			
 			
 			planetCenter = SceneNode.create(str(name) + "PlanetCenter")
+			
 			
 			# deal with the axial tilt of the bodies
 			tiltCenter = SceneNode.create(str(name) + "TiltCenter")
@@ -234,9 +228,20 @@ def create3DSystems():
 			tiltCenter.addChild(model)
 			tiltCenter.roll(theSystem[name].inclination/180.0*pi)
 			
+			
+			if name == "Saturn":
+				rings = CylinderShape.create(1, 80000*planetScaleFactor, 80000*planetScaleFactor, 10, 128)
+				rings.setEffect('colored -e #88888866')
+				rings.getMaterial().setTransparent(True)
+				rings.setPosition(Vector3(0,0,-theSystem[name].minorA * orbitScaleFactor*userScaleFactor))
+				rings.pitch((-pi * 0.5))
+				tiltCenter.addChild(rings)
+			
+			
+			
 			#deal with rotating the planets around the sun
 			rotCenter = SceneNode.create(str(name) + "RotCenter")
-			rotCenter.setPosition(pos)
+			rotCenter.setPosition(pos2)
 			rotCenter.addChild(planetCenter)
 			
 			activeRotCenters[name] = rotCenter
@@ -246,9 +251,27 @@ def create3DSystems():
 			addOrbit(theSystem[name].minorA*orbitScaleFactor*userScaleFactor, 0, 0.001, system)
 			
 			# deal with labelling everything
-				
+			v = Text3D.create('fonts/arial.ttf', 1, str(name))
+			if system == "Solar System":
+				if theSystem[name].isStar == 0:
+					pos1 = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA*orbitScaleFactor*userScaleFactor)
+				else:
+					pos1 = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor*userScaleFactor)
+			else:
+				if theSystem[name].isStar == 0:
+					pos1 = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA*orbitScaleFactor*userScaleFactor)
+				else:
+					pos1 = Vector3(0,theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA*orbitScaleFactor*userScaleFactor)
+					#pos = (starLocations[system].pos) + Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA*orbitScaleFactor*userScaleFactor)
+			v.setPosition(pos1)
+			v.setFontResolution(120)
+			v.setFontSize(180)
+			v.getMaterial().setDoubleFace(1)
+			v.setFixedSize(False)
+			v.setColor(Color('white'))
+			planetCenter.addChild(v)
+
 			
-		
 		# deal with the goldilocks zones
 		inner = CylinderShape.create(1, habitableZones[system].habInner * orbitScaleFactor * userScaleFactor, habitableZones[system].habInner * orbitScaleFactor * userScaleFactor, 10, 128)
 		inner.setEffect('colored -e #FF000044')
@@ -260,11 +283,11 @@ def create3DSystems():
 		outer.setEffect('colored -e #00FF0044')
 		outer.getMaterial().setTransparent(True)
 		outer.pitch(-pi * 0.5)
-		outer.setScale(Vector3(1.0,1.0,0.1))
+		outer.setScale(Vector3(1.0,1.0,1.0))
 		
 		if system != "Solar System":
-			inner.setPosition(starLocations[system].pos * orbitScaleFactor * userScaleFactor )
-			outer.setPosition(starLocations[system].pos * orbitScaleFactor * userScaleFactor )
+			inner.setPosition(starLocations[system].pos)
+			outer.setPosition(starLocations[system].pos)
 			
 		gZone = SceneNode.create("GZone")
 		gZone.addChild(outer)
@@ -278,8 +301,8 @@ def create3DSystems():
 	
 def onUpdate(frame, t, dt):
     for name,model in allSystemsOrbital["Solar System"].iteritems():
-		activeRotCenters[name].yaw(dt/10*(1.0 / allSystemsOrbital["Solar System"][name].period)) #revolution (year)
-		activeBodies[name].yaw(dt/10*365*(1.0 / allSystemsOrbital["Solar System"][name].rotation)) #rotation (day) 
+		activeRotCenters[name].yaw(dt/30*(1.0 / allSystemsOrbital["Solar System"][name].period)) #revolution (year)
+		activeBodies[name].yaw(dt/30*365*(1.0 / allSystemsOrbital["Solar System"][name].rotation)) #rotation (day) 
 
 	
 # Main ----------------------------------------------------------
@@ -367,6 +390,9 @@ create3DSystems()
 
 # create the systems in 2D space
 create2DSystems()
+
+# initialize menu 
+initButtons()
 
 # set update function
 setUpdateFunction(onUpdate)

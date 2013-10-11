@@ -82,7 +82,8 @@ def getData():
 			data2[name] = bodyInfoObj
 		allSystemsOrbital[system] = data
 		allSystemsInfo[system] = data2
-		
+	
+	starLocations["Solar System"] = starLoc("Solar System", "0:0:0", "+0:0:0", 0)
 	for system in systemList:
 		readFromFile = "Select * from starLoc"
 		rawDataSet = c.execute(readFromFile)

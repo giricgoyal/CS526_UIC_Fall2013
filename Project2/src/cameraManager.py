@@ -35,3 +35,7 @@ def initCam():
 	pos3D = cam.getPosition()
 	orient2D = cam.getOrientation()
 	pos2D = cam.getPosition()
+	
+def setCamPosition(pos):
+	global cam
+	cam.setPosition(pos)

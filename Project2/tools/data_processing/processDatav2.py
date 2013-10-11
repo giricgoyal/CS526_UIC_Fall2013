@@ -112,6 +112,10 @@ for singleSet in rawDataSet:
 	star_mass = singleSet[i_Star_Mass]
 	star_radius = singleSet[i_Star_Radius]
 	star_spec_type = singleSet[i_Star_Spec_Type]
+	if star_name == "Kepler-42":
+		star_spec_type = "M5V"
+	elif star_name == "Kepler-68":
+		star_spec_type = "G"
 	star_age = singleSet[i_Star_Age]
 	star_teff = singleSet[i_Star_Teff]
 	rotation = singleSet[i_Rotation]
