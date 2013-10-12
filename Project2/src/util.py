@@ -96,8 +96,16 @@ class bodyOrbit:
 				self.texture = "data/textures/planets/uranus.jpg"
 			elif name == "Neptune":
 				self.texture = "data/textures/planets/neptune.jpg"
+			elif self.radius/rEarth > 15:
+				self.texture = "data/textures/planets/jupiter.jpg"
+			elif self.radius/rEarth > 6:
+				self.texture = "data/textures/planets/jupiter.jpg"
+			elif self.radius/rEarth > 2:
+				self.texture = "data/textures/planets/neptune.jpg"
+			elif self.radius/rEarth > 1.25:
+				self.texture = "data/textures/planets/earth.jpg"
 			else:
-				self.texture = "data/textures/planets/mercury.jpg"
+				self.texture = "data/textures/planets/earth.jpg"
 				
 
 class bodyInfo:
@@ -235,7 +243,7 @@ class starLoc:
 		x = float(self.distance) * float(cos(radians(self.alpha))) * float(cos(radians(self.delta)))
 		y = float(self.distance) * float(cos(radians(self.delta))) * float(sin(radians(self.alpha)))
 		z = float(self.distance) * float(sin(radians(self.delta)))
-		self.pos = Vector3(x * PCtoKM * orbitScaleFactor * userScaleFactor, y * PCtoKM * orbitScaleFactor * userScaleFactor, z * PCtoKM * orbitScaleFactor * userScaleFactor)
+		self.pos = Vector3(x * PCtoKM, y * PCtoKM, z * PCtoKM)
 		
 		
 		
@@ -293,10 +301,12 @@ allSystemsInfo = dict()
 #systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "ups And", "CoRoT-11", "XO-3", "Kepler-22", "MOA-2007-BLG-192-L", "Kepler-11", "Kepler-10", "GJ 1214", "Gl 581", "WASP-33", "30 Ari B", "Kepler-39", "HR 8799", "Kepler-65", "Fomalhaut", "KOI-142", "HD 10180", "Kepler-68", "Kepler-20", "24 Sex", "Kepler-42", "HD 39194", "HD 134987", "HD 60532", "HD 96700", "HD 142", "HD 134060", "HD 215152", "HD 217107", "HD 99492", "GJ 676A", "HD 20794", "HD 128311", "14 Her", "HD 136352", "HD 113538", "HD 190360", "mu Ara", "47 Uma", "Gl 163", "Gliese 876", "55 Cnc", "HD 20003", "GJ 667C", "61 Vir", "HD 69830", "HD 40307"]
 systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "ups And", "CoRoT-11", "Kepler-22", "Kepler-11", "Kepler-10", "GJ 1214", "Gl 581", "30 Ari B", "Kepler-39", "HR 8799", "Fomalhaut", "KOI-142", "HD 10180", "Kepler-68", "Kepler-20", "24 Sex", "Kepler-42", "HD 39194", "HD 134987", "HD 60532", "HD 96700", "HD 142", "HD 134060", "HD 215152", "HD 217107", "HD 99492", "GJ 676A", "HD 20794", "HD 128311", "14 Her", "HD 136352", "HD 113538", "HD 190360", "mu Ara", "47 Uma", "Gl 163", "Gliese 876", "55 Cnc", "HD 20003", "GJ 667C", "61 Vir", "HD 69830", "HD 40307"]
 activeSystem = None
+starLocations = dict()
+
 activeBodies = dict()
 activeRotCenters = dict()
 habitableZones = dict()
-starLocations = dict()
+systemNodeDict = dict()
 
 # Colors
 colorBlack = Color("#000000FF") # Black
@@ -315,6 +325,23 @@ colorM = Color("#FFBF86EE") # yellow orange red
 currentSystem = "Solar System"
 
 
+
+
+# setting up initial scene hierarchy
+# level 1
+allSystems = SceneNode.create('allSystems')
+
+# level 2
+universe = SceneNode.create('universe')
+thingsOnTheWall = SceneNode.create('thingsOnTheWall')
+
+# level 3
+everything = SceneNode.create('everything')
+
+
+
+
+
 # -----------------------------------------------------------------
 # method definitions
 # get length of semi major axis using eccentricity and semi major axis
@@ -323,4 +350,45 @@ def getOrbitCoords(e, a):
 	rp = (1.0 - e) * a
 	b = pow((ra*rp), 0.5)
 	return b
-		
+
+def resetSystem():
+	global allSystems, universe, thinsOnTheWall, everything
+	activeBodies = dict()
+	activeRotCenters = dict()
+	habitableZones = dict()
+	systemNodeDict = dict()
+	
+	#everything.removeChildByRef(universe)
+
+	# level 1
+	allSystems = None
+	allSystems = SceneNode.create('allSystems')
+
+	# level 2
+	universe = None
+	thingsOnTheWall = None
+	universe = SceneNode.create('universe')
+	thingsOnTheWall = SceneNode.create('thingsOnTheWall')
+
+	# level 3
+	everything = None
+	everything = SceneNode.create('everything')
+
+	# initialize the scene nodes again
+	initSceneNodes()
+
+
+def updateOrbitScale(scale):
+	global orbitScaleFactor
+	orbitScaleFactor = pow(0.1, scale)
+	resetSystem()
+	#pos2 = starLocations[system].pos  * orbitScaleFactor * userScaleFactor
+	'''
+	for system in systemList:
+		theSystem = allSystemsOrbital[system]
+		for name, model in theSystem.iteritems():
+			pos = ((Vector3(0.0, 0.0, -theSystem[name].minorA  * orbitScaleFactor * userScaleFactor)))
+			activeBodies[name].setPosition(pos)
+	'''
+	print orbitScaleFactor
+	

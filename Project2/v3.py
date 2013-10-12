@@ -120,7 +120,7 @@ def create2DSystems():
 		
 		outlineBox = BoxShape.create(2.0, 0.25, 0.001)
 		outlineBox.setPosition(Vector3(-0.5, 0, 0.01))
-		outlineBox.setEffect('colored -e #11111166')
+		outlineBox.setEffect('colored -e #111111EE')
 		outlineBox.getMaterial().setTransparent(True)
 		screenCenter = SceneNode.create("box"+str(panelCounter))
 		
@@ -130,7 +130,7 @@ def create2DSystems():
 				continue
 			if theSystem[name].isStar == 0:
 				model = StaticObject.create("defaultSphere")
-				model.setScale(Vector3(theSystem[name].minorA * XplanetScaleFactor, theSystem[name].minorA * XplanetScaleFactor, theSystem[name].minorA * XplanetScaleFactor))
+				model.setScale(Vector3(theSystem[name].radius * XplanetScaleFactor, theSystem[name].radius * XplanetScaleFactor, theSystem[name].radius * XplanetScaleFactor))
 			else:
 				setHabitableZone(system, name, theSystem[name].starType)
 				
@@ -141,7 +141,7 @@ def create2DSystems():
 			sSystem.addChild(model)
 			
 			# set effect for the body spheres
-			#model.setEffect("textured -v emissive -d "+theSystem)
+			model.setEffect("textured -v emissive -d "+theSystem[name].texture)
 			
 			panelCounter += 1
 		
@@ -150,7 +150,7 @@ def create2DSystems():
 		
 		goldiZone.setPosition(Vector3(0.0, 0.0, 48000 - habCenter * XorbitScaleFactor * user2ScaleFactor))
 		sSystem.addChild(goldiZone)
-		goldiZone.setEffect('colored -e #00440077')
+		goldiZone.setEffect('colored -e #004400ee')
 		goldiZone.getMaterial().setTransparent(True)
 		
 		sSystem.yaw(pi/2.0)
@@ -163,6 +163,7 @@ def create2DSystems():
 		degreeConvert = 36.0/360.0 * 2 * pi 
 		caveRadius = 3.25
 		screenCenter.setPosition(Vector3(sin(hLoc * degreeConvert) * caveRadius, v * 0.29 + 0.41, cos(hLoc * degreeConvert) * caveRadius))
+		print Vector3(sin(hLoc * degreeConvert) * caveRadius, v * 0.29 + 0.41, cos(hLoc * degreeConvert) * caveRadius)
 		screenCenter.yaw(hLoc * degreeConvert)
 		screenCenter.addChild(sSystem)
 		screenCenter.addChild(outlineBox)
@@ -297,8 +298,8 @@ def create3DSystems():
 		systemNodeDict[system].addChild(gZone)
 		systemNodeDict[system].addChild(lightsDict[system])
 		
-	allSystems.setScale(Vector3(overallScaleFactor, overallScaleFactor, overallScaleFactor))
-	allSystems.setPosition(Vector3(0, 1.5, 1))
+	universe.setScale(Vector3(overallScaleFactor, overallScaleFactor, overallScaleFactor))
+	universe.setPosition(Vector3(0, 1.5, 1))
 	
 def initSceneNodes():
 	for system in systemList:

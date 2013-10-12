@@ -361,6 +361,7 @@ def addWallOfSystems():
             degreeConvert = 36.0/360.0*2*pi #18 degrees per panel times 2 panels per viz = 36
             caveRadius = 3.25
             screenCenter.setPosition(Vector3(sin(hLoc*degreeConvert)*caveRadius, v * 0.29 + 0.41, cos(hLoc*degreeConvert)*caveRadius))
+            print Vector3(sin(hLoc*degreeConvert)*caveRadius, v * 0.29 + 0.41, cos(hLoc*degreeConvert)*caveRadius)
             screenCenter.yaw(hLoc*degreeConvert)
             screenCenter.addChild(sSystem)
             screenCenter.addChild(outlineBox)
