@@ -14,7 +14,10 @@ from cameraManager import *
 # -----------------------------------------------------------------
 # variables
 visitSystemButtonList = dict()
-planetScaleSlider = None
+orbitScaleSlider = None
+orbitScaleSlider = None
+planetScaleSliderText = None
+planetScaleSliderText = None
 
 #------------------------------------------------------------------
 # method definitions
@@ -31,9 +34,15 @@ def visitSystem():
 				#print button.getText()
 				setCamPosition(pos)
 
+def setOrbitSlider():
+	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue()))
+	updateOrbitScale(orbitScaleSlider.getValue())
+	
+
 def setPlanetSlider():
-	print planetScaleSlider.getValue()
-	updateOrbitScale(planetScaleSlider.getValue())
+	planetScaleSliderText.setText("Planet Scale: " + str(planetScaleSlider.getValue()))
+	#updatePlanetScale(planetScaleSlider.getValue())
+	
 # -----------------------------------------------------------------
 # main
 
@@ -68,14 +77,24 @@ def initButtons():
 		visitSystemButtonList[system] = button
 		button.setUIEventCommand('visitSystem()')
 		
-	# planet scale slider
-	global planetScaleSlider
+	# orbit scale slider
+	global orbitScaleSlider, orbitScaleSliderText
+	orbitScaleSliderText = Label.create(scaleContainer)
+	orbitScaleSlider = Slider.create(scaleContainer)
+	orbitScaleSlider.setTicks(9)
+	orbitScaleSlider.setValue(4)
+	orbitScaleSlider.setUIEventCommand('setOrbitSlider()')
+	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue()))
+	
+	# orbit scale slider
+	global planetScaleSlider, planetScaleSliderText
+	planetScaleSliderText = Label.create(scaleContainer)
 	planetScaleSlider = Slider.create(scaleContainer)
 	planetScaleSlider.setTicks(9)
 	planetScaleSlider.setValue(4)
 	planetScaleSlider.setUIEventCommand('setPlanetSlider()')
+	planetScaleSliderText.setText("Planet Scale: " + str(planetScaleSlider.getValue()))
 	
-
 
 
 

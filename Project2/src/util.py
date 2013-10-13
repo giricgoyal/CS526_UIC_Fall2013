@@ -182,7 +182,7 @@ class habZone:
 		self.starType = starType
 	
 	def calHabitableZone(self):
-		if self.starType.find('A') != -1:	
+		if self.starType.find('A') != -1:
 			self.habInner = 8.5 * AUtoKM
 			self.habOuter = 12.5 * AUtoKM
 		elif self.starType.find('F') != -1:
@@ -200,7 +200,6 @@ class habZone:
 		else:
 			self.habInner = 0.0
 			self.habOuter = 0.0
-			
 		self.habCenter = (self.habInner + self.habOuter) * 0.5
 
 		
@@ -307,6 +306,10 @@ activeBodies = dict()
 activeRotCenters = dict()
 habitableZones = dict()
 systemNodeDict = dict()
+orbitDict = dict()
+textDict = dict()
+otherObjectsDict = dict()
+
 
 # Colors
 colorBlack = Color("#000000FF") # Black
@@ -339,12 +342,27 @@ thingsOnTheWall = SceneNode.create('thingsOnTheWall')
 everything = SceneNode.create('everything')
 
 
-
+# Camera Properties
+camSpeed = 25
 
 
 # -----------------------------------------------------------------
 # method definitions
 # get length of semi major axis using eccentricity and semi major axis
+
+def initSceneNodes():
+	for system in systemList:
+		temp = SceneNode.create(system)
+		systemNodeDict[system] = temp
+	for system in systemList:
+		universe.addChild(systemNodeDict[system])
+	
+	thingsOnTheWall.addChild(allSystems)
+	everything.addChild(universe)
+	everything.addChild(thingsOnTheWall)
+
+
+
 def getOrbitCoords(e, a):
 	ra = (1.0 + e) * a
 	rp = (1.0 - e) * a
@@ -380,15 +398,22 @@ def resetSystem():
 
 def updateOrbitScale(scale):
 	global orbitScaleFactor
-	orbitScaleFactor = pow(0.1, scale)
-	resetSystem()
-	#pos2 = starLocations[system].pos  * orbitScaleFactor * userScaleFactor
-	'''
+	orbitScaleFactor = pow(0.1, 9 - scale)
+
 	for system in systemList:
 		theSystem = allSystemsOrbital[system]
 		for name, model in theSystem.iteritems():
 			pos = ((Vector3(0.0, 0.0, -theSystem[name].minorA  * orbitScaleFactor * userScaleFactor)))
+			pos2 = starLocations[system].pos  * orbitScaleFactor * userScaleFactor
+			pos3 = theSystem[name].minorA*orbitScaleFactor*userScaleFactor
+			if theSystem[name].isStar == 0:
+				pos4 = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
+			else:
+				pos4 = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 			activeBodies[name].setPosition(pos)
-	'''
-	print orbitScaleFactor
+			activeRotCenters[name].setPosition(pos2)
+			orbitDict[name].setScale(Vector3(pos3, 10.0, pos3))
+			textDict[name].setPosition(pos4)
+			if name == "Saturn":
+				otherObjectsDict[name].setPosition(pos)
 	

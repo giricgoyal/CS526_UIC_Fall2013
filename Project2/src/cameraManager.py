@@ -31,7 +31,7 @@ def initCam():
 	global cam, orient3D, pos3D, orient2D, pos2D
 	cam = getDefaultCamera()
 	cam.setPosition(Vector3(0,0,0))
-	cam.getController().setSpeed(10)
+	cam.getController().setSpeed(camSpeed)
 	orient3D = cam.getOrientation()
 	pos3D = cam.getPosition()
 	orient2D = cam.getOrientation()

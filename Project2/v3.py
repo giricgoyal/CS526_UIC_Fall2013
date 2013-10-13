@@ -70,7 +70,7 @@ def setHabitableZone(system, starName, starType):
 	habitableZones[system] = habObj
 	
 	
-def addOrbit(orbit, col, thick, system):
+def addOrbit(orbit, col, thick, system, name):
 	circle = LineSet.create()
 	segments = 180
 	radius = 1
@@ -106,7 +106,7 @@ def addOrbit(orbit, col, thick, system):
 			circle.setScale(Vector3(orbit, 1000.0, orbit))
 		else:
 			circle.setScale(Vector3(orbit, 10.0, orbit)) # 0.1
-		
+	orbitDict[name] = circle
 	systemNodeDict[system].addChild(circle)
 
 
@@ -146,9 +146,9 @@ def create2DSystems():
 			panelCounter += 1
 		
 		# show habitable zones 
-		goldiZone = BoxShape.create(4, 25000, (1.0 * (habOuter - habInner)) * XorbitScaleFactor * user2ScaleFactor)
+		goldiZone = BoxShape.create(4, 25000, (1.0 * (habitableZones[system].habOuter - habitableZones[system].habInner)) * XorbitScaleFactor * user2ScaleFactor)
 		
-		goldiZone.setPosition(Vector3(0.0, 0.0, 48000 - habCenter * XorbitScaleFactor * user2ScaleFactor))
+		goldiZone.setPosition(Vector3(0.0, 0.0, 48000 - habitableZones[system].habCenter * XorbitScaleFactor * user2ScaleFactor))
 		sSystem.addChild(goldiZone)
 		goldiZone.setEffect('colored -e #004400ee')
 		goldiZone.getMaterial().setTransparent(True)
@@ -163,17 +163,15 @@ def create2DSystems():
 		degreeConvert = 36.0/360.0 * 2 * pi 
 		caveRadius = 3.25
 		screenCenter.setPosition(Vector3(sin(hLoc * degreeConvert) * caveRadius, v * 0.29 + 0.41, cos(hLoc * degreeConvert) * caveRadius))
-		print Vector3(sin(hLoc * degreeConvert) * caveRadius, v * 0.29 + 0.41, cos(hLoc * degreeConvert) * caveRadius)
 		screenCenter.yaw(hLoc * degreeConvert)
 		screenCenter.addChild(sSystem)
 		screenCenter.addChild(outlineBox)
 		allSystems.addChild(screenCenter)
 		
-		if v == 7:
+		if v == 8:
 			h += 1
 			v = 0
 		v += 1
-		
 		
 # method for creating all the systems in 3D
 def create3DSystems():
@@ -237,6 +235,7 @@ def create3DSystems():
 				rings.getMaterial().setTransparent(True)
 				rings.setPosition(Vector3(0,0,-theSystem[name].minorA * orbitScaleFactor*userScaleFactor))
 				rings.pitch((-pi * 0.5))
+				otherObjectsDict[name] = rings
 				tiltCenter.addChild(rings)
 			
 			
@@ -250,21 +249,20 @@ def create3DSystems():
 			systemNodeDict[system].addChild(rotCenter)
 			
 			# add orbit
-			addOrbit(theSystem[name].minorA*orbitScaleFactor*userScaleFactor, 0, 0.001, system)
+			addOrbit(theSystem[name].minorA*orbitScaleFactor*userScaleFactor, 0, 0.001, system, name)
 			
 			# deal with labelling everything
 			v = Text3D.create('fonts/arial.ttf', 1, str(name))
 			if system == "Solar System":
 				if theSystem[name].isStar == 0:
-					pos1 = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA*orbitScaleFactor*userScaleFactor)
+					pos1 = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 				else:
-					pos1 = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor*userScaleFactor)
+					pos1 = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 			else:
 				if theSystem[name].isStar == 0:
-					pos1 = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA*orbitScaleFactor*userScaleFactor)
+					pos1 = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 				else:
-					pos1 = Vector3(0,theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA*orbitScaleFactor*userScaleFactor)
-					#pos = (starLocations[system].pos) + Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA*orbitScaleFactor*userScaleFactor)
+					pos1 = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 			v.setPosition(pos1)
 			v.setFontResolution(120)
 			v.setFontSize(180)
@@ -272,7 +270,7 @@ def create3DSystems():
 			v.setFixedSize(False)
 			v.setColor(Color('white'))
 			planetCenter.addChild(v)
-
+			textDict[name] = v
 			
 		# deal with the goldilocks zones
 		inner = CylinderShape.create(1, habitableZones[system].habInner * orbitScaleFactor * userScaleFactor, habitableZones[system].habInner * orbitScaleFactor * userScaleFactor, 10, 128)
@@ -301,17 +299,6 @@ def create3DSystems():
 	universe.setScale(Vector3(overallScaleFactor, overallScaleFactor, overallScaleFactor))
 	universe.setPosition(Vector3(0, 1.5, 1))
 	
-def initSceneNodes():
-	for system in systemList:
-		temp = SceneNode.create(system)
-		systemNodeDict[system] = temp
-	for system in systemList:
-		universe.addChild(systemNodeDict[system])
-	
-	thingsOnTheWall.addChild(allSystems)
-	everything.addChild(universe)
-	everything.addChild(thingsOnTheWall)
-
 
 	
 def onUpdate(frame, t, dt):
@@ -390,7 +377,7 @@ loadSphereModel()
 create3DSystems()
 
 # create the systems in 2D space
-create2DSystems()
+#create2DSystems()
 
 # initialize menu 
 initButtons()
