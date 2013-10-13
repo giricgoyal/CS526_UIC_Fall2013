@@ -398,7 +398,7 @@ def resetSystem():
 
 def updateOrbitScale(scale):
 	global orbitScaleFactor
-	orbitScaleFactor = pow(0.1, 9 - scale)
+	orbitScaleFactor = 1.0/pow(10, scale)
 
 	for system in systemList:
 		theSystem = allSystemsOrbital[system]
@@ -416,4 +416,9 @@ def updateOrbitScale(scale):
 			textDict[name].setPosition(pos4)
 			if name == "Saturn":
 				otherObjectsDict[name].setPosition(pos)
+				
+def updatePlanetScale(scale):
+	global planetScaleFactor
+	planetScaleFactor = 1.0/pow(10, scale)
+	
 	

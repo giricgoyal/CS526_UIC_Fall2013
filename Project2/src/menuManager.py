@@ -15,9 +15,11 @@ from cameraManager import *
 # variables
 visitSystemButtonList = dict()
 orbitScaleSlider = None
-orbitScaleSlider = None
+orbitScaleSliderText = None
+planetScaleSlider = None
 planetScaleSliderText = None
-planetScaleSliderText = None
+sunScaleSlider = None
+sunScaleSliderText = None
 
 #------------------------------------------------------------------
 # method definitions
@@ -35,13 +37,17 @@ def visitSystem():
 				setCamPosition(pos)
 
 def setOrbitSlider():
-	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue()))
+	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue() + 1) + "x")
 	updateOrbitScale(orbitScaleSlider.getValue())
 	
 
 def setPlanetSlider():
-	planetScaleSliderText.setText("Planet Scale: " + str(planetScaleSlider.getValue()))
-	#updatePlanetScale(planetScaleSlider.getValue())
+	planetScaleSliderText.setText("Planet Scale: " + str(planetScaleSlider.getValue() + 1) + "x")
+	updatePlanetScale(planetScaleSlider.getValue())
+	
+def setSunSlider():
+	sunScaleSliderText.setText("Sun Scale: " + str(sunScaleSlider.getValue() + 1) + "x")
+	#updateSunScale(sunScaleSlider.getValue())
 	
 # -----------------------------------------------------------------
 # main
@@ -59,9 +65,11 @@ visitSystemMenu = mainMenu.addSubMenu("Visit System")
 # level 2
 scaleContainer = scaleMenu.addContainer().getContainer()
 scaleContainer.setLayout(ContainerLayout.LayoutVertical)
+#scaleContainer.setHorizontalAlign(HAlign.AlignLeft)
 
 visitSystemContainer = visitSystemMenu.addContainer().getContainer()
 visitSystemContainer.setLayout(ContainerLayout.LayoutVertical)
+#visitSystemContainer.setHorizontalAlign(HAlign.AlignLeft)
 
 
 
@@ -77,25 +85,37 @@ def initButtons():
 		visitSystemButtonList[system] = button
 		button.setUIEventCommand('visitSystem()')
 		
-	# orbit scale slider
+	# scale slider
+	scaleText = Label.create(scaleContainer)
+	scaleText.setText("Scaling Factor (n): 1/10^n")
+	
+	# orbit
 	global orbitScaleSlider, orbitScaleSliderText
 	orbitScaleSliderText = Label.create(scaleContainer)
 	orbitScaleSlider = Slider.create(scaleContainer)
 	orbitScaleSlider.setTicks(9)
-	orbitScaleSlider.setValue(4)
+	orbitScaleSlider.setValue(5)
 	orbitScaleSlider.setUIEventCommand('setOrbitSlider()')
-	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue()))
+	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue() + 1) + "x")
 	
-	# orbit scale slider
+	# planet
 	global planetScaleSlider, planetScaleSliderText
 	planetScaleSliderText = Label.create(scaleContainer)
 	planetScaleSlider = Slider.create(scaleContainer)
-	planetScaleSlider.setTicks(9)
-	planetScaleSlider.setValue(4)
+	planetScaleSlider.setTicks(5)
+	planetScaleSlider.setValue(2)
 	planetScaleSlider.setUIEventCommand('setPlanetSlider()')
-	planetScaleSliderText.setText("Planet Scale: " + str(planetScaleSlider.getValue()))
+	planetScaleSliderText.setText("Planet Scale: " + str(planetScaleSlider.getValue() + 1) + "x")
 	
-
+	# sun
+	global sunScaleSlider, sunScaleSliderText
+	sunScaleSliderText = Label.create(scaleContainer)
+	sunScaleSlider = Slider.create(scaleContainer)
+	sunScaleSlider.setTicks(5)
+	sunScaleSlider.setValue(1)
+	sunScaleSlider.setUIEventCommand('setSunSlider()')
+	sunScaleSliderText.setText("Sun Scale: " + str(sunScaleSlider.getValue() + 1) + "x")
+	
 
 
 
