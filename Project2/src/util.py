@@ -286,6 +286,7 @@ orbitScaleFactor = 0.00001
 planetScaleFactor = 0.01
 sunScaleFactor = 0.001
 overallScaleFactor = 0.00025
+timeFactor = 90
 
 XorbitScaleFactor = 320000.0 / wallLimit
 XplanetScaleFactor = 0.2
@@ -302,13 +303,15 @@ systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "
 activeSystem = None
 starLocations = dict()
 
+# dicts to change when scaling 
 activeBodies = dict()
-activeRotCenters = dict()
+activeRotCenters = dict() # do not scale these
 habitableZones = dict()
 systemNodeDict = dict()
 orbitDict = dict()
 textDict = dict()
 otherObjectsDict = dict()
+wallSystemsDict = dict()
 
 
 # Colors
@@ -369,32 +372,6 @@ def getOrbitCoords(e, a):
 	b = pow((ra*rp), 0.5)
 	return b
 
-def resetSystem():
-	global allSystems, universe, thinsOnTheWall, everything
-	activeBodies = dict()
-	activeRotCenters = dict()
-	habitableZones = dict()
-	systemNodeDict = dict()
-	
-	#everything.removeChildByRef(universe)
-
-	# level 1
-	allSystems = None
-	allSystems = SceneNode.create('allSystems')
-
-	# level 2
-	universe = None
-	thingsOnTheWall = None
-	universe = SceneNode.create('universe')
-	thingsOnTheWall = SceneNode.create('thingsOnTheWall')
-
-	# level 3
-	everything = None
-	everything = SceneNode.create('everything')
-
-	# initialize the scene nodes again
-	initSceneNodes()
-
 
 def updateOrbitScale(scale):
 	global orbitScaleFactor
@@ -410,10 +387,16 @@ def updateOrbitScale(scale):
 				pos4 = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 			else:
 				pos4 = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
+			pos5 = Vector3(0.0, 0.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
+			pos6 = Vector3(0.0, 0.0, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
 			activeBodies[name].setPosition(pos)
-			activeRotCenters[name].setPosition(pos2)
+			#activeRotCenters[name].setPosition(pos2)
 			orbitDict[name].setScale(Vector3(pos3, 10.0, pos3))
 			textDict[name].setPosition(pos4)
+			if theSystem[name].minorA <= wallLimit:
+				wallSystemsDict[name].setPosition(pos5)
+			else:
+				wallSystemsDict[name].setPosition(pos6)
 			if name == "Saturn":
 				otherObjectsDict[name].setPosition(pos)
 				
@@ -421,4 +404,33 @@ def updatePlanetScale(scale):
 	global planetScaleFactor
 	planetScaleFactor = 1.0/pow(10, scale)
 	
+	for system in systemList:
+		theSystem = allSystemsOrbital[system]
+		for name, model in theSystem.iteritems():
+			if theSystem[name].isStar == 0:
+				activeBodies[name].setScale(Vector3(theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor))
+				pos = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
+				textDict[name].setPosition(pos)
+				
+	
+def updateSunScale(scale):
+	global sunScaleFactor
+	sunScaleFactor = 1.0/pow(10, scale)
+	
+	for system in systemList:
+		theSystem = allSystemsOrbital[system]
+		for name, model in theSystem.iteritems():
+			if theSystem[name].isStar == 1:
+				activeBodies[name].setScale(Vector3(theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor))
+				pos = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
+				textDict[name].setPosition(pos)
+				
+
+def updateTimeFactor(factor):
+	global timeFactor
+	timeFactor = (9 - factor) * 10 if (9 - factor) != 0 else 1
+	
+
+def getTimeFactor():
+	return timeFactor
 	

@@ -18,25 +18,33 @@ from util import *
 cam = None
 orient3D = None
 pos3D = None
-orient2D = None
-pos2D = None
+obj = None
+
+
 
 # ------------------------------------------------------
 # methods
-obj = InterpolActor(cam)
-obj.setDuration(3)
-obj.setOperation(InterpolActor.POSITION | InterpolActor.ORIENT | InterpolActor.SCALE)
 
 def initCam():
-	global cam, orient3D, pos3D, orient2D, pos2D
+	print "Initializing Cam"
+	global cam, orient3D, pos3D, orient2D, pos2D, obj
 	cam = getDefaultCamera()
 	cam.setPosition(Vector3(0,0,0))
 	cam.getController().setSpeed(camSpeed)
 	orient3D = cam.getOrientation()
 	pos3D = cam.getPosition()
-	orient2D = cam.getOrientation()
-	pos2D = cam.getPosition()
+	obj = InterpolActor(cam)
+	obj.setDuration(3)
+	obj.setOperation(InterpolActor.POSITION | InterpolActor.ORIENT | InterpolActor.SCALE)
+
+
 	
 def setCamPosition(pos):
-	global cam
-	cam.setPosition(pos)
+	global cam, obj, orient3D
+	'''
+	orient3D = cam.getOrientation()
+	obj.setTargetPosition(pos * overallScaleFactor)
+	obj.setTargetOrientation(orient3D)
+	obj.startInterpolation()
+	'''
+	cam.setPosition(pos * overallScaleFactor)

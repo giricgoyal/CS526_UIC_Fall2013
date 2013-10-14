@@ -93,7 +93,7 @@ def addOrbit(orbit, col, thick, system, name):
 		if system == "Solar System":
 			circle.setPosition(Vector3(0,0,0))
 		else:
-			circle.setPosition(starLocations[system].pos)
+			circle.setPosition(starLocations[system].pos * orbitScaleFactor * userScaleFactor)
 		
 		if col == 0:
 			circle.setEffect('colored -e white')
@@ -123,11 +123,8 @@ def create2DSystems():
 		outlineBox.setEffect('colored -e #111111EE')
 		outlineBox.getMaterial().setTransparent(True)
 		screenCenter = SceneNode.create("box"+str(panelCounter))
-		
 		sSystem = SceneNode.create("sSystem"+str(panelCounter))
 		for name, model in theSystem.iteritems():
-			if theSystem[name].minorA > wallLimit:
-				continue
 			if theSystem[name].isStar == 0:
 				model = StaticObject.create("defaultSphere")
 				model.setScale(Vector3(theSystem[name].radius * XplanetScaleFactor, theSystem[name].radius * XplanetScaleFactor, theSystem[name].radius * XplanetScaleFactor))
@@ -137,7 +134,13 @@ def create2DSystems():
 				# text ????????????????????//
 				
 				model = BoxShape.create(100, 25000, 2000)
-			model.setPosition(Vector3(0.0, 0.0, 48000 - theSystem[name].minorA * XorbitScaleFactor * user2ScaleFactor))
+				
+			if theSystem[name].minorA <= wallLimit:
+				model.setPosition(Vector3(0.0, 0.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10))
+			else:
+				model.setPosition(Vector3(0.0, 0.0, - wallLimit * orbitScaleFactor * userScaleFactor * 10))
+			
+			wallSystemsDict[name] = model
 			sSystem.addChild(model)
 			
 			# set effect for the body spheres
@@ -146,9 +149,9 @@ def create2DSystems():
 			panelCounter += 1
 		
 		# show habitable zones 
-		goldiZone = BoxShape.create(4, 25000, (1.0 * (habitableZones[system].habOuter - habitableZones[system].habInner)) * XorbitScaleFactor * user2ScaleFactor)
+		goldiZone = BoxShape.create(4, 25000, (1.0 * (habitableZones[system].habOuter - habitableZones[system].habInner)) * orbitScaleFactor * userScaleFactor * 10)
 		
-		goldiZone.setPosition(Vector3(0.0, 0.0, 48000 - habitableZones[system].habCenter * XorbitScaleFactor * user2ScaleFactor))
+		goldiZone.setPosition(Vector3(0.0, 0.0, 48000 - habitableZones[system].habCenter * orbitScaleFactor * userScaleFactor * 10))
 		sSystem.addChild(goldiZone)
 		goldiZone.setEffect('colored -e #004400ee')
 		goldiZone.getMaterial().setTransparent(True)
@@ -186,14 +189,14 @@ def create3DSystems():
 			
 		# create the objects
 		theSystem = allSystemsOrbital[system]
-		pos2 = starLocations[system].pos  * orbitScaleFactor * userScaleFactor
+		pos2 = starLocations[system].pos * orbitScaleFactor * userScaleFactor
+		#print system + " : " + str(pos2)
 		for name, model in theSystem.iteritems():
 			pos = Vector3(0,0,0)
 			model = StaticObject.create("defaultSphere")
 			if theSystem[name].isStar == 0:
 				# set the model position depending on the system
 				pos = ((Vector3(0.0, 0.0, -theSystem[name].minorA  * orbitScaleFactor * userScaleFactor)))
-				#print name + " :" + str(pos)
 				model.setPosition(pos)
 				model.setScale(Vector3(theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor))
 			elif theSystem[name].isStar == 1:
@@ -286,8 +289,8 @@ def create3DSystems():
 		outer.setScale(Vector3(1.0,1.0,1.0))
 		
 		if system != "Solar System":
-			inner.setPosition(starLocations[system].pos)
-			outer.setPosition(starLocations[system].pos)
+			inner.setPosition(starLocations[system].pos * orbitScaleFactor * userScaleFactor)
+			outer.setPosition(starLocations[system].pos * orbitScaleFactor * userScaleFactor)
 			
 		gZone = SceneNode.create("GZone")
 		gZone.addChild(outer)
@@ -304,9 +307,10 @@ def create3DSystems():
 def onUpdate(frame, t, dt):
 	for system in systemList:
 		for name,model in allSystemsOrbital[system].iteritems():
-			activeRotCenters[name].yaw(dt/30*(1.0 / allSystemsOrbital[system][name].period)) #revolution (year)
-			activeBodies[name].yaw(dt/30*365*(1.0 / allSystemsOrbital[system][name].rotation)) #rotation (day) 
-
+			timeF = getTimeFactor()
+			activeRotCenters[name].yaw(dt/timeF*(1.0 / allSystemsOrbital[system][name].period)) #revolution (year)
+			activeBodies[name].yaw(dt/timeF*365*(1.0 / allSystemsOrbital[system][name].rotation)) #rotation (day) 
+			
 	
 # Main ----------------------------------------------------------
 # initialize database
@@ -377,7 +381,7 @@ loadSphereModel()
 create3DSystems()
 
 # create the systems in 2D space
-#create2DSystems()
+create2DSystems()
 
 # initialize menu 
 initButtons()
