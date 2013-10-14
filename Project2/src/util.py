@@ -248,6 +248,9 @@ class starLoc:
 		
 # ------------------------------------------------------------------			
 # variables
+
+isCave = False
+
 mSun = "1.989E30 kg"
 
 rSun = 695500 # km
@@ -270,7 +273,8 @@ habOuter = 1.4 * AUtoKM
 habCenter = 0.5 * (habInner + habOuter)
 
 
-wallLimit = 400000000
+#wallLimit = 400000000
+wallLimit = 300000000
 
 # scaling
 #scale factor for 3d system in the cave
@@ -289,7 +293,7 @@ overallScaleFactor = 0.00025
 timeFactor = 90
 
 XorbitScaleFactor = 320000.0 / wallLimit
-XplanetScaleFactor = 0.2
+XplanetScaleFactor = 0.25
 
 
 # time 
@@ -318,13 +322,13 @@ wallSystemsDict = dict()
 colorBlack = Color("#000000FF") # Black
 colorWhite = Color("#FFFFFFFF") # white
 # starColors
-colorO = Color("#3E94D1EE") # blue
-colorB = Color("#A5E5FFEE") # deep blue white
-colorA = Color("#CAF0FFEE") # blue white
-colorF = Color("#FFFFFFEE") # white
-colorG = Color("#FFEFC0EE") # yellowish white
-colorK = Color("#FFD36BEE") # pale yellow orange
-colorM = Color("#FFBF86EE") # yellow orange red
+colorO = Color("#3E94D1AA") # blue
+colorB = Color("#A5E5FFAA") # deep blue white
+colorA = Color("#CAF0FFAA") # blue white
+colorF = Color("#FFFFFFAA") # white
+colorG = Color("#FFEFC0AA") # yellowish white
+colorK = Color("#FFD36BAA") # pale yellow orange
+colorM = Color("#FFBF86AA") # yellow orange red
 
 
 
@@ -348,6 +352,10 @@ everything = SceneNode.create('everything')
 # Camera Properties
 camSpeed = 25
 
+# Cave dependent scaling 
+# font
+scaleFactor = 2400 if isCave == True else 1 
+fontSize = 0.04 * scaleFactor
 
 # -----------------------------------------------------------------
 # method definitions
@@ -364,6 +372,21 @@ def initSceneNodes():
 	everything.addChild(universe)
 	everything.addChild(thingsOnTheWall)
 
+def starColor(star):
+	if star.starType.find('A') != -1:
+		return colorA
+	elif star.starType.find('B') != -1:
+		return colorB
+	elif star.starType.find('G') != -1:
+		return colorG
+	elif star.starType.find('K') != -1:
+		return colorK
+	elif star.starType.find('F') != -1:
+		return colorF
+	elif star.starType.find('M') != -1:
+		return colorM
+	elif star.starType.find('O') != -1:
+		return colorO
 
 
 def getOrbitCoords(e, a):
@@ -387,16 +410,15 @@ def updateOrbitScale(scale):
 				pos4 = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 			else:
 				pos4 = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
-			pos5 = Vector3(0.0, 0.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
-			pos6 = Vector3(0.0, 0.0, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
+			if theSystem[name].minorA <= wallLimit:
+				pos5 = Vector3(0.0, 0.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
+			else:
+				pos5 = Vector3(0.0, 0.0, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
 			activeBodies[name].setPosition(pos)
 			#activeRotCenters[name].setPosition(pos2)
 			orbitDict[name].setScale(Vector3(pos3, 10.0, pos3))
 			textDict[name].setPosition(pos4)
-			if theSystem[name].minorA <= wallLimit:
-				wallSystemsDict[name].setPosition(pos5)
-			else:
-				wallSystemsDict[name].setPosition(pos6)
+			wallSystemsDict[name].setPosition(pos5)
 			if name == "Saturn":
 				otherObjectsDict[name].setPosition(pos)
 				

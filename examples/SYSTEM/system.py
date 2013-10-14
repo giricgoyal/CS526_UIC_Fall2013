@@ -564,7 +564,7 @@ scene.loadModel(mi)
 
 # we dont want the wall systems moving
 #getDefaultCamera().addChild(allSystems)
-getDefaultCamera().addChild(thingsOnTheWall)
+#getDefaultCamera().addChild(thingsOnTheWall)
 
 #need to work out some issues with globals to get this to work
 
