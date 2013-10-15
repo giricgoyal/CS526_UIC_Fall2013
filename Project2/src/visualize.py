@@ -33,9 +33,13 @@ def createVisualization():
 				dot = StaticObject.create("defaultSphere")
 				dot.setPosition(pos)
 				dot.setScale(Vector3(10.0/70, 10.0/70, 10.0/70))
-				dot.setEffect("colored -e white")
 				if name == "The Sun":
 					dot.setEffect("colored -e red")
+				else:
+					if findInList(system, displaySystemList) == True:
+						dot.setEffect("colored -e #0000CCCC")
+					else:
+						dot.setEffect("colored -e white")
 				vizContainer.addChild(dot)
 				visualizeDict[system] = dot
 				
@@ -60,3 +64,9 @@ def changeColor():
 		visualizeDict[system].setEffect("colored -e white")
 		if system == activeSystem:
 			visualizeDict[system].setEffect("colored -e red")
+		else:
+			if findInList(system, displaySystemList) == True:
+				visualizeDict[system].setEffect("colored -e #0000CCCC")
+			else:
+				visualizeDict[system].setEffect("colored -e white")
+		
