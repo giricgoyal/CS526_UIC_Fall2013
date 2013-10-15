@@ -122,7 +122,7 @@ for singleSet in rawDataSet:
 	star_rotation = singleSet[i_Star_Rotation]
 	isStar = 1
 	if star_name == "The Sun":
-		systemName = "Solar System"
+		systemName = "The Sol"
 		discovered = 0
 		inclination = 7.5
 	else:

@@ -32,6 +32,7 @@ from src.util import *
 from src.manageData import *
 from src.cameraManager import *
 from src.menuManager import *
+from src.visualize import *
 
 
 # ---------------------------------------------------------------
@@ -131,18 +132,45 @@ def create2DSystems():
 			screenCenter = SceneNode.create("box"+str(panelCounter))
 			sSystem = SceneNode.create("sSystem"+str(panelCounter))
 			for name, model in theSystem.iteritems():
+				pos = None
+				if theSystem[name].minorA <= wallLimit:
+					pos = Vector3(0.0, 0.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
+					pos2 = Vector3(0.0, -10000.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
+				else:
+					pos = Vector3(0.0, 0.0, - wallLimit * orbitScaleFactor * userScaleFactor * 10)
+					pos2 = Vector3(0.0, -10000.0, - wallLimit * orbitScaleFactor * userScaleFactor * 10)
+				
 				if theSystem[name].isStar == 0:
 					model = StaticObject.create("defaultSphere")
 					model.setScale(Vector3(theSystem[name].radius * XplanetScaleFactor, theSystem[name].radius * XplanetScaleFactor, theSystem[name].radius * XplanetScaleFactor))
+					
+					# text 
+					text = str(name)
+					
+					t1 = Text3D.create('fonts/verdana.ttf', 1, text)
+					t1.setPosition(pos2)
+					t1.yaw(pi/2)
+					t1.setFontResolution(256)
+					t1.setFontSize(fontSize/1.2)
+					t1.setScale(1.0/0.0000001, 1.0/0.00001, 1.0/0.00001)
+					t1.getMaterial().setTransparent(False)
+					t1.getMaterial().setDepthTestEnabled(False)
+					t1.setColor(colorWhite)
+					wallSystemTextDict[name] = t1
+					sSystem.addChild(t1)
+					
+					
 				else:
 					setHabitableZone(system, name, theSystem[name].starType)
 					
 					# text 
-					if name == "The Sun":
-						t1 = Text3D.create('fonts/verdana.ttf', 1, "The Sol (" + str(theSystem[name].starType) + ") ")
-					else:
-						t1 = Text3D.create('fonts/verdana.ttf', 1, str(name) + " (" + str(theSystem[name].starType) + ") ")
-					t1.setPosition(Vector3(0.4,0.075,0))
+					text = ""
+					text = str(allSystemsInfo[system][name].systemName) + " (" + str(allSystemsInfo[system][name].starType) + ")"
+					if name != "The Sun":
+						text = text + " %.3f light years from you!" % (allSystemsInfo[system][name].starDistance * PCtoLY)
+					
+					t1 = Text3D.create('fonts/verdana.ttf', 1, text)
+					t1.setPosition(Vector3(0.35,0.075,0))
 					t1.yaw(pi)
 					t1.setFontResolution(256)
 					t1.setFontSize(fontSize)
@@ -153,10 +181,7 @@ def create2DSystems():
 					
 					model = BoxShape.create(100, 25000, 2000)
 					
-				if theSystem[name].minorA <= wallLimit:
-					model.setPosition(Vector3(0.0, 0.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10))
-				else:
-					model.setPosition(Vector3(0.0, 0.0, - wallLimit * orbitScaleFactor * userScaleFactor * 10))
+				model.setPosition(pos)
 				
 				wallSystemsDict[name] = model
 				sSystem.addChild(model)
@@ -400,6 +425,9 @@ create3DSystems()
 
 # create the systems in 2D space
 create2DSystems()
+
+# create visualization of stars 
+createVisualization()
 
 # initialize menu 
 initButtons()

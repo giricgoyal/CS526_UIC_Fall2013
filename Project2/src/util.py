@@ -260,6 +260,7 @@ rEarth = 6378 #km
 # conversions
 AUtoKM = 149597871
 PCtoKM = 3.08567e13
+PCtoLY = 3.26163344
 HRtoDEG = 15.0
 DAYtoDEG = 24.0 * HRtoDEG
 MINtoDEG = 15.0/60.0
@@ -289,6 +290,7 @@ user2ScaleFactor = 1
 orbitScaleFactor = 0.00001
 planetScaleFactor = 0.01
 sunScaleFactor = 0.001
+visualizationScaleFactor = 0.00001
 overallScaleFactor = 0.00025
 timeFactor = 90
 
@@ -304,7 +306,7 @@ allSystemsOrbital = dict()
 allSystemsInfo = dict()
 #systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "ups And", "CoRoT-11", "XO-3", "Kepler-22", "MOA-2007-BLG-192-L", "Kepler-11", "Kepler-10", "GJ 1214", "Gl 581", "WASP-33", "30 Ari B", "Kepler-39", "HR 8799", "Kepler-65", "Fomalhaut", "KOI-142", "HD 10180", "Kepler-68", "Kepler-20", "24 Sex", "Kepler-42", "HD 39194", "HD 134987", "HD 60532", "HD 96700", "HD 142", "HD 134060", "HD 215152", "HD 217107", "HD 99492", "GJ 676A", "HD 20794", "HD 128311", "14 Her", "HD 136352", "HD 113538", "HD 190360", "mu Ara", "47 Uma", "Gl 163", "Gliese 876", "55 Cnc", "HD 20003", "GJ 667C", "61 Vir", "HD 69830", "HD 40307"]
 systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "ups And", "CoRoT-11", "Kepler-22", "Kepler-11", "Kepler-10", "GJ 1214", "Gl 581", "30 Ari B", "Kepler-39", "HR 8799", "Fomalhaut", "KOI-142", "HD 10180", "Kepler-68", "Kepler-20", "24 Sex", "Kepler-42", "HD 39194", "HD 134987", "HD 60532", "HD 96700", "HD 142", "HD 134060", "HD 215152", "HD 217107", "HD 99492", "GJ 676A", "HD 20794", "HD 128311", "14 Her", "HD 136352", "HD 113538", "HD 190360", "mu Ara", "47 Uma", "Gl 163", "Gliese 876", "55 Cnc", "HD 20003", "GJ 667C", "61 Vir", "HD 69830", "HD 40307"]
-activeSystem = None
+activeSystem = "Solar System"
 starLocations = dict()
 
 # dicts to change when scaling 
@@ -316,6 +318,8 @@ orbitDict = dict()
 textDict = dict()
 otherObjectsDict = dict()
 wallSystemsDict = dict()
+wallSystemTextDict = dict()
+visualizeDict = dict()
 
 
 # Colors
@@ -340,10 +344,12 @@ currentSystem = "Solar System"
 # setting up initial scene hierarchy
 # level 1
 allSystems = SceneNode.create('allSystems')
+vizContainer = SceneNode.create('vizContainer')
 
 # level 2
 universe = SceneNode.create('universe')
 thingsOnTheWall = SceneNode.create('thingsOnTheWall')
+visualization = SceneNode.create('visualization')
 
 # level 3
 everything = SceneNode.create('everything')
@@ -357,6 +363,9 @@ camSpeed = 25
 scaleFactor = 2400 if isCave == True else 1 
 fontSize = 0.04 * scaleFactor
 
+# Visualization parameters
+vizPos = Vector3(10000000000,10000000000,100000000000)
+
 # -----------------------------------------------------------------
 # method definitions
 # get length of semi major axis using eccentricity and semi major axis
@@ -368,9 +377,11 @@ def initSceneNodes():
 	for system in systemList:
 		universe.addChild(systemNodeDict[system])
 	
+	visualization.addChild(vizContainer)
 	thingsOnTheWall.addChild(allSystems)
 	everything.addChild(universe)
 	everything.addChild(thingsOnTheWall)
+	everything.addChild(visualization)
 
 def starColor(star):
 	if star.starType.find('A') != -1:
@@ -412,13 +423,17 @@ def updateOrbitScale(scale):
 				pos4 = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 			if theSystem[name].minorA <= wallLimit:
 				pos5 = Vector3(0.0, 0.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
+				pos6 = Vector3(0.0, -10000.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
 			else:
 				pos5 = Vector3(0.0, 0.0, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
+				pos6 = Vector3(0.0, -10000.0, - wallLimit * orbitScaleFactor * userScaleFactor * 10)
 			activeBodies[name].setPosition(pos)
 			#activeRotCenters[name].setPosition(pos2)
 			orbitDict[name].setScale(Vector3(pos3, 10.0, pos3))
 			textDict[name].setPosition(pos4)
 			wallSystemsDict[name].setPosition(pos5)
+			if theSystem[name].isStar == 0:
+				wallSystemTextDict[name].setPosition(pos6)
 			if name == "Saturn":
 				otherObjectsDict[name].setPosition(pos)
 				
@@ -455,4 +470,11 @@ def updateTimeFactor(factor):
 
 def getTimeFactor():
 	return timeFactor
+	
+def setActiveSystem(name):
+	global activeSystem
+	activeSystem = name
+	
+def getActiveSystem():
+	return activeSystem
 	

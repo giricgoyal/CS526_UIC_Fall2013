@@ -10,6 +10,7 @@ from omegaToolkit import *
 from euclid import *
 from util import *
 from cameraManager import *
+from visualize import *
 
 # -----------------------------------------------------------------
 # variables
@@ -23,20 +24,18 @@ sunScaleSliderText = None
 timeFactorSlider = None
 timeFactorSliderText = None
 resetButton = None
+visualizeButton = None
 
 #------------------------------------------------------------------
 # method definitions
 def visitSystem():
-	##global currentSystem
-	for system, button in visitSystemButtonList.iteritems():
-		if button.getText() == currentSystem:
-			button.setChecked(False)
 	for system, button in visitSystemButtonList.iteritems():
 		if button.isChecked():
-			if button.getText() != currentSystem:
-				#currentSystem = button.getText()
-				pos = starLocations[system].pos * orbitScaleFactor * userScaleFactor
-				setCamPosition(pos)
+			pos = starLocations[system].pos * orbitScaleFactor * userScaleFactor
+			setCamPosition(pos)
+			setActiveSystem(button.getText())
+			visualizeButton.setChecked(False)
+			#print activeSystem
 
 def setOrbitSlider():
 	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue() + 1))
@@ -65,6 +64,15 @@ def resetSystem():
 	setSunSlider()
 	timeFactorSlider.setValue(0)
 	setTimeFactor()
+	
+def visitVisualization():
+	print "Showing Visualization"
+	changeColor()
+	if visualizeButton.isChecked():
+		setCamPos()
+		setCamPosition(vizPos)
+	else:
+		setCamPosition2(getCamPosition())
 	
 # -----------------------------------------------------------------
 # main
@@ -151,5 +159,12 @@ def initButtons():
 	resetButton = Button.create(optionsMenuContainer)
 	resetButton.setText("Reset System")
 	resetButton.setUIEventCommand('resetSystem()')
+	
+	# See Visualization
+	global visualizeButton
+	visualizeButton = Button.create(optionsMenuContainer)
+	visualizeButton.setText("Show Relative Position")
+	visualizeButton.setCheckable(True)
+	visualizeButton.setUIEventCommand('visitVisualization()')
 
 

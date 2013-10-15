@@ -13,14 +13,15 @@ from cyclops import *
 from caveutil import *
 from util import *
 
+
 # ------------------------------------------------------
 # variables
 cam = None
 orient3D = None
 pos3D = None
 obj = None
-
-
+currentPos = None
+camPos = None
 
 # ------------------------------------------------------
 # methods
@@ -29,7 +30,8 @@ def initCam():
 	print "Initializing Cam"
 	global cam, orient3D, pos3D, orient2D, pos2D, obj
 	cam = getDefaultCamera()
-	cam.setPosition(Vector3(0,0,0))
+	cam.setPosition(Vector3(0,10,10))
+	cam.pitch(-pi/3)
 	cam.getController().setSpeed(camSpeed)
 	orient3D = cam.getOrientation()
 	pos3D = cam.getPosition()
@@ -41,10 +43,18 @@ def initCam():
 	
 def setCamPosition(pos):
 	global cam, obj, orient3D
-	'''
-	orient3D = cam.getOrientation()
-	obj.setTargetPosition(pos * overallScaleFactor)
-	obj.setTargetOrientation(orient3D)
-	obj.startInterpolation()
-	'''
-	cam.setPosition(pos * overallScaleFactor)
+	cam.setPosition(pos * overallScaleFactor + pos3D)
+	cam.setOrientation(orient3D)
+
+def setCamPosition2(pos):
+	global cam
+	cam.setPosition(pos)
+	cam.setOrientation(orient3D)
+
+def setCamPos():
+	global camPos
+	camPos = cam.getPosition()
+	
+def getCamPosition():
+	return camPos
+	
