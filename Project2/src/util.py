@@ -165,6 +165,7 @@ class habZone:
 	habInner = 0.0
 	habOuter = 0.0
 	habCenter = 0.0
+	habWidth = 0.0
 	
 	def __getitem__(self, starName):
 		return starName
@@ -176,6 +177,8 @@ class habZone:
 		return habOuter
 	def __getitem__(self, habCenter):
 		return habCenter
+	def __getitem__(self, habWidth):
+		return habWidth
 	
 	def __init__(self, starName, starType):
 		self.starName = starName
@@ -201,6 +204,7 @@ class habZone:
 			self.habInner = 0.0
 			self.habOuter = 0.0
 		self.habCenter = (self.habInner + self.habOuter) * 0.5
+		self.habWidth = self.habOuter - self.habInner
 
 		
 class starLoc:
@@ -275,7 +279,7 @@ habCenter = 0.5 * (habInner + habOuter)
 
 
 #wallLimit = 400000000
-wallLimit = 300000000
+wallLimit = - 3 * 48000
 
 # scaling
 #scale factor for 3d system in the cave
@@ -321,6 +325,9 @@ otherObjectsDict = dict()
 wallSystemsDict = dict()
 wallSystemTextDict = dict()
 visualizeDict = dict()
+habiInnerDict = dict()
+habiOuterDict = dict()
+habiWallDict = dict()
 
 
 # Colors
@@ -417,27 +424,38 @@ def updateOrbitScale(scale):
 		for name, model in theSystem.iteritems():
 			pos = ((Vector3(0.0, 0.0, -theSystem[name].minorA  * orbitScaleFactor * userScaleFactor)))
 			pos2 = starLocations[system].pos  * orbitScaleFactor * userScaleFactor
-			pos3 = theSystem[name].minorA*orbitScaleFactor*userScaleFactor
+			pos3 = habitableZones[system].habCenter * orbitScaleFactor * userScaleFactor
+			pos1 = habitableZones[system].habWidth * orbitScaleFactor * userScaleFactor * 0.00015
+			pos2_1 = theSystem[name].minorA * orbitScaleFactor * userScaleFactor
 			if theSystem[name].isStar == 0:
 				pos4 = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 			else:
 				pos4 = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
-			if theSystem[name].minorA <= wallLimit:
+			if (48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10) >= wallLimit:
 				pos5 = Vector3(0.0, 0.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
 				pos6 = Vector3(0.0, -10000.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
 			else:
-				pos5 = Vector3(0.0, 0.0, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
-				pos6 = Vector3(0.0, -10000.0, - wallLimit * orbitScaleFactor * userScaleFactor * 10)
+				pos5 = Vector3(0.0, 0.0, wallLimit)
+				pos6 = Vector3(0.0, -10000.0,wallLimit)
+			if (48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10) >= wallLimit:
+				pos7 = Vector3(0.0, 0.0, 48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10)
+			else:
+				pos7 = Vector3(0.0,0.0, habitableZones[system].habCenter)
+			#pos7 = Vector3(0.0, 0.0, 48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10)
 			activeBodies[name].setPosition(pos)
 			#activeRotCenters[name].setPosition(pos2)
-			orbitDict[name].setScale(Vector3(pos3, 10.0, pos3))
+			orbitDict[name].setScale(Vector3(pos2_1, 10.0, pos2_1))
 			textDict[name].setPosition(pos4)
 			wallSystemsDict[name].setPosition(pos5)
 			if theSystem[name].isStar == 0:
 				wallSystemTextDict[name].setPosition(pos6)
 			if name == "Saturn":
 				otherObjectsDict[name].setPosition(pos)
-				
+			habiInnerDict[system].setScale(orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor)
+			habiOuterDict[system].setScale(orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor)
+			habiWallDict[system].setPosition(pos7)
+			habiWallDict[system].setScale( 1,1 ,  orbitScaleFactor * userScaleFactor )
+			
 def updatePlanetScale(scale):
 	global planetScaleFactor
 	planetScaleFactor = 1.0/pow(10, scale)
@@ -449,6 +467,8 @@ def updatePlanetScale(scale):
 				activeBodies[name].setScale(Vector3(theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor))
 				pos = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 				textDict[name].setPosition(pos)
+			if name == "Saturn":
+				otherObjectsDict[name].setScale(planetScaleFactor, planetScaleFactor, planetScaleFactor)
 				
 	
 def updateSunScale(scale):

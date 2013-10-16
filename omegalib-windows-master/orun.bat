@@ -1,1 +1,1 @@
-.\bin\orun.exe -s examples/spincube.py 
+.\bin\orun.exe -s examples/circle.py 

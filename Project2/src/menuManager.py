@@ -39,19 +39,27 @@ def visitSystem():
 
 def setOrbitSlider():
 	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue() + 1))
+	if orbitScaleSlider.getValue() == 5:
+		orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue() + 1) + " (default)")
 	updateOrbitScale(orbitScaleSlider.getValue())
 	
 
 def setPlanetSlider():
 	planetScaleSliderText.setText("Planet Scale: " + str(planetScaleSlider.getValue() + 1))
+	if planetScaleSlider.getValue() == 2:
+		planetScaleSliderText.setText("Planet Scale: " + str(planetScaleSlider.getValue() + 1) + " (default)")
 	updatePlanetScale(planetScaleSlider.getValue())
 	
 def setSunSlider():
 	sunScaleSliderText.setText("Sun Scale: " + str(sunScaleSlider.getValue() + 1))
+	if sunScaleSlider.getValue() == 3:
+		sunScaleSliderText.setText("Sun Scale: " + str(sunScaleSlider.getValue() + 1) + "(default)")
 	updateSunScale(sunScaleSlider.getValue())
 	
 def setTimeFactor():
 	timeFactorSliderText.setText("Time: " + str(timeFactorSlider.getValue() + 1))
+	if timeFactorSlider.getValue() == 0:
+		timeFactorSliderText.setText("Time: " + str(timeFactorSlider.getValue() + 1) + "(default)")
 	updateTimeFactor(timeFactorSlider.getValue())
 	
 def resetSystem():
@@ -122,7 +130,7 @@ def initButtons():
 	orbitScaleSlider.setTicks(9)
 	orbitScaleSlider.setValue(5)
 	orbitScaleSlider.setUIEventCommand('setOrbitSlider()')
-	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue() + 1))
+	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue() + 1) + " (default)" )
 	
 	# planet
 	global planetScaleSlider, planetScaleSliderText
@@ -131,7 +139,7 @@ def initButtons():
 	planetScaleSlider.setTicks(5)
 	planetScaleSlider.setValue(2)
 	planetScaleSlider.setUIEventCommand('setPlanetSlider()')
-	planetScaleSliderText.setText("Planet Scale: " + str(planetScaleSlider.getValue() + 1))
+	planetScaleSliderText.setText("Planet Scale: " + str(planetScaleSlider.getValue() + 1) + " (default)" )
 	
 	# sun
 	global sunScaleSlider, sunScaleSliderText
@@ -140,7 +148,7 @@ def initButtons():
 	sunScaleSlider.setTicks(5)
 	sunScaleSlider.setValue(3)
 	sunScaleSlider.setUIEventCommand('setSunSlider()')
-	sunScaleSliderText.setText("Sun Scale: " + str(sunScaleSlider.getValue() + 1))
+	sunScaleSliderText.setText("Sun Scale: " + str(sunScaleSlider.getValue() + 1) + " (default)" )
 	
 	# time slider
 	timeText = Label.create(scaleContainer)
@@ -152,7 +160,7 @@ def initButtons():
 	timeFactorSlider.setTicks(10)
 	timeFactorSlider.setValue(0)
 	timeFactorSlider.setUIEventCommand('setTimeFactor()')
-	timeFactorSliderText.setText("Time: " + str(timeFactorSlider.getValue() + 1))
+	timeFactorSliderText.setText("Time: " + str(timeFactorSlider.getValue() + 1) + " (default)" )
 	
 	# reset button
 	global resetButton

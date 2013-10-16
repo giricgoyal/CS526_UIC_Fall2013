@@ -8,7 +8,7 @@ circle = LineSet.create()
 
 segments = 32
 radius = 1
-thickness = 0.1
+thickness = 1
 
 a = 0.0
 while a <= 360:
@@ -34,5 +34,5 @@ circle.setPosition(Vector3(0,2,-4))
 circle.setEffect('colored -e red')
 
 # Squish z to turn the torus into a disc-like shape.
-circle.setScale(Vector3(1.0,1.0,0.1))
+circle.setScale(Vector3(2.0,2.0,0.1))
 	

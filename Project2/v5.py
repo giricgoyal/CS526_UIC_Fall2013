@@ -73,23 +73,29 @@ def setHabitableZone(system, starName, starType):
 	
 def addOrbit(orbit, col, thick, system, name):
 	circle = LineSet.create()
-	segments = 128
-	radius = 1
+	if col == 0:
+		segments = 128
+		radius = 1
+	else:
+		segments = 256
+		radius = 1
 	thickness = thick
 	
 	# need to think about elliptical orbit, for now circular based on minorA
 	a = 0.0
+	newList = []
 	while a <= 360:
-		x = cos(radians(a)) * radius
-		y = sin(radians(a)) * radius
+		x = float(float(cos(radians(a))) * float(radius))
+		y = float(float(sin(radians(a))) * float(radius))
 		a += 360.0/segments
-		nx = cos(radians(a)) * radius
-		ny = sin(radians(a)) * radius
+		nx = float(float(cos(radians(a))) * float(radius))
+		ny = float(float(sin(radians(a))) * float(radius))
 		
 		l = circle.addLine()
-		l.setStart(Vector3(x, 0, y))
-		l.setEnd(Vector3(nx, 0, ny))
+		l.setStart(Vector3(x, 0.0, y))
+		l.setEnd(Vector3(nx, 0.0, ny))
 		l.setThickness(thickness)
+		newList.append(l)
 		
 		if system == "Solar System":
 			circle.setPosition(Vector3(0,0,0))
@@ -99,15 +105,20 @@ def addOrbit(orbit, col, thick, system, name):
 		if col == 0:
 			circle.setEffect('colored -e white')
 		else:
-			circle.setEffect('colored -e green')
+			circle.setEffect('colored -e #00BB0033')
+			circle.getMaterial().setTransparent(True)
 			
         # Squish z to turn the torus into a disc-like shape.
 
 		if col == 0:
 			circle.setScale(Vector3(orbit, 1000.0, orbit))
 		else:
-			circle.setScale(Vector3(orbit, 10.0, orbit)) # 0.1
-	orbitDict[name] = circle
+			circle.setScale(Vector3(orbitScaleFactor * userScaleFactor, 0.1, orbitScaleFactor * userScaleFactor)) # 0.1
+	if col == 0:
+		orbitDict[name] = circle
+	else:
+		habiOuterDict[system] = circle
+		habiInnerDict[system] = newList
 	systemNodeDict[system].addChild(circle)
 
 
@@ -301,7 +312,7 @@ def create3DSystems():
 			systemNodeDict[system].addChild(rotCenter)
 			
 			# add orbit
-			addOrbit(theSystem[name].minorA*orbitScaleFactor*userScaleFactor, 0, 0.001, system, name)
+			addOrbit(theSystem[name].minorA * orbitScaleFactor * userScaleFactor, 0, 0.001, system, name)
 			
 			# deal with labelling everything
 			v = Text3D.create('fonts/verdana.ttf', 1, str(name))
@@ -325,6 +336,17 @@ def create3DSystems():
 			textDict[name] = v
 			
 		# deal with the goldilocks zones
+		
+		#if habitableZones[system].habCenter != 0:
+		#	addOrbit(habitableZones[system].habCenter, 1, habitableZones[system].habWidth, system, system)
+		#else:
+		#	addOrbit(habitableZones[system].habCenter * orbitScaleFactor * userScaleFactor, 1, (habitableZones[system].habWidth) * orbitScaleFactor * userScaleFactor, system, system)
+		#print str(habitableZones[system].habCenter * orbitScaleFactor * userScaleFactor) + " : " + str(habitableZones[system].habWidth * orbitScaleFactor * userScaleFactor)
+		#for l in habiInnerDict[system]:
+		#	if habitableZones[system].habCenter != 0:
+			#print habitableZones[system].habWidth / habitableZones[system].habCenter
+			#l.setThickness(1)
+		
 		inner = CylinderShape.create(1, habitableZones[system].habInner, habitableZones[system].habInner, 10, 128)
 		inner.setEffect('colored -e #FF000044')
 		inner.getMaterial().setTransparent(True)
@@ -339,10 +361,11 @@ def create3DSystems():
 		outer.setScale(Vector3(orbitScaleFactor * userScaleFactor,orbitScaleFactor * userScaleFactor,orbitScaleFactor * userScaleFactor))
 		habiOuterDict[system] = outer
 		
+		
 		if system != "Solar System":
 			inner.setPosition(starLocations[system].pos * orbitScaleFactor * userScaleFactor)
 			outer.setPosition(starLocations[system].pos * orbitScaleFactor * userScaleFactor)
-			
+		
 		gZone = SceneNode.create("GZone")
 		gZone.addChild(outer)
 		gZone.addChild(inner)
