@@ -330,7 +330,7 @@ earthLikeList = []
 habitableList = []
 
 # sun like List
-sunLikeList = []
+sunLikeList = ["Solar System", "mu Ara", "Kepler-75", "Kepler-68", "Kepler-22", "Kepler-20", "Kepler-11", "Kepler-10", "HD 96700", "HD 217107", "HD 209458", "HD 20794", "HD 20003", "HD 190360", "HD 142", "HD 136352", "HD 134987", "HD 134060", "HD 10180", "61 Vir", "47 Uma", "24 Sex", "ups And", "14 Her", "55 Cnc", "HD 128311", "HD 215152", "HD 39194", "HD 69830", "alf Cen B", "nu Oph"]
 
 # current shown list
 displaySystemList = systemList
