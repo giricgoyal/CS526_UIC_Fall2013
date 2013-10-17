@@ -36,7 +36,7 @@ def createVisualization():
 				if name == "The Sun":
 					dot.setEffect("colored -e red")
 				else:
-					if findInList(system, displaySystemList) == True:
+					if findInList(system, getDisplayList()) == True:
 						dot.setEffect("colored -e #0000CCCC")
 					else:
 						dot.setEffect("colored -e white")
@@ -65,7 +65,7 @@ def changeColor():
 		if system == activeSystem:
 			visualizeDict[system].setEffect("colored -e red")
 		else:
-			if findInList(system, displaySystemList) == True:
+			if findInList(system, getDisplayList()) == True:
 				visualizeDict[system].setEffect("colored -e #0000CCCC")
 			else:
 				visualizeDict[system].setEffect("colored -e white")

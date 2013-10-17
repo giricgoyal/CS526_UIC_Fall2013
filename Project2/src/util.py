@@ -252,6 +252,8 @@ class starLoc:
 		
 # ------------------------------------------------------------------			
 # variables
+skyBox = None
+scene = None
 
 isCave = False
 
@@ -306,13 +308,36 @@ XplanetScaleFactor = 0.25
 DAYtoYEAR = 1.0/365.0
 
 # data variables
+# Dictionaries
 allSystemsOrbital = dict()
 allSystemsInfo = dict()
-#systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "ups And", "CoRoT-11", "XO-3", "Kepler-22", "MOA-2007-BLG-192-L", "Kepler-11", "Kepler-10", "GJ 1214", "Gl 581", "WASP-33", "30 Ari B", "Kepler-39", "HR 8799", "Kepler-65", "Fomalhaut", "KOI-142", "HD 10180", "Kepler-68", "Kepler-20", "24 Sex", "Kepler-42", "HD 39194", "HD 134987", "HD 60532", "HD 96700", "HD 142", "HD 134060", "HD 215152", "HD 217107", "HD 99492", "GJ 676A", "HD 20794", "HD 128311", "14 Her", "HD 136352", "HD 113538", "HD 190360", "mu Ara", "47 Uma", "Gl 163", "Gliese 876", "55 Cnc", "HD 20003", "GJ 667C", "61 Vir", "HD 69830", "HD 40307"]
-systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "ups And", "CoRoT-11", "Kepler-22", "Kepler-11", "Kepler-10", "GJ 1214", "Gl 581", "30 Ari B", "Kepler-39", "HR 8799", "Fomalhaut", "KOI-142", "HD 10180", "Kepler-68", "Kepler-20", "24 Sex", "Kepler-42", "HD 39194", "HD 134987", "HD 60532", "HD 96700", "HD 142", "HD 134060", "HD 215152", "HD 217107", "HD 99492", "GJ 676A", "HD 20794", "HD 128311", "14 Her", "HD 136352", "HD 113538", "HD 190360", "mu Ara", "47 Uma", "Gl 163", "Gliese 876", "55 Cnc", "HD 20003", "GJ 667C", "61 Vir", "HD 69830", "HD 40307"]
-displaySystemList = systemList
-activeSystem = "Solar System"
 starLocations = dict()
+lightsDict = dict()
+
+# Lists
+#systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "ups And", "CoRoT-11", "XO-3", "Kepler-22", "MOA-2007-BLG-192-L", "Kepler-11", "Kepler-10", "GJ 1214", "Gl 581", "WASP-33", "30 Ari B", "Kepler-39", "HR 8799", "Kepler-65", "Fomalhaut", "KOI-142", "HD 10180", "Kepler-68", "Kepler-20", "24 Sex", "Kepler-42", "HD 39194", "HD 134987", "HD 60532", "HD 96700", "HD 142", "HD 134060", "HD 215152", "HD 217107", "HD 99492", "GJ 676A", "HD 20794", "HD 128311", "14 Her", "HD 136352", "HD 113538", "HD 190360", "mu Ara", "47 Uma", "Gl 163", "Gliese 876", "55 Cnc", "HD 20003", "GJ 667C", "61 Vir", "HD 69830", "HD 40307"]
+
+# all main list
+systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "ups And", "CoRoT-11", "Kepler-22", "Kepler-11", "Kepler-10", "GJ 1214", "Gl 581", "30 Ari B", "Kepler-39", "HR 8799", "Fomalhaut", "KOI-142", "HD 10180", "Kepler-68", "Kepler-20", "24 Sex", "Kepler-42", "HD 39194", "HD 134987", "HD 60532", "HD 96700", "HD 142", "HD 134060", "HD 215152", "HD 217107", "HD 99492", "GJ 676A", "HD 20794", "HD 128311", "14 Her", "HD 136352", "HD 113538", "HD 190360", "mu Ara", "47 Uma", "Gl 163", "Gliese 876", "55 Cnc", "HD 20003", "GJ 667C", "61 Vir", "HD 69830", "HD 40307"]
+
+# nearest to earth list
+nearestToEarthList = ["Solar System", "alf Cen B", "Gliese 876",  "HD 20794",  "Gl 581", "GJ 667C", "Fomalhaut", "61 Vir", "55 Cnc", "HD 69830", "HD 40307", "GJ 1214", "ups And", "47 Uma", "HD 136352", "Gl 163"]
+
+# Earth like list
+earthLikeList = []
+
+# habitable List
+habitableList = []
+
+# sun like List
+sunLikeList = []
+
+# current shown list
+displaySystemList = systemList
+
+# Variables
+activeSystem = "Solar System"
+
 
 # dicts to change when scaling 
 activeBodies = dict()
@@ -343,11 +368,7 @@ colorK = Color("#FFD36BAA") # pale yellow orange
 colorM = Color("#FFBF86AA") # yellow orange red
 
 
-
 currentSystem = "Solar System"
-
-
-
 
 # setting up initial scene hierarchy
 # level 1
@@ -415,75 +436,6 @@ def getOrbitCoords(e, a):
 	return b
 
 
-def updateOrbitScale(scale):
-	global orbitScaleFactor
-	orbitScaleFactor = 1.0/pow(10, scale)
-
-	for system in systemList:
-		theSystem = allSystemsOrbital[system]
-		for name, model in theSystem.iteritems():
-			pos = ((Vector3(0.0, 0.0, -theSystem[name].minorA  * orbitScaleFactor * userScaleFactor)))
-			pos2 = starLocations[system].pos  * orbitScaleFactor * userScaleFactor
-			pos3 = habitableZones[system].habCenter * orbitScaleFactor * userScaleFactor
-			pos1 = habitableZones[system].habWidth * orbitScaleFactor * userScaleFactor * 0.00015
-			pos2_1 = theSystem[name].minorA * orbitScaleFactor * userScaleFactor
-			if theSystem[name].isStar == 0:
-				pos4 = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
-			else:
-				pos4 = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
-			if (48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10) >= wallLimit:
-				pos5 = Vector3(0.0, 0.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
-				pos6 = Vector3(0.0, -10000.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
-			else:
-				pos5 = Vector3(0.0, 0.0, wallLimit)
-				pos6 = Vector3(0.0, -10000.0,wallLimit)
-			if (48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10) >= wallLimit:
-				pos7 = Vector3(0.0, 0.0, 48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10)
-			else:
-				pos7 = Vector3(0.0,0.0, habitableZones[system].habCenter)
-			#pos7 = Vector3(0.0, 0.0, 48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10)
-			activeBodies[name].setPosition(pos)
-			#activeRotCenters[name].setPosition(pos2)
-			orbitDict[name].setScale(Vector3(pos2_1, 10.0, pos2_1))
-			textDict[name].setPosition(pos4)
-			wallSystemsDict[name].setPosition(pos5)
-			if theSystem[name].isStar == 0:
-				wallSystemTextDict[name].setPosition(pos6)
-			if name == "Saturn":
-				otherObjectsDict[name].setPosition(pos)
-			habiInnerDict[system].setScale(orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor)
-			habiOuterDict[system].setScale(orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor)
-			habiWallDict[system].setPosition(pos7)
-			habiWallDict[system].setScale( 1,1 ,  orbitScaleFactor * userScaleFactor )
-			
-def updatePlanetScale(scale):
-	global planetScaleFactor
-	planetScaleFactor = 1.0/pow(10, scale)
-	
-	for system in systemList:
-		theSystem = allSystemsOrbital[system]
-		for name, model in theSystem.iteritems():
-			if theSystem[name].isStar == 0:
-				activeBodies[name].setScale(Vector3(theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor))
-				pos = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
-				textDict[name].setPosition(pos)
-			if name == "Saturn":
-				otherObjectsDict[name].setScale(planetScaleFactor, planetScaleFactor, planetScaleFactor)
-				
-	
-def updateSunScale(scale):
-	global sunScaleFactor
-	sunScaleFactor = 1.0/pow(10, scale)
-	
-	for system in systemList:
-		theSystem = allSystemsOrbital[system]
-		for name, model in theSystem.iteritems():
-			if theSystem[name].isStar == 1:
-				activeBodies[name].setScale(Vector3(theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor))
-				pos = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
-				textDict[name].setPosition(pos)
-				
-
 def updateTimeFactor(factor):
 	global timeFactor
 	timeFactor = (9 - factor) * 10 if (9 - factor) != 0 else 1
@@ -501,6 +453,17 @@ def getActiveSystem():
 	
 def findInList(object, list):
 	for temp in list:
-		if object == temp:
+		if object.strip() == temp.strip():
 			return True
+	return False
+			
+def setDisplayList(listNo):
+	global displaySystemList
+	if listNo == 0: displaySystemList = systemList 
+	elif listNo == 1: displaySystemList = nearestToEarthList
+	elif listNo == 2: displaySystemList = earthLikeList
+	elif listNo == 3: displaySystemList = habitableList
+	elif listNo == 4: displaySystemList = sunLikeList
 	
+def getDisplayList():
+	return displaySystemList

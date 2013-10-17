@@ -38,10 +38,6 @@ from src.visualize import *
 # ---------------------------------------------------------------
 # Variables
 
-skyBox = None
-scene = None
-
-
 # -------------------------------------------------------------------
 # method definitions
 def setSkyBox():
@@ -209,11 +205,12 @@ def create2DSystems():
 			goldiZone = BoxShape.create(4, 25000, (1.0 * (habitableZones[system].habOuter - habitableZones[system].habInner)) * 10)
 			if (48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10) >= wallLimit:
 				goldiZone.setPosition(Vector3(0.0, 0.0, 48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10))
-			sSystem.addChild(goldiZone)
+			
 			goldiZone.setEffect('colored -e #00440077')
 			goldiZone.setScale(1,1,orbitScaleFactor * userScaleFactor)
 			goldiZone.getMaterial().setTransparent(True)
 			habiWallDict[system] = goldiZone
+			sSystem.addChild(goldiZone)
 			
 			sSystem.yaw(pi/2.0)
 			sSystem.setScale(0.0000001, 0.00001, 0.00001)
@@ -234,6 +231,10 @@ def create2DSystems():
 			#	h += 1
 			#	v = 0
 			#v += 1
+			
+def remove2DSystems():
+	for name, model in wallSystemTextDict.iteritems():
+		sSystem.removeChildByRef(wallSystemTextDict[name])
 		
 # method for creating all the systems in 3D
 def create3DSystems():
@@ -394,7 +395,7 @@ getData()
 
 # lights for each system
 
-lightsDict = dict()
+
 for system in systemList:
 	light = Light.create()
 	light.setLightType(LightType.Point)

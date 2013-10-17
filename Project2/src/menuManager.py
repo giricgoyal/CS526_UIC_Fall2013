@@ -11,6 +11,7 @@ from euclid import *
 from util import *
 from cameraManager import *
 from visualize import *
+from system import *
 
 # -----------------------------------------------------------------
 # variables
@@ -25,6 +26,12 @@ timeFactorSlider = None
 timeFactorSliderText = None
 resetButton = None
 visualizeButton = None
+allSystemsListButton = None
+nearestListButton = None
+earthLikeListButton = None
+habitableListButton = None
+sunLikeListButton = None
+
 
 #------------------------------------------------------------------
 # method definitions
@@ -82,6 +89,12 @@ def visitVisualization():
 	else:
 		setCamPosition2(getCamPosition())
 	
+	
+def updateList(number):
+	print "Setting systems from new list"
+	setDisplayList(number)
+	reorderAuto2D()
+	
 # -----------------------------------------------------------------
 # main
 
@@ -91,9 +104,11 @@ mm = MenuManager.createAndInitialize()
 mainMenu = mm.getMainMenu()
 
 # Level 1
-scaleMenu = mainMenu.addSubMenu("Scale Options")
-visitSystemMenu = mainMenu.addSubMenu("Visit System")
+scaleMenu = mainMenu.addSubMenu("Scale")
+visitSystemMenu = mainMenu.addSubMenu("Visit")
+listsMenu = mainMenu.addSubMenu("Lists")
 optionsMenu = mainMenu.addSubMenu("Options")
+
 
 # level 2
 scaleContainer = scaleMenu.addContainer().getContainer()
@@ -107,18 +122,12 @@ visitSystemContainer.setLayout(ContainerLayout.LayoutVertical)
 optionsMenuContainer = optionsMenu.addContainer().getContainer()
 optionsMenuContainer.setLayout(ContainerLayout.LayoutVertical)
 
+listsContainer = listsMenu.addContainer().getContainer()
+listsContainer.setLayout(ContainerLayout.LayoutVertical)
+
 # buttons
 def initButtons():
-	
-	# visit system buttons
-	for system in systemList:
-		button = Button.create(visitSystemContainer)
-		button.setText(system)
-		button.setCheckable(True)
-		button.setRadio(True)
-		visitSystemButtonList[system] = button
-		button.setUIEventCommand('visitSystem()')
-		
+
 	# scale slider
 	scaleText = Label.create(scaleContainer)
 	scaleText.setText("Scaling Factor (n): 1/10^n")
@@ -161,6 +170,60 @@ def initButtons():
 	timeFactorSlider.setValue(0)
 	timeFactorSlider.setUIEventCommand('setTimeFactor()')
 	timeFactorSliderText.setText("Time: " + str(timeFactorSlider.getValue() + 1) + " (default)" )
+	
+	
+	# visit system buttons
+	for system in systemList:
+		button = Button.create(visitSystemContainer)
+		button.setText(system)
+		button.setCheckable(True)
+		button.setRadio(True)
+		visitSystemButtonList[system] = button
+		button.setUIEventCommand('visitSystem()')
+	
+	# Lists Buttons
+	# four Lists
+	
+	# all systems
+	global allSystemsListButton
+	allSystemsListButton = Button.create(listsContainer)
+	allSystemsListButton.setText("All Systems")
+	allSystemsListButton.setCheckable(True)
+	allSystemsListButton.setRadio(True)
+	allSystemsListButton.setChecked(True)
+	allSystemsListButton.setUIEventCommand('updateList(0)')
+	
+	# nearest to the earth 
+	global nearestListButton
+	nearestListButton = Button.create(listsContainer)
+	nearestListButton.setText("Nearest to the Earth")
+	nearestListButton.setCheckable(True)
+	nearestListButton.setRadio(True)
+	nearestListButton.setUIEventCommand('updateList(1)')
+	
+	# Earth like
+	global earthLikeListButton
+	earthLikeListButton = Button.create(listsContainer)
+	earthLikeListButton.setText("Earth Like")
+	earthLikeListButton.setCheckable(True)
+	earthLikeListButton.setRadio(True)
+	earthLikeListButton.setUIEventCommand('updateList(2)')
+	
+	# Habitable 
+	global habitableListButton
+	habitableListButton = Button.create(listsContainer)
+	habitableListButton.setText("Likely to be Habitable")
+	habitableListButton.setCheckable(True)
+	habitableListButton.setRadio(True)
+	habitableListButton.setUIEventCommand('updateList(3)')
+	
+	# Sun like stars
+	global sunLikeListButton
+	sunLikeListButton = Button.create(listsContainer)
+	sunLikeListButton.setText("Sun Like")
+	sunLikeListButton.setCheckable(True)
+	sunLikeListButton.setRadio(True)
+	sunLikeListButton.setUIEventCommand('updateList(4)')
 	
 	# reset button
 	global resetButton
