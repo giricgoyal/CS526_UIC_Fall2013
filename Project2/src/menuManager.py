@@ -33,6 +33,7 @@ habitableListButton = None
 sunLikeListButton = None
 
 
+
 #------------------------------------------------------------------
 # method definitions
 def visitSystem():

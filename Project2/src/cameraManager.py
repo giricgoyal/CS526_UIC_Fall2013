@@ -58,3 +58,6 @@ def setCamPos():
 def getCamPosition():
 	return camPos
 	
+def getCam():
+	return cam
+	

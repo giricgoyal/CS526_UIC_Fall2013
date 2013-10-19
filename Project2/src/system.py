@@ -5,15 +5,33 @@ from euclid import *
 from omega import *
 from cyclops import *
 from util import *
+from cameraManager import *
 
+# ---------------------------------------------------------------------------------
+# main
 
+panelCounter = 0
 
+xMin = sin(6.5 * (36.0/360.0 * 2 * pi)) * 3.25
+xMax = sin(4.5 * (36.0/360.0 * 2 * pi)) * 3.25
+yMin = 0.41
+yMax = 5.8 * 0.29 + 0.41
+yMin2 = 6 * 0.29 + 0.41
+yMax2 = 7 * 0.29 + 0.41
+zMin = cos(6.5 * (36.0/360.0 * 2 * pi)) * 3.25
+zMax = cos(4.5 * (36.0/360.0 * 2 * pi)) * 3.25
+
+infoText = ""
+infoContainer = None
+infoDisplayBox = None
+
+# --------------------------------------------------------------------------------------
+# methods
 # Calculate habitable zones
 def setHabitableZone(system, starName, starType):
 	habObj = habZone(starName, starType)
 	habObj.calHabitableZone()
 	habitableZones[system] = habObj
-	
 	
 	
 # create orbits for the planets
@@ -67,9 +85,132 @@ def addOrbit(orbit, col, thick, system, name):
 		habiInnerDict[system] = newList
 	systemNodeDict[system].addChild(circle)
 
+# create each 2D system
+def createEach2DSystem(system, h, v):
+	global panelCounter
+	theSystem = allSystemsOrbital[system]
+	
+	outlineBox = BoxShape.create(2.0, 0.25, 0.001)
+	outlineBox.setPosition(Vector3(-0.5, 0, 0.01))
+	outlineBox.setEffect('colored -e #111111EE')
+	outlineBox.getMaterial().setTransparent(False)
+	infoOutlineBox = BoxShape.create(2.0, 2.0, 0.01)
+	infoOutlineBox.setPosition(Vector3(0,0,0))
+	infoOutlineBox.setEffect('colored -e #111111EE')
+	infoOutlineBox.getMaterial().setTransparent(False)
+	
+	screenCenter = SceneNode.create(system + " box "+str(panelCounter))
+	infoBox = SceneNode.create(system + " infoBox")
+	sSystem = SceneNode.create("sSystem"+str(panelCounter))
+	for name, model in theSystem.iteritems():
+		pos = None
+		if (48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10) >= wallLimit:
+		#if theSystem[name].minorA <= wallLimit:
+			pos = Vector3(0.0, 0.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
+			pos2 = Vector3(0.0, -10000.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
+		else:
+			pos = Vector3(0,0,wallLimit)
+			pos2 = Vector3(0,-10000, wallLimit)
+			#pos = Vector3(0.0, 0.0, - wallLimit * orbitScaleFactor * userScaleFactor * 10)
+			#pos2 = Vector3(0.0, -10000.0, - wallLimit * orbitScaleFactor * userScaleFactor * 10)
+		
+		if theSystem[name].isStar == 0:
+			model = StaticObject.create("defaultSphere")
+			model.setScale(Vector3(theSystem[name].radius * XplanetScaleFactor, theSystem[name].radius * XplanetScaleFactor, theSystem[name].radius * XplanetScaleFactor))
+			
+			# text 
+			text = str(name)
+			
+			t1 = Text3D.create('fonts/verdana.ttf', 1, text)
+			t1.setPosition(pos2)
+			t1.yaw(pi/2)
+			t1.setFontResolution(256)
+			t1.setFontSize(fontSize/1.2)
+			t1.setScale(1.0/0.0000001, 1.0/0.00001, 1.0/0.00001)
+			t1.getMaterial().setTransparent(False)
+			t1.getMaterial().setDepthTestEnabled(False)
+			t1.setColor(colorWhite)
+			wallSystemTextDict[name] = t1
+			sSystem.addChild(t1)
+			
+			
+		else:
+			setHabitableZone(system, name, theSystem[name].starType)
+			
+			# text 
+			text = ""
+			text = str(allSystemsInfo[system][name].systemName) + " (" + str(allSystemsInfo[system][name].starType) + ")"
+			if name != "The Sun":
+				text = text + " %.3f light years from you!" % (allSystemsInfo[system][name].starDistance * PCtoLY)
+			
+			t1 = Text3D.create('fonts/verdana.ttf', 1, text)
+			t1.setPosition(Vector3(0.35,0.075,0))
+			t1.yaw(pi)
+			t1.setFontResolution(256)
+			t1.setFontSize(fontSize)
+			t1.getMaterial().setTransparent(True)
+			t1.getMaterial().setDepthTestEnabled(False)
+			t1.setColor(starColor(theSystem[name]))
+			screenCenter.addChild(t1)
+			
+			model = BoxShape.create(100, 25000, 2000)
+			
+		model.setPosition(pos)
+		
+		wallSystemsDict[name] = model
+		sSystem.addChild(model)
+		
+		# set effect for the body spheres
+		model.setEffect("textured -v emissive -d "+theSystem[name].texture)
+	
+	# show habitable zones 
+	goldiZone = BoxShape.create(4, 25000, (1.0 * (habitableZones[system].habOuter - habitableZones[system].habInner)) * 10)
+	if (48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10) >= wallLimit:
+		goldiZone.setPosition(Vector3(0.0, 0.0, 48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10))
+	else:
+		goldiZone.setPosition(Vector3(0.0,0.0, habitableZones[system].habCenter))
+	goldiZone.setEffect('colored -e #00440077')
+	goldiZone.setScale(1,1,orbitScaleFactor * userScaleFactor)
+	goldiZone.getMaterial().setTransparent(True)
+	habiWallDict[system] = goldiZone
+	sSystem.addChild(goldiZone)
+	
+	sSystem.yaw(pi/2.0)
+	sSystem.setScale(0.0000001, 0.00001, 0.00001)
+	
+	# add statistics as well
+	#
+	
+	hLoc = h + 0.5
+	degreeConvert = 36.0/360.0 * 2 * pi 
+	caveRadius = 3.25
+	screenCenter.setPosition(Vector3(sin(hLoc * degreeConvert) * caveRadius, v * 0.29 + 0.41, cos(hLoc * degreeConvert) * caveRadius))
+	screenCenter.yaw(hLoc * degreeConvert)
+	screenCenter.addChild(sSystem)
+	screenCenter.addChild(outlineBox)
+	screenCenter.setSelectable(True)
+	allSystems.addChild(screenCenter)
+	
+	# info box for all systems
+	infoBox.setPosition(Vector3(0,0,30))
+	infoBox.addChild(infoOutlineBox)
+	allSystems.addChild(infoBox)
+	systemInfoDict[system] = infoBox
+	
+	text = system
+	
+	t1 = Text3D.create('fonts/verdana.ttf', 1, text)
+	t1.setPosition(Vector3(0,0,0))
+	t1.yaw(pi)
+	t1.setFontResolution(256)
+	t1.setFontSize(fontSize)
+	t1.getMaterial().setTransparent(True)
+	t1.getMaterial().setDepthTestEnabled(False)
+			
 
 # Create the 2D systems for the wall
 def create2DSystems():
+	global panelCounter
 	panelCounter = 0
 	systemCounter = len(systemList)-1
 	for h in xrange(1, 10):
@@ -79,111 +220,9 @@ def create2DSystems():
 		#for system in systemList:
 			system = systemList[systemCounter]
 			systemCounter -= 1
-			
-			theSystem = allSystemsOrbital[system]
-			
-			outlineBox = BoxShape.create(2.0, 0.25, 0.001)
-			outlineBox.setPosition(Vector3(-0.5, 0, 0.01))
-			outlineBox.setEffect('colored -e #111111EE')
-			outlineBox.getMaterial().setTransparent(False)
-			screenCenter = SceneNode.create(system + " box "+str(panelCounter))
-			sSystem = SceneNode.create("sSystem"+str(panelCounter))
-			for name, model in theSystem.iteritems():
-				pos = None
-				if (48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10) >= wallLimit:
-				#if theSystem[name].minorA <= wallLimit:
-					pos = Vector3(0.0, 0.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
-					pos2 = Vector3(0.0, -10000.0, 48000 - theSystem[name].minorA * orbitScaleFactor * userScaleFactor * 10)
-				else:
-					pos = Vector3(0,0,wallLimit)
-					pos2 = Vector3(0,-10000, wallLimit)
-					#pos = Vector3(0.0, 0.0, - wallLimit * orbitScaleFactor * userScaleFactor * 10)
-					#pos2 = Vector3(0.0, -10000.0, - wallLimit * orbitScaleFactor * userScaleFactor * 10)
-				
-				if theSystem[name].isStar == 0:
-					model = StaticObject.create("defaultSphere")
-					model.setScale(Vector3(theSystem[name].radius * XplanetScaleFactor, theSystem[name].radius * XplanetScaleFactor, theSystem[name].radius * XplanetScaleFactor))
-					
-					# text 
-					text = str(name)
-					
-					t1 = Text3D.create('fonts/verdana.ttf', 1, text)
-					t1.setPosition(pos2)
-					t1.yaw(pi/2)
-					t1.setFontResolution(256)
-					t1.setFontSize(fontSize/1.2)
-					t1.setScale(1.0/0.0000001, 1.0/0.00001, 1.0/0.00001)
-					t1.getMaterial().setTransparent(False)
-					t1.getMaterial().setDepthTestEnabled(False)
-					t1.setColor(colorWhite)
-					wallSystemTextDict[name] = t1
-					sSystem.addChild(t1)
-					
-					
-				else:
-					setHabitableZone(system, name, theSystem[name].starType)
-					
-					# text 
-					text = ""
-					text = str(allSystemsInfo[system][name].systemName) + " (" + str(allSystemsInfo[system][name].starType) + ")"
-					if name != "The Sun":
-						text = text + " %.3f light years from you!" % (allSystemsInfo[system][name].starDistance * PCtoLY)
-					
-					t1 = Text3D.create('fonts/verdana.ttf', 1, text)
-					t1.setPosition(Vector3(0.35,0.075,0))
-					t1.yaw(pi)
-					t1.setFontResolution(256)
-					t1.setFontSize(fontSize)
-					t1.getMaterial().setTransparent(True)
-					t1.getMaterial().setDepthTestEnabled(False)
-					t1.setColor(starColor(theSystem[name]))
-					screenCenter.addChild(t1)
-					
-					model = BoxShape.create(100, 25000, 2000)
-					
-				model.setPosition(pos)
-				
-				wallSystemsDict[name] = model
-				sSystem.addChild(model)
-				
-				# set effect for the body spheres
-				model.setEffect("textured -v emissive -d "+theSystem[name].texture)
-				
+			createEach2DSystem(system, h, v)
 			panelCounter += 1
-			
-			# show habitable zones 
-			goldiZone = BoxShape.create(4, 25000, (1.0 * (habitableZones[system].habOuter - habitableZones[system].habInner)) * 10)
-			if (48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10) >= wallLimit:
-				goldiZone.setPosition(Vector3(0.0, 0.0, 48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10))
-			else:
-				goldiZone.setPosition(Vector3(0.0,0.0, habitableZones[system].habCenter))
-			goldiZone.setEffect('colored -e #00440077')
-			goldiZone.setScale(1,1,orbitScaleFactor * userScaleFactor)
-			goldiZone.getMaterial().setTransparent(True)
-			habiWallDict[system] = goldiZone
-			sSystem.addChild(goldiZone)
-			
-			sSystem.yaw(pi/2.0)
-			sSystem.setScale(0.0000001, 0.00001, 0.00001)
-			
-			# add statistics as well
-			#
-			
-			hLoc = h + 0.5
-			degreeConvert = 36.0/360.0 * 2 * pi 
-			caveRadius = 3.25
-			screenCenter.setPosition(Vector3(sin(hLoc * degreeConvert) * caveRadius, v * 0.29 + 0.41, cos(hLoc * degreeConvert) * caveRadius))
-			screenCenter.yaw(hLoc * degreeConvert)
-			screenCenter.addChild(sSystem)
-			screenCenter.addChild(outlineBox)
-			allSystems.addChild(screenCenter)
-			
-			#if v == 8:
-			#	h += 1
-			#	v = 0
-			#v += 1
-			
-			
+		
 # remove the systems from the wall
 def reorderAuto2D():
 	global allSystems
@@ -247,7 +286,7 @@ def create3DSystems():
 				sunDot.setPosition(pos)
 				sunDot.setScale(Vector3(1, 1, 1))
 				systemNodeDict[system].addChild(sunDot)
-				
+				'''
 				sunLine = LineSet.create()
 				l = sunLine.addLine()
 				l.setStart(Vector3(0,0,0))
@@ -255,7 +294,8 @@ def create3DSystems():
 				l.setThickness(1)
 				sunLine.setEffect('colored -e white')
 				systemNodeDict[system].addChild(sunLine)
-			
+				'''
+				
 			# set textures
 			model.getMaterial().setProgram("textured")
 			model.setEffect("textured -v emissive -d "+theSystem[name].texture)
@@ -288,6 +328,7 @@ def create3DSystems():
 			rotCenter = SceneNode.create(str(name) + "RotCenter")
 			rotCenter.setPosition(pos2)
 			rotCenter.addChild(planetCenter)
+			rotCenter.setSelectable(True)
 			
 			activeRotCenters[name] = rotCenter
 			systemNodeDict[system].addChild(rotCenter)
@@ -315,6 +356,7 @@ def create3DSystems():
 			v.setColor(Color('white'))
 			planetCenter.addChild(v)
 			textDict[name] = v
+			orientObjects.append(v)
 			
 		# deal with the goldilocks zones
 		
@@ -425,3 +467,59 @@ def updateSunScale(scale):
 				activeBodies[name].setScale(Vector3(theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor, theSystem[name].radius * sunScaleFactor))
 				pos = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 				textDict[name].setPosition(pos)
+
+def setInfoVisible(val):
+	global infoContainer
+	infoContainer.setVisible(val)
+	infoContainer.setChildrenVisible(val)
+
+	
+def createInfoDisplay():
+	global infoContainer
+	
+	infoDisplayBox = BoxShape.create(1.0, 1.0, 0.001)
+	infoDisplayBox.setPosition(Vector3(0,0,0))
+	infoDisplayBox.setEffect('colored -e #111111EE')
+	infoDisplayBox.getMaterial().setTransparent(False)
+	
+	infoContainer = SceneNode.create("Info Container")
+	infoContainer.addChild(infoDisplayBox)
+	
+	infoContainer.setPosition(xMin, yMax, zMin)
+	infoContainer.yaw(6.5 * 36.0/360.0 * 2 * pi)
+
+	
+
+def showInfo(name):
+	if name.find("RotCenter") != -1:
+		print name
+	elif name.find("box") != -1:
+		print name + "box"
+
+	
+def drawMidWindowOutline():
+	print "drawing mid window outline"
+	
+	# initialize mid Window outline when dragged
+	midWindowOutline = BoxShape.create(xMax-xMin, yMax-yMin, 0.01)
+	midWindowOutline.setPosition(Vector3(xMin + (xMax-xMin)/2, yMin + (yMax - yMin)/2, -2))
+	midWindowOutline.setEffect('colored -e #DDDDAA44')
+	midWindowOutline.getMaterial().setTransparent(True)
+	allSystems.addChild(midWindowOutline)
+
+	deleteWindowOutline = BoxShape.create(xMax-xMin, yMax2-yMin2, 0.01)
+	deleteWindowOutline.setPosition(Vector3(xMin + (xMax-xMin)/2, yMin2 + (yMax2 - yMin2)/2, -2))
+	deleteWindowOutline.setEffect('colored -e #DD333344')
+	deleteWindowOutline.getMaterial().setTransparent(True)
+	allSystems.addChild(deleteWindowOutline)
+
+	
+	
+def setWallTilePosAfterMove(wandRay, wandPos, objectPos, objectOrient, intersectObj):
+	print "positioning obj"
+	print "Wand Ray : " + str(wandRay)
+	print "wandPos : " + str(wandPos)
+	
+	intersectObj.setPosition(objectPos)
+	intersectObj.setOrientation(objectOrient)
+	

@@ -34,6 +34,7 @@ from src.cameraManager import *
 from src.menuManager import *
 from src.visualize import *
 from src.system import *
+from src.input import *
 
 
 # ---------------------------------------------------------------
@@ -67,7 +68,15 @@ def onUpdate(frame, t, dt):
 			timeF = getTimeFactor()
 			activeRotCenters[name].yaw(dt/timeF*(1.0 / allSystemsOrbital[system][name].period)) #revolution (year)
 			activeBodies[name].yaw(dt/timeF*365*(1.0 / allSystemsOrbital[system][name].rotation)) #rotation (day) 
-			
+	
+	for obj in orientObjects:
+		caveutil.orientWithHead(getCam(), obj)
+		
+	if getIsMovingTile() == True:
+		caveutil.positionAtWand(getCam(), getIntersectObj(), wandID, getIntersectDist())
+		caveutil.orientWithHead(getCam(), getIntersectObj())
+		print getIntersectObj().getPosition()
+	
 	
 # Main ----------------------------------------------------------
 # initialize database
@@ -122,8 +131,7 @@ initCam()
 initSceneNodes()
 
 # make wall systems static. Add "thingsOnTheWall" to the cam
-#getDefaultCamera().addChild(thingsOnTheWall)
-
+getDefaultCamera().addChild(thingsOnTheWall)
 
 # initialize the scene
 initializeScene()
@@ -145,6 +153,9 @@ createVisualization()
 
 # initialize menu 
 initButtons()
+
+# initialize input
+#initInput(scene, cam)
 
 # set update function
 setUpdateFunction(onUpdate)

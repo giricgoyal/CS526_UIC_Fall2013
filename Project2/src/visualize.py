@@ -12,6 +12,9 @@ from math import *
 from euclid import *
 from omega import *
 from cyclops import *
+from cameraManager import *
+from caveutil import *
+
 
 
 # -------------------------------------------------------
@@ -51,6 +54,7 @@ def createVisualization():
 				t1.getMaterial().setTransparent(False)
 				t1.getMaterial().setDepthTestEnabled(False)
 				t1.setColor(colorWhite)
+				orientObjects.append(t1)
 				vizContainer.addChild(t1)
 				
 	

@@ -5,6 +5,7 @@ from math import *
 from euclid import *
 from omega import *
 from cyclops import *
+from caveutil import *
 
 # -------------------------------------------------------------
 # class definitions
@@ -256,6 +257,7 @@ skyBox = None
 scene = None
 
 isCave = False
+isMovingTile = False
 
 mSun = "1.989E30 kg"
 
@@ -324,13 +326,15 @@ systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "
 nearestToEarthList = ["Solar System", "alf Cen B", "Gliese 876",  "HD 20794",  "Gl 581", "GJ 667C", "Fomalhaut", "61 Vir", "55 Cnc", "HD 69830", "HD 40307", "GJ 1214", "ups And", "47 Uma", "HD 136352", "Gl 163"]
 
 # Earth like list
-earthLikeList = []
+earthLikeList = ["Solar System", "HD 217107", "HD 20794", "GJ 667C", "HD 40307", "alf Cen B", "Kepler-11", "Kepler-10", "Gl 581", "HD 39194", "Kepler-42", "Kepler-20", "Kepler-68"]
 
 # habitable List
-habitableList = []
+habitableList = ["Solar System", "Gl 581", "Kepler-22", "Gl 163", "HD 40307",]
 
 # sun like List
 sunLikeList = ["Solar System", "mu Ara", "Kepler-75", "Kepler-68", "Kepler-22", "Kepler-20", "Kepler-11", "Kepler-10", "HD 96700", "HD 217107", "HD 209458", "HD 20794", "HD 20003", "HD 190360", "HD 142", "HD 136352", "HD 134987", "HD 134060", "HD 10180", "61 Vir", "47 Uma", "24 Sex", "ups And", "14 Her", "55 Cnc", "HD 128311", "HD 215152", "HD 39194", "HD 69830", "alf Cen B", "nu Oph"]
+
+orientObjects = []
 
 # current shown list
 displaySystemList = systemList
@@ -353,6 +357,7 @@ visualizeDict = dict()
 habiInnerDict = dict()
 habiOuterDict = dict()
 habiWallDict = dict()
+systemInfoDict = dict()
 
 
 # Colors
@@ -389,11 +394,16 @@ camSpeed = 25
 
 # Cave dependent scaling 
 # font
-scaleFactor = 2400 if isCave == True else 1 
+scaleFactor = 2400 if caveutil.isCAVE() == True else 1 
 fontSize = 0.04 * scaleFactor
 
 # Visualization parameters
 vizPos = Vector3(10000000000,10000000000,100000000000)
+
+midWindowX = sin(5.25 * (36.0/360.0 * 2 * pi)) * 3.25
+midWindowY = 3.5 * 0.29 + 0.41
+midWindowW = 1
+midWindowH = 1
 
 # -----------------------------------------------------------------
 # method definitions
@@ -467,3 +477,15 @@ def setDisplayList(listNo):
 	
 def getDisplayList():
 	return displaySystemList
+	
+def getScene():
+	global scene
+	return scene
+	
+def setIsMovingTile(val):
+	global isMovingTile
+	isMovingTile == val
+	
+def getIsMovingTile():
+	global isMovingTile
+	return isMovingTile
