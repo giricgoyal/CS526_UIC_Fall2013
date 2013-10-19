@@ -20,6 +20,7 @@ from caveutil import *
 # -------------------------------------------------------
 # variables
 
+infoWindowContainer = None
 
 # -------------------------------------------------------
 # method definitions
@@ -74,3 +75,6 @@ def changeColor():
 			else:
 				visualizeDict[system].setEffect("colored -e white")
 		
+		
+
+	

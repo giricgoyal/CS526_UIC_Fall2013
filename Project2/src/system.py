@@ -21,9 +21,23 @@ yMax2 = 7 * 0.29 + 0.41
 zMin = cos(6.5 * (36.0/360.0 * 2 * pi)) * 3.25
 zMax = cos(4.5 * (36.0/360.0 * 2 * pi)) * 3.25
 
-infoText = ""
+infoTextList = []
 infoContainer = None
 infoDisplayBox = None
+systemInfo = None
+planetInfo = None
+midWindow = None
+
+text1 = ""
+text2 = ""
+text3 = ""
+text4 = ""
+text5 = ""
+text6 = ""
+text7 = ""
+text8 = ""
+text9 = ""
+text10 = ""
 
 # --------------------------------------------------------------------------------------
 # methods
@@ -148,7 +162,7 @@ def createEach2DSystem(system, h, v):
 			t1.yaw(pi)
 			t1.setFontResolution(256)
 			t1.setFontSize(fontSize)
-			t1.getMaterial().setTransparent(True)
+			t1.getMaterial().setTransparent(False)
 			t1.getMaterial().setDepthTestEnabled(False)
 			t1.setColor(starColor(theSystem[name]))
 			screenCenter.addChild(t1)
@@ -189,23 +203,10 @@ def createEach2DSystem(system, h, v):
 	screenCenter.addChild(sSystem)
 	screenCenter.addChild(outlineBox)
 	screenCenter.setSelectable(True)
+	screenCenter.setBoundingBoxVisible(True)
 	allSystems.addChild(screenCenter)
 	
-	# info box for all systems
-	infoBox.setPosition(Vector3(0,0,30))
-	infoBox.addChild(infoOutlineBox)
-	allSystems.addChild(infoBox)
-	systemInfoDict[system] = infoBox
 	
-	text = system
-	
-	t1 = Text3D.create('fonts/verdana.ttf', 1, text)
-	t1.setPosition(Vector3(0,0,0))
-	t1.yaw(pi)
-	t1.setFontResolution(256)
-	t1.setFontSize(fontSize)
-	t1.getMaterial().setTransparent(True)
-	t1.getMaterial().setDepthTestEnabled(False)
 			
 
 # Create the 2D systems for the wall
@@ -213,6 +214,7 @@ def create2DSystems():
 	global panelCounter
 	panelCounter = 0
 	systemCounter = len(systemList)-1
+	systemList.sort()
 	for h in xrange(1, 10):
 		if (h>=4) and (h<=6):
 			continue
@@ -325,7 +327,7 @@ def create3DSystems():
 			
 			
 			#deal with rotating the planets around the sun
-			rotCenter = SceneNode.create(str(name) + "RotCenter")
+			rotCenter = SceneNode.create(str(system) + " : " + str(name) + " RotCenter")
 			rotCenter.setPosition(pos2)
 			rotCenter.addChild(planetCenter)
 			rotCenter.setSelectable(True)
@@ -374,14 +376,14 @@ def create3DSystems():
 		inner.setEffect('colored -e #FF000044')
 		inner.getMaterial().setTransparent(True)
 		inner.pitch(-pi * 0.5)
-		inner.setScale(Vector3(orbitScaleFactor * userScaleFactor,orbitScaleFactor * userScaleFactor,orbitScaleFactor * userScaleFactor))
+		inner.setScale(Vector3(orbitScaleFactor * userScaleFactor,orbitScaleFactor * userScaleFactor,0.3))
 		habiInnerDict[system] = inner
 		
 		outer = CylinderShape.create(1, habitableZones[system].habOuter, habitableZones[system].habOuter, 10, 128)
 		outer.setEffect('colored -e #00FF0044')
 		outer.getMaterial().setTransparent(True)
 		outer.pitch(-pi * 0.5)
-		outer.setScale(Vector3(orbitScaleFactor * userScaleFactor,orbitScaleFactor * userScaleFactor,orbitScaleFactor * userScaleFactor))
+		outer.setScale(Vector3(orbitScaleFactor * userScaleFactor,orbitScaleFactor * userScaleFactor,0.001))
 		habiOuterDict[system] = outer
 		
 		
@@ -436,8 +438,8 @@ def updateOrbitScale(scale):
 				wallSystemTextDict[name].setPosition(pos6)
 			if name == "Saturn":
 				otherObjectsDict[name].setPosition(pos)
-			habiInnerDict[system].setScale(orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor)
-			habiOuterDict[system].setScale(orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor)
+			habiInnerDict[system].setScale(orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor, 0.3)
+			habiOuterDict[system].setScale(orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor, 0.001)
 			habiWallDict[system].setPosition(pos7)
 			habiWallDict[system].setScale( 1,1 ,  orbitScaleFactor * userScaleFactor )
 			
@@ -469,34 +471,122 @@ def updateSunScale(scale):
 				textDict[name].setPosition(pos)
 
 def setInfoVisible(val):
-	global infoContainer
+	global infoContainer, planetInfo
 	infoContainer.setVisible(val)
 	infoContainer.setChildrenVisible(val)
-
+	
+	if val == True:
+		planetInfo = SceneNode.create("Planet info")
+		planetInfo.setPosition(Vector3(0,0,0))
+		infoContainer.addChild(planetInfo)
+		list = getTexts()
+		counter = 0
+		for text in list:
+			tObj = Text3D.create('fonts/verdana.ttf', 1, text)
+			tObj.setPosition(0,counter,0)
+			tObj.yaw(pi/2)
+			tObj.setFontResolution(256)
+			tObj.setFontSize(fontSize/1.2)
+			tObj.setScale(1.0/0.0000001, 1.0/0.00001, 1.0/0.00001)
+			tObj.getMaterial().setTransparent(False)
+			tObj.getMaterial().setDepthTestEnabled(False)
+			tObj.setColor(colorWhite)
+			planetInfo.addChild(tObj)
+			counter = counter + 1
+	else:
+		pass
+		#if infoContainer.getChildByName("Planet info") != None:
+		#	infoContainer.removeChildByName("Planet info")
+		
+def getInfoContainer():
+	global infoContainer
+	return infoContainer
 	
 def createInfoDisplay():
-	global infoContainer
+	global infoContainer, infoDisplayBox, planetInfo, systemInfo
+	global text1, text2, text3, text4, text5, text6, text7, text8, text9, text10
 	
 	infoDisplayBox = BoxShape.create(1.0, 1.0, 0.001)
 	infoDisplayBox.setPosition(Vector3(0,0,0))
 	infoDisplayBox.setEffect('colored -e #111111EE')
 	infoDisplayBox.getMaterial().setTransparent(False)
 	
+	systemInfo = SceneNode.create("system info")
+	systemInfo.setPosition(Vector3(0,0,0))
+	
 	infoContainer = SceneNode.create("Info Container")
 	infoContainer.addChild(infoDisplayBox)
 	
 	infoContainer.setPosition(xMin, yMax, zMin)
 	infoContainer.yaw(6.5 * 36.0/360.0 * 2 * pi)
-
+	
+	
+		
 	
 
 def showInfo(name):
+	global planetInfo, systemInfo
+	global text1, text2, text3, text4, text5, text6, text7, text8, text9, text10
+	
 	if name.find("RotCenter") != -1:
 		print name
-	elif name.find("box") != -1:
-		print name + "box"
-
+		bodyName = name.strip().split("RotCenter")[0].strip().split(":")[1].strip()
+		bodyName = bodyName.strip()
+		systemName = name.strip().split("RotCenter")[0].strip().split(":")[0].strip()
+		systemName = systemName.strip()
+		radius = allSystemsOrbital[systemName][bodyName].radius
+		mass = allSystemsInfo[systemName][bodyName].mass
+		majorA = allSystemsOrbital[systemName][bodyName].majorA
+		minorA = allSystemsOrbital[systemName][bodyName].minorA
+		period = allSystemsOrbital[systemName][bodyName].period
+		rot = allSystemsOrbital[systemName][bodyName].rotation
+		discovered = allSystemsInfo[systemName][bodyName].discovered
+		detection = allSystemsInfo[systemName][bodyName].detectionType
+		molecules = allSystemsInfo[systemName][bodyName].molecules
+		starType = allSystemsInfo[systemName][bodyName].starType
+		starAge = allSystemsInfo[systemName][bodyName].starAge
+		starDistance = allSystemsInfo[systemName][bodyName].starDistance
+		planetInfo.setVisible(True)
+		planetInfo.setChildrenVisible(True)
+		systemInfo.setVisible(False)
+		systemInfo.setChildrenVisible(False)
+		if allSystemsOrbital[systemName][name].isStar == 0: 
+			if minorA != 0.0: 
+				text4 = "Distance to Star: %.3f AU" % (minorA/AUtoKM)
+				infoTextList.append(text4)
+			if rot != 0.0: 
+				text5 = "Rotation Period: " + rot + " days"
+				infoTextList.append(text5)
+			if period != 0.0: 
+				text6 = "Revolution Period: " + period + " years"
+				infoTextList.append(text6)
+		else:
+			text4 = "Star type: " + starType
+			if starAge != 0.0: text5 = "Star Age: " + starAge
+		text1 = bodyName + " ( " + systemName + " System )"
+		infoTextList.append(text1)
+		if radius != 0.0: 
+			text2 = "Radius: %.2f AU" % (radius/AUtoKM)
+			infoTextList.append(text2)
+		if mass != "": 
+			text3 = "Mass: " + mass
+			infoTextList.append(text3)
+		if discovered != 0: 
+			text7 = "Discovered: " + discovered
+			infoTextList.append(text7)
+		if detection != "": 
+			text8 = "Detection Type: " + detection
+			infoTextList.append(text8)
+		if molecules != "": 
+			text9 = "Molecules: " + molecules
+			infoTextList.append(text9)
+		
 	
+def getTexts():
+	global infoTextList
+	return infoTextList
+	
+'''
 def drawMidWindowOutline():
 	print "drawing mid window outline"
 	
@@ -514,12 +604,28 @@ def drawMidWindowOutline():
 	allSystems.addChild(deleteWindowOutline)
 
 	
-	
+def removeMidWindowOutline():
+	global midWindow
+	midWindow - SceneNode.create("mid window")
+
+'''
+
 def setWallTilePosAfterMove(wandRay, wandPos, objectPos, objectOrient, intersectObj):
+	global xMin, xMax, yMix, yMax, yMin2, yMax2, zMin, zMax
+	
 	print "positioning obj"
 	print "Wand Ray : " + str(wandRay)
 	print "wandPos : " + str(wandPos)
+	name = intersectObj.getName().strip().split("box")[0].strip()
 	
-	intersectObj.setPosition(objectPos)
-	intersectObj.setOrientation(objectOrient)
+	if (intersectObj.getPosition().x <= xMin) and (intersectObj.getPosition().x >= xMax):
+		if (intersectObj.getPosition().y <= yMin) and (intersectObj.getPosition().y >= yMax):
+			intersectObj.setPosition(objectPos)
+			intersectObj.setOrientation(objectOrient)
+			visitSystem(name)
+		
+		if (intersectObj.getPosition().y <= yMin2) and (intersectObj.getPosition().y >= yMax2):
+			displaySystemList.remove(name)
+			userList = displaySystemList
+			updateList(5)
 	

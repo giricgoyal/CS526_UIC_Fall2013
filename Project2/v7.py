@@ -85,10 +85,15 @@ def onUpdate(frame, t, dt):
 		intersectObj, intersectDist = caveutil.getNearestIntersectingObject(wandPos, wandRay)
 		if intersectObj != None:
 			name = intersectObj.getName()
-			showInfo(name)
-			setInfoVisible(False)
+			if name.find("RotCenter") != -1:
+				print name
+				showInfo(name)
+				setInfoVisible(True)
+				if isCave == True: caveutil.positionAtWand(getCam(), getInfoContainer(), wandID, 3)
+			else:
+				setInfoVisible(False)
 		else:
-			setInfoVisible(True)
+			setInfoVisible(False)
 		
 
 # Main ----------------------------------------------------------
@@ -144,13 +149,13 @@ initCam()
 initSceneNodes()
 
 # make wall systems static. Add "thingsOnTheWall" to the cam
-#getDefaultCamera().addChild(thingsOnTheWall)
+if isCave == True: getDefaultCamera().addChild(thingsOnTheWall)
 
 # initialize the scene
 initializeScene()
 
 # initialize and set skybox
-#setSkyBox()
+setSkyBox()
 
 # load sphere into the scene
 loadSphereModel()

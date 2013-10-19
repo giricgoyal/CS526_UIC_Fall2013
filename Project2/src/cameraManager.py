@@ -43,8 +43,11 @@ def initCam():
 	
 def setCamPosition(pos):
 	global cam, obj, orient3D
+	#obj.setTargetPosition(pos * overallScaleFactor + pos3D)
+	#obj.setTargetOrientation(orient3D)
 	cam.setPosition(pos * overallScaleFactor + pos3D)
 	cam.setOrientation(orient3D)
+	#obj.startInterpolation()
 
 def setCamPosition2(pos):
 	global cam

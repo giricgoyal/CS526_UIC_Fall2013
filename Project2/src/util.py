@@ -256,7 +256,7 @@ class starLoc:
 skyBox = None
 scene = None
 
-isCave = False
+isCave = True
 isMovingTile = False
 
 mSun = "1.989E30 kg"
@@ -329,10 +329,13 @@ nearestToEarthList = ["Solar System", "alf Cen B", "Gliese 876",  "HD 20794",  "
 earthLikeList = ["Solar System", "HD 217107", "HD 20794", "GJ 667C", "HD 40307", "alf Cen B", "Kepler-11", "Kepler-10", "Gl 581", "HD 39194", "Kepler-42", "Kepler-20", "Kepler-68"]
 
 # habitable List
-habitableList = ["Solar System", "Gl 581", "Kepler-22", "Gl 163", "HD 40307",]
+habitableList = ["Solar System", "Gl 581", "Kepler-22", "Gl 163", "HD 40307"]
 
 # sun like List
 sunLikeList = ["Solar System", "mu Ara", "Kepler-75", "Kepler-68", "Kepler-22", "Kepler-20", "Kepler-11", "Kepler-10", "HD 96700", "HD 217107", "HD 209458", "HD 20794", "HD 20003", "HD 190360", "HD 142", "HD 136352", "HD 134987", "HD 134060", "HD 10180", "61 Vir", "47 Uma", "24 Sex", "ups And", "14 Her", "55 Cnc", "HD 128311", "HD 215152", "HD 39194", "HD 69830", "alf Cen B", "nu Oph"]
+
+# user list
+userList = systemList
 
 orientObjects = []
 
@@ -394,7 +397,7 @@ camSpeed = 25
 
 # Cave dependent scaling 
 # font
-scaleFactor = 2400 if caveutil.isCAVE() == True else 1 
+scaleFactor = 1 if isCave == True else 1 
 fontSize = 0.04 * scaleFactor
 
 # Visualization parameters
@@ -474,6 +477,7 @@ def setDisplayList(listNo):
 	elif listNo == 2: displaySystemList = earthLikeList
 	elif listNo == 3: displaySystemList = habitableList
 	elif listNo == 4: displaySystemList = sunLikeList
+	elif listNo == 5: displaySystemList = userList
 	
 def getDisplayList():
 	return displaySystemList
@@ -484,7 +488,7 @@ def getScene():
 	
 def setIsMovingTile(val):
 	global isMovingTile
-	isMovingTile == val
+	isMovingTile = val
 	
 def getIsMovingTile():
 	global isMovingTile

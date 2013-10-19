@@ -36,14 +36,23 @@ sunLikeListButton = None
 
 #------------------------------------------------------------------
 # method definitions
-def visitSystem():
-	for system, button in visitSystemButtonList.iteritems():
-		if button.isChecked():
-			pos = starLocations[system].pos * orbitScaleFactor * userScaleFactor
-			setCamPosition(pos)
-			setActiveSystem(button.getText())
-			visualizeButton.setChecked(False)
-			#print activeSystem
+def visitSystem(tempSys = "-"):
+	if tempSys == "-":
+		for system, button in visitSystemButtonList.iteritems():
+			if button.isChecked():
+				pos = starLocations[system].pos * orbitScaleFactor * userScaleFactor
+				setCamPosition(pos)
+				setActiveSystem(button.getText())
+				visualizeButton.setChecked(False)
+				#print activeSystem
+	else:
+		for system, button in visitSystemButtonList.iteritems():
+			if button.getText() == tempSys:
+				pos = starLocations[tempSys].pos * orbitScaleFactor * userScaleFactor
+				setCamPosition(pos)
+				setActiveSystem(button.getText())
+				visualizeButton.setChecked(False)
+				
 
 def setOrbitSlider():
 	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue() + 1))
@@ -95,6 +104,7 @@ def updateList(number):
 	print "Setting systems from new list"
 	setDisplayList(number)
 	reorderAuto2D()
+	changeColor()
 	
 # -----------------------------------------------------------------
 # main
