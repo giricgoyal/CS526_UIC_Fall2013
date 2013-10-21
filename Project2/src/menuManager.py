@@ -31,6 +31,7 @@ nearestListButton = None
 earthLikeListButton = None
 habitableListButton = None
 sunLikeListButton = None
+userDefinedList = None
 
 
 
@@ -39,9 +40,11 @@ sunLikeListButton = None
 def visitSystem(tempSys = "-"):
 	if tempSys == "-":
 		for system, button in visitSystemButtonList.iteritems():
+			lightsDict[system].setEnabled(False)
 			if button.isChecked():
 				pos = starLocations[system].pos * orbitScaleFactor * userScaleFactor
 				setCamPosition(pos)
+				lightsDict[system].setEnabled(True)
 				setActiveSystem(button.getText())
 				visualizeButton.setChecked(False)
 				#print activeSystem
@@ -51,8 +54,10 @@ def visitSystem(tempSys = "-"):
 				pos = starLocations[tempSys].pos * orbitScaleFactor * userScaleFactor
 				setCamPosition(pos)
 				setActiveSystem(button.getText())
+				button.setChecked(True)
 				visualizeButton.setChecked(False)
-				
+			else:
+				button.setChecked(False)
 
 def setOrbitSlider():
 	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue() + 1))
@@ -106,6 +111,30 @@ def updateList(number):
 	reorderAuto2D()
 	changeColor()
 	
+def setUserDefinedList(val):
+	global userDefinedList
+	userDefinedList.setChecked(val)
+	
+def setAllSystemsList(val):
+	global allSystemsListButton
+	allSystemsListButton.setChecked(val)
+
+def setNearesrList(val):
+	global nearestListButton
+	nearestListButton.setChecked(val)
+	
+def setEarthLikeList(val):
+	global earthLikeListButton
+	earthLikeListButton.setChecked(val)
+
+def setHabitableList(val):
+	global habitableListButton
+	habitableListButton.setChecked(val)
+
+def setSunLikeList(val):
+	global sunLikeListButton
+	sunLikeListButton.setChecked(val)
+	
 # -----------------------------------------------------------------
 # main
 
@@ -130,11 +159,22 @@ visitSystemContainer = visitSystemMenu.addContainer().getContainer()
 visitSystemContainer.setLayout(ContainerLayout.LayoutVertical)
 #visitSystemContainer.setHorizontalAlign(HAlign.AlignLeft)
 
+listsContainer1 = Container.create(ContainerLayout.LayoutHorizontal, visitSystemContainer)
+listsContainer2 = Container.create(ContainerLayout.LayoutHorizontal, visitSystemContainer)
+listsContainer3 = Container.create(ContainerLayout.LayoutHorizontal, visitSystemContainer)
+listsContainer4 = Container.create(ContainerLayout.LayoutHorizontal, visitSystemContainer)
+listsContainer5 = Container.create(ContainerLayout.LayoutHorizontal, visitSystemContainer)
+listsContainer6 = Container.create(ContainerLayout.LayoutHorizontal, visitSystemContainer)
+listsContainer7 = Container.create(ContainerLayout.LayoutHorizontal, visitSystemContainer)
+listsContainer8 = Container.create(ContainerLayout.LayoutHorizontal, visitSystemContainer)
+
+
 optionsMenuContainer = optionsMenu.addContainer().getContainer()
 optionsMenuContainer.setLayout(ContainerLayout.LayoutVertical)
 
 listsContainer = listsMenu.addContainer().getContainer()
 listsContainer.setLayout(ContainerLayout.LayoutVertical)
+
 
 # buttons
 def initButtons():
@@ -184,13 +224,85 @@ def initButtons():
 	
 	
 	# visit system buttons
-	for system in systemList:
-		button = Button.create(visitSystemContainer)
+	counter = 0
+	for i in range(0,6):
+		button = Button.create(listsContainer1)
+		button.setText(systemList[i])
+		button.setCheckable(True)
+		button.setRadio(True)
+		visitSystemButtonList[systemList[i]] = button
+		button.setUIEventCommand('visitSystem()')
+		
+	for i in range(6,11):
+		system = systemList[i]
+		button = Button.create(listsContainer2)
 		button.setText(system)
 		button.setCheckable(True)
 		button.setRadio(True)
 		visitSystemButtonList[system] = button
 		button.setUIEventCommand('visitSystem()')
+
+	for system in systemList:
+		'''
+		if (counter >= 0) and (counter <= 5):
+			button = Button.create(listsContainer1)
+			button.setText(system)
+			button.setCheckable(True)
+			button.setRadio(True)
+			visitSystemButtonList[system] = button
+			button.setUIEventCommand('visitSystem()')
+			
+		if (counter >= 6) and (counter <= 11):
+			button = Button.create(listsContainer2)
+			button.setText(system)
+			button.setCheckable(True)
+			button.setRadio(True)
+			visitSystemButtonList[system] = button
+			button.setUIEventCommand('visitSystem()')
+			'''
+		if (counter >= 12) and (counter <= 17):
+			button = Button.create(listsContainer3)
+			button.setText(system)
+			button.setCheckable(True)
+			button.setRadio(True)
+			visitSystemButtonList[system] = button
+			button.setUIEventCommand('visitSystem()')
+		if (counter >= 18) and (counter <= 23):
+			button = Button.create(listsContainer4)
+			button.setText(system)
+			button.setCheckable(True)
+			button.setRadio(True)
+			visitSystemButtonList[system] = button
+			button.setUIEventCommand('visitSystem()')
+		if (counter >= 24) and (counter <= 29):
+			button = Button.create(listsContainer5)
+			button.setText(system)
+			button.setCheckable(True)
+			button.setRadio(True)
+			visitSystemButtonList[system] = button
+			button.setUIEventCommand('visitSystem()')
+		if (counter >= 30) and (counter <= 35):
+			button = Button.create(listsContainer6)
+			button.setText(system)
+			button.setCheckable(True)
+			button.setRadio(True)
+			visitSystemButtonList[system] = button
+			button.setUIEventCommand('visitSystem()')
+		if (counter >= 36) and (counter <= 41):
+			button = Button.create(listsContainer7)
+			button.setText(system)
+			button.setCheckable(True)
+			button.setRadio(True)
+			visitSystemButtonList[system] = button
+			button.setUIEventCommand('visitSystem()')
+		if (counter >= 42) and (counter <= 47):
+			button = Button.create(listsContainer8)
+			button.setText(system)
+			button.setCheckable(True)
+			button.setRadio(True)
+			visitSystemButtonList[system] = button
+			button.setUIEventCommand('visitSystem()')
+		counter += 1
 	
 	# Lists Buttons
 	# four Lists
@@ -236,6 +348,14 @@ def initButtons():
 	sunLikeListButton.setRadio(True)
 	sunLikeListButton.setUIEventCommand('updateList(4)')
 	
+	# user list
+	global userDefinedList
+	userDefinedList = Button.create(listsContainer)
+	userDefinedList.setText("User Defined")
+	userDefinedList.setCheckable(True)
+	userDefinedList.setRadio(True)
+	userDefinedList.setUIEventCommand('updateList(5)')
+	
 	# reset button
 	global resetButton
 	resetButton = Button.create(optionsMenuContainer)
@@ -245,7 +365,7 @@ def initButtons():
 	# See Visualization
 	global visualizeButton
 	visualizeButton = Button.create(optionsMenuContainer)
-	visualizeButton.setText("Show Relative Position")
+	visualizeButton.setText("Stellar View")
 	visualizeButton.setCheckable(True)
 	visualizeButton.setUIEventCommand('visitVisualization()')
 

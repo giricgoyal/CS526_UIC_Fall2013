@@ -31,20 +31,24 @@ def createVisualization():
 		# set the system name
 		# create the objects
 		theSystem = allSystemsOrbital[system]
-		pos = starLocations[system].pos * orbitScaleFactor * userScaleFactor * 0.0000000001
+		pos = starLocations[system].pos * orbitScaleFactor * userScaleFactor * 0.000000001
 		for name, model in theSystem.iteritems():
 			if theSystem[name].isStar == 1:
 				dot = StaticObject.create("defaultSphere")
 				dot.setPosition(pos)
 				dot.setScale(Vector3(10.0/70, 10.0/70, 10.0/70))
+				
 				if name == "The Sun":
 					dot.setEffect("colored -e red")
 				else:
 					if findInList(system, getDisplayList()) == True:
-						dot.setEffect("colored -e #0000CCCC")
+						dot.setEffect("colored -e #EEEE00CC")
+						#dot.setEffect("textured -v emissive -d " + theSystem[name].texture)
 					else:
+						#dot.setEffect("textured -v emissive -d " + theSystem[name].texture)
 						dot.setEffect("colored -e white")
 				vizContainer.addChild(dot)
+			
 				visualizeDict[system] = dot
 				
 				t1 = Text3D.create('fonts/verdana.ttf', 1, str(name))
@@ -57,7 +61,8 @@ def createVisualization():
 				t1.setColor(colorWhite)
 				orientObjects.append(t1)
 				vizContainer.addChild(t1)
-				
+				visualizeTextDict[system] = t1
+	
 	
 	vizContainer.setPosition(vizPos * overallScaleFactor)
 	
@@ -66,14 +71,18 @@ def createVisualization():
 def changeColor():
 	activeSystem = getActiveSystem()
 	for system, model in visualizeDict.iteritems():
-		visualizeDict[system].setEffect("colored -e white")
+		#visualizeDict[system].setEffect("colored -e white")
 		if system == activeSystem:
 			visualizeDict[system].setEffect("colored -e red")
 		else:
 			if findInList(system, getDisplayList()) == True:
-				visualizeDict[system].setEffect("colored -e #0000CCCC")
+				visualizeDict[system].setEffect("colored -e #EEEE00FF")
+				#visualizeDict[system].setEffect("textured -v emissive -d " + visualizeDict[system].texture)
+				pass
 			else:
 				visualizeDict[system].setEffect("colored -e white")
+				#visualizeDict[system].setEffect("textured -v emissive -d " + visualizeDict[system].texture)
+				pass
 		
 		
 

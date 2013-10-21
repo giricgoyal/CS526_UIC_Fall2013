@@ -335,7 +335,7 @@ habitableList = ["Solar System", "Gl 581", "Kepler-22", "Gl 163", "HD 40307"]
 sunLikeList = ["Solar System", "mu Ara", "Kepler-75", "Kepler-68", "Kepler-22", "Kepler-20", "Kepler-11", "Kepler-10", "HD 96700", "HD 217107", "HD 209458", "HD 20794", "HD 20003", "HD 190360", "HD 142", "HD 136352", "HD 134987", "HD 134060", "HD 10180", "61 Vir", "47 Uma", "24 Sex", "ups And", "14 Her", "55 Cnc", "HD 128311", "HD 215152", "HD 39194", "HD 69830", "alf Cen B", "nu Oph"]
 
 # user list
-userList = systemList
+userList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "ups And", "CoRoT-11", "Kepler-22", "Kepler-11", "Kepler-10", "GJ 1214", "Gl 581", "30 Ari B", "Kepler-39", "HR 8799", "Fomalhaut", "KOI-142", "HD 10180", "Kepler-68", "Kepler-20", "24 Sex", "Kepler-42", "HD 39194", "HD 134987", "HD 60532", "HD 96700", "HD 142", "HD 134060", "HD 215152", "HD 217107", "HD 99492", "GJ 676A", "HD 20794", "HD 128311", "14 Her", "HD 136352", "HD 113538", "HD 190360", "mu Ara", "47 Uma", "Gl 163", "Gliese 876", "55 Cnc", "HD 20003", "GJ 667C", "61 Vir", "HD 69830", "HD 40307"]
 
 orientObjects = []
 
@@ -357,10 +357,12 @@ otherObjectsDict = dict()
 wallSystemsDict = dict()
 wallSystemTextDict = dict()
 visualizeDict = dict()
+visualizeTextDict = dict()
 habiInnerDict = dict()
 habiOuterDict = dict()
 habiWallDict = dict()
 systemInfoDict = dict()
+hitWallDict = dict()
 
 
 # Colors
@@ -397,8 +399,7 @@ camSpeed = 25
 
 # Cave dependent scaling 
 # font
-scaleFactor = 1 if isCave == True else 1 
-fontSize = 0.04 * scaleFactor
+fontSize = 0.04
 
 # Visualization parameters
 vizPos = Vector3(10000000000,10000000000,100000000000)
@@ -453,6 +454,10 @@ def updateTimeFactor(factor):
 	global timeFactor
 	timeFactor = (9 - factor) * 10 if (9 - factor) != 0 else 1
 	
+def updateTextSize(factor):
+	global fontSize
+	fontSize = factor
+	
 
 def getTimeFactor():
 	return timeFactor
@@ -481,6 +486,10 @@ def setDisplayList(listNo):
 	
 def getDisplayList():
 	return displaySystemList
+	
+def getUserList():
+	global userList
+	return userList
 	
 def getScene():
 	global scene

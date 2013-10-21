@@ -7,6 +7,7 @@ from cyclops import *
 from util import *
 from cameraManager import *
 
+
 # ---------------------------------------------------------------------------------
 # main
 
@@ -100,18 +101,20 @@ def addOrbit(orbit, col, thick, system, name):
 	systemNodeDict[system].addChild(circle)
 
 # create each 2D system
-def createEach2DSystem(system, h, v):
-	global panelCounter
+def createEach2DSystem(system, h, v, panelCounter):
 	theSystem = allSystemsOrbital[system]
 	
 	outlineBox = BoxShape.create(2.0, 0.25, 0.001)
 	outlineBox.setPosition(Vector3(-0.5, 0, 0.01))
-	outlineBox.setEffect('colored -e #111111EE')
+	outlineBox.setEffect('colored -e #111122EE')
 	outlineBox.getMaterial().setTransparent(False)
-	infoOutlineBox = BoxShape.create(2.0, 2.0, 0.01)
-	infoOutlineBox.setPosition(Vector3(0,0,0))
-	infoOutlineBox.setEffect('colored -e #111111EE')
-	infoOutlineBox.getMaterial().setTransparent(False)
+	outlineBox.setSelectable(True)
+	outlineBox.setTag(system + " box "+str(panelCounter))
+	hitWallDict[system] = outlineBox
+	#infoOutlineBox = BoxShape.create(2.0, 2.0, 0.01)
+	#infoOutlineBox.setPosition(Vector3(0,0,0))
+	#infoOutlineBox.setEffect('colored -e #111111EE')
+	#infoOutlineBox.getMaterial().setTransparent(False)
 	
 	screenCenter = SceneNode.create(system + " box "+str(panelCounter))
 	infoBox = SceneNode.create(system + " infoBox")
@@ -129,6 +132,7 @@ def createEach2DSystem(system, h, v):
 			#pos2 = Vector3(0.0, -10000.0, - wallLimit * orbitScaleFactor * userScaleFactor * 10)
 		
 		if theSystem[name].isStar == 0:
+			#model = SphereShape.create(0.5, 4)
 			model = StaticObject.create("defaultSphere")
 			model.setScale(Vector3(theSystem[name].radius * XplanetScaleFactor, theSystem[name].radius * XplanetScaleFactor, theSystem[name].radius * XplanetScaleFactor))
 			
@@ -138,7 +142,8 @@ def createEach2DSystem(system, h, v):
 			t1 = Text3D.create('fonts/verdana.ttf', 1, text)
 			t1.setPosition(pos2)
 			t1.yaw(pi/2)
-			t1.setFontResolution(256)
+			#t1.setFontResolution(256)
+			#t1.setFontSize(64)
 			t1.setFontSize(fontSize/1.2)
 			t1.setScale(1.0/0.0000001, 1.0/0.00001, 1.0/0.00001)
 			t1.getMaterial().setTransparent(False)
@@ -160,10 +165,13 @@ def createEach2DSystem(system, h, v):
 			t1 = Text3D.create('fonts/verdana.ttf', 1, text)
 			t1.setPosition(Vector3(0.35,0.075,0))
 			t1.yaw(pi)
-			t1.setFontResolution(256)
+			#t1.setFontResolution(256)
+			#t1.setFontSize(64)
 			t1.setFontSize(fontSize)
+			#t1.setScale(1.0/0.0000001, 1.0/0.00001, 1.0/0.00001)
 			t1.getMaterial().setTransparent(False)
 			t1.getMaterial().setDepthTestEnabled(False)
+			t1.setColor(colorWhite)
 			t1.setColor(starColor(theSystem[name]))
 			screenCenter.addChild(t1)
 			
@@ -202,8 +210,12 @@ def createEach2DSystem(system, h, v):
 	screenCenter.yaw(hLoc * degreeConvert)
 	screenCenter.addChild(sSystem)
 	screenCenter.addChild(outlineBox)
-	screenCenter.setSelectable(True)
-	screenCenter.setBoundingBoxVisible(True)
+	#interactor = ToolkitUtils.setupInteractor("config/interactor")
+	#interactor.setSceneNode(screenCenter)
+	#screenCenter.setSelectable(True)
+	#screenCenter.setBoundingBoxVisible(True)
+	screenCenter.setTag(system + " box "+str(panelCounter))
+	#screenCenter.setScale(2.0, 0.25, 0.001)
 	allSystems.addChild(screenCenter)
 	
 	
@@ -222,7 +234,7 @@ def create2DSystems():
 		#for system in systemList:
 			system = systemList[systemCounter]
 			systemCounter -= 1
-			createEach2DSystem(system, h, v)
+			createEach2DSystem(system, h, v, panelCounter)
 			panelCounter += 1
 		
 # remove the systems from the wall
@@ -238,7 +250,7 @@ def reorderAuto2D():
 		if findInList(name, list) == True:
 			tempList.append(node)
 		else:
-			node.setPosition(0,0,10)
+			node.setPosition(0,100,10)
 	
 	counter = len(tempList)-1
 	for h in xrange(1, 10):
@@ -262,7 +274,8 @@ def create3DSystems():
 	theSystem = dict()
 	for system in systemList:
 		# set the system name 
-		#lightsDict[system].setEnabled = True
+		lightsDict["Solar System"].setEnabled(True)
+		
 		if system == "Solar System":
 			star = "The Sun"
 		else:
@@ -274,11 +287,15 @@ def create3DSystems():
 		#print system + " : " + str(pos2)
 		for name, model in theSystem.iteritems():
 			pos = Vector3(0,0,0)
+			#model = SphereShape.create(1, 4)
 			model = StaticObject.create("defaultSphere")
 			if theSystem[name].isStar == 0:
 				# set the model position depending on the system
 				pos = ((Vector3(0.0, 0.0, -theSystem[name].minorA  * orbitScaleFactor * userScaleFactor)))
 				model.setPosition(pos)
+				# set textures
+				model.getMaterial().setProgram("textured")
+				model.setEffect("textured -d "+theSystem[name].texture)
 				model.setScale(Vector3(theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor))
 			elif theSystem[name].isStar == 1:
 				setHabitableZone(system, name, theSystem[name].starType)
@@ -288,6 +305,11 @@ def create3DSystems():
 				sunDot.setPosition(pos)
 				sunDot.setScale(Vector3(1, 1, 1))
 				systemNodeDict[system].addChild(sunDot)
+				lightsDict[system].setPosition(pos2)
+				# set textures
+				model.getMaterial().setProgram("textured")
+				model.setEffect("textured -v emissive -d "+theSystem[name].texture)
+				
 				'''
 				sunLine = LineSet.create()
 				l = sunLine.addLine()
@@ -298,19 +320,19 @@ def create3DSystems():
 				systemNodeDict[system].addChild(sunLine)
 				'''
 				
-			# set textures
-			model.getMaterial().setProgram("textured")
-			model.setEffect("textured -v emissive -d "+theSystem[name].texture)
+			model.setTag(str(system) + " : " + str(name) + " RotCenter")
+			model.setSelectable(True)
+			
 			activeBodies[name] = model
 			
-			
 			planetCenter = SceneNode.create(str(name) + "PlanetCenter")
-			
 			
 			# deal with the axial tilt of the bodies
 			tiltCenter = SceneNode.create(str(name) + "TiltCenter")
 			planetCenter.addChild(tiltCenter)
 			tiltCenter.addChild(model)
+			if theSystem[name].isStar == 1:
+				tiltCenter.addChild(lightsDict[system])
 			tiltCenter.roll(theSystem[name].inclination/180.0*pi)
 			
 			
@@ -328,9 +350,10 @@ def create3DSystems():
 			
 			#deal with rotating the planets around the sun
 			rotCenter = SceneNode.create(str(system) + " : " + str(name) + " RotCenter")
+			rotCenter.setTag(str(system) + " : " + str(name) + " RotCenter")
 			rotCenter.setPosition(pos2)
 			rotCenter.addChild(planetCenter)
-			rotCenter.setSelectable(True)
+			#rotCenter.setSelectable(True)
 			
 			activeRotCenters[name] = rotCenter
 			systemNodeDict[system].addChild(rotCenter)
@@ -351,7 +374,7 @@ def create3DSystems():
 				else:
 					pos1 = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 			v.setPosition(pos1)
-			v.setFontResolution(120)
+			#v.setFontResolution(120)
 			v.setFontSize(180)
 			v.getMaterial().setDoubleFace(1)
 			v.setFixedSize(False)
@@ -396,7 +419,7 @@ def create3DSystems():
 		gZone.addChild(inner)
 		
 		systemNodeDict[system].addChild(gZone)
-		systemNodeDict[system].addChild(lightsDict[system])
+		#systemNodeDict[system].addChild()
 		
 	universe.setScale(Vector3(overallScaleFactor, overallScaleFactor, overallScaleFactor))
 	universe.setPosition(Vector3(0, 1.5, 1))
@@ -409,7 +432,7 @@ def updateOrbitScale(scale):
 	for system in systemList:
 		theSystem = allSystemsOrbital[system]
 		for name, model in theSystem.iteritems():
-			pos = ((Vector3(0.0, 0.0, -theSystem[name].minorA  * orbitScaleFactor * userScaleFactor)))
+			pos = Vector3(0.0, 0.0, -theSystem[name].minorA  * orbitScaleFactor * userScaleFactor)
 			pos2 = starLocations[system].pos  * orbitScaleFactor * userScaleFactor
 			pos3 = habitableZones[system].habCenter * orbitScaleFactor * userScaleFactor
 			pos1 = habitableZones[system].habWidth * orbitScaleFactor * userScaleFactor * 0.00015
@@ -429,19 +452,23 @@ def updateOrbitScale(scale):
 			else:
 				pos7 = Vector3(0.0,0.0, habitableZones[system].habCenter)
 			#pos7 = Vector3(0.0, 0.0, 48000 - habitableZones[system].habCenter *  orbitScaleFactor * userScaleFactor  * 10)
-			activeBodies[name].setPosition(pos)
+			pos8 = starLocations[system].pos * orbitScaleFactor * userScaleFactor * 0.000000001
+			
 			#activeRotCenters[name].setPosition(pos2)
 			orbitDict[name].setScale(Vector3(pos2_1, 10.0, pos2_1))
 			textDict[name].setPosition(pos4)
 			wallSystemsDict[name].setPosition(pos5)
 			if theSystem[name].isStar == 0:
 				wallSystemTextDict[name].setPosition(pos6)
+				activeBodies[name].setPosition(pos)
 			if name == "Saturn":
 				otherObjectsDict[name].setPosition(pos)
 			habiInnerDict[system].setScale(orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor, 0.3)
 			habiOuterDict[system].setScale(orbitScaleFactor * userScaleFactor, orbitScaleFactor * userScaleFactor, 0.001)
 			habiWallDict[system].setPosition(pos7)
 			habiWallDict[system].setScale( 1,1 ,  orbitScaleFactor * userScaleFactor )
+			visualizeDict[system].setPosition(pos8)
+			visualizeTextDict[system].setPosition(pos8)
 			
 def updatePlanetScale(scale):
 	global planetScaleFactor
@@ -470,15 +497,17 @@ def updateSunScale(scale):
 				pos = Vector3(0, theSystem[name].radius * sunScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
 				textDict[name].setPosition(pos)
 
-def setInfoVisible(val):
+def setInfoVisible(val, name):
 	global infoContainer, planetInfo
 	infoContainer.setVisible(val)
 	infoContainer.setChildrenVisible(val)
+	caveutil.orientWithHead(getCam(), infoContainer)
 	
 	if val == True:
 		planetInfo = SceneNode.create("Planet info")
 		planetInfo.setPosition(Vector3(0,0,0))
 		infoContainer.addChild(planetInfo)
+		showInfo(name)
 		list = getTexts()
 		counter = 0
 		for text in list:
@@ -518,7 +547,8 @@ def createInfoDisplay():
 	infoContainer.addChild(infoDisplayBox)
 	
 	infoContainer.setPosition(xMin, yMax, zMin)
-	infoContainer.yaw(6.5 * 36.0/360.0 * 2 * pi)
+	allSystems.addChild(infoContainer)
+	#infoContainer.yaw(6.5 * 36.0/360.0 * 2 * pi)
 	
 	
 		
@@ -527,7 +557,7 @@ def createInfoDisplay():
 def showInfo(name):
 	global planetInfo, systemInfo
 	global text1, text2, text3, text4, text5, text6, text7, text8, text9, text10
-	
+	print "Step show Info  : " + str(name)
 	if name.find("RotCenter") != -1:
 		print name
 		bodyName = name.strip().split("RotCenter")[0].strip().split(":")[1].strip()
@@ -550,35 +580,35 @@ def showInfo(name):
 		planetInfo.setChildrenVisible(True)
 		systemInfo.setVisible(False)
 		systemInfo.setChildrenVisible(False)
-		if allSystemsOrbital[systemName][name].isStar == 0: 
+		if allSystemsOrbital[systemName][bodyName].isStar == 0: 
 			if minorA != 0.0: 
 				text4 = "Distance to Star: %.3f AU" % (minorA/AUtoKM)
 				infoTextList.append(text4)
 			if rot != 0.0: 
-				text5 = "Rotation Period: " + rot + " days"
+				text5 = "Rotation Period: " + str(rot) + " days"
 				infoTextList.append(text5)
 			if period != 0.0: 
-				text6 = "Revolution Period: " + period + " years"
+				text6 = "Revolution Period: " + str(period) + " years"
 				infoTextList.append(text6)
 		else:
-			text4 = "Star type: " + starType
-			if starAge != 0.0: text5 = "Star Age: " + starAge
+			text4 = "Star type: " + str(starType)
+			if starAge != 0.0: text5 = "Star Age: " + str(starAge)
 		text1 = bodyName + " ( " + systemName + " System )"
 		infoTextList.append(text1)
 		if radius != 0.0: 
 			text2 = "Radius: %.2f AU" % (radius/AUtoKM)
 			infoTextList.append(text2)
 		if mass != "": 
-			text3 = "Mass: " + mass
+			text3 = "Mass: " + str(mass)
 			infoTextList.append(text3)
 		if discovered != 0: 
-			text7 = "Discovered: " + discovered
+			text7 = "Discovered: " + str(discovered)
 			infoTextList.append(text7)
 		if detection != "": 
-			text8 = "Detection Type: " + detection
+			text8 = "Detection Type: " + str(detection)
 			infoTextList.append(text8)
 		if molecules != "": 
-			text9 = "Molecules: " + molecules
+			text9 = "Molecules: " + str(molecules)
 			infoTextList.append(text9)
 		
 	
@@ -618,13 +648,14 @@ def setWallTilePosAfterMove(wandRay, wandPos, objectPos, objectOrient, intersect
 	print "wandPos : " + str(wandPos)
 	name = intersectObj.getName().strip().split("box")[0].strip()
 	
-	if (intersectObj.getPosition().x <= xMin) and (intersectObj.getPosition().x >= xMax):
-		if (intersectObj.getPosition().y <= yMin) and (intersectObj.getPosition().y >= yMax):
+	if (intersectObj.getPosition().x >= xMin) and (intersectObj.getPosition().x <= xMax):
+		if (intersectObj.getPosition().y >= yMin) and (intersectObj.getPosition().y <= yMax):
+			print "visiting system"
 			intersectObj.setPosition(objectPos)
 			intersectObj.setOrientation(objectOrient)
-			visitSystem(name)
+			visitSystem(name.strip())
 		
-		if (intersectObj.getPosition().y <= yMin2) and (intersectObj.getPosition().y >= yMax2):
+		if (intersectObj.getPosition().y >= yMin2) and (intersectObj.getPosition().y <= yMax2):
 			displaySystemList.remove(name)
 			userList = displaySystemList
 			updateList(5)

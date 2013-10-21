@@ -35,6 +35,8 @@ from src.menuManager import *
 from src.visualize import *
 from src.system import *
 from src.input import *
+from src.sound import *
+
 
 
 # ---------------------------------------------------------------
@@ -53,6 +55,7 @@ def initializeScene():
 	scene = getSceneManager()
 	scene.setBackgroundColor(colorBlack)
 	setNearFarZ(0.1, 1000000)
+	scene.displayWand(0,1)
 
 def loadSphereModel():
 	global scene
@@ -73,28 +76,31 @@ def onUpdate(frame, t, dt):
 		obj.setFacingCamera(getCam())
 		#caveutil.orientWithHead(getCam(), obj)
 		
+	'''
 	if getIsMovingTile() == True:
-		setInfoVisible(False)
-		caveutil.positionAtWand(getCam(), getIntersectObj(), wandID, getIntersectDist())
+		setInfoVisible(False, None)
+		caveutil.positionAtWand(getCam(), getIntersectObj(), getWandID(), 3)
 		caveutil.orientWithHead(getCam(), getIntersectObj())
 		print getIntersectObj().getPosition()
 	
-	if getIsMovingTile() == False:
-		wandPos = caveutil.getWandWorldPosition(getCam(), wandID)
-		wandRay = caveutil.getWandRay(getCam(), wandID)
-		intersectObj, intersectDist = caveutil.getNearestIntersectingObject(wandPos, wandRay)
-		if intersectObj != None:
-			name = intersectObj.getName()
-			if name.find("RotCenter") != -1:
-				print name
-				showInfo(name)
-				setInfoVisible(True)
-				if isCave == True: caveutil.positionAtWand(getCam(), getInfoContainer(), wandID, 3)
-			else:
-				setInfoVisible(False)
+	#if getIsMovingTile() == False:
+	wandPos = caveutil.getWandWorldPosition(getCam(), getWandID())
+	wandRay = caveutil.getWandRay(getCam(), getWandID())
+	intersectObj, intersectDist = caveutil.getNearestIntersectingObject(wandPos, wandRay)
+	if intersectObj != None:
+		name = intersectObj.getTag()
+		print name
+		if name.find("RotCenter") != -1:
+			print name
+			#showInfo(name)
+			#setInfoVisible(True, name)
+			if isCave == True: 
+				caveutil.positionAtWand(getCam(), getInfoContainer(), getWandID(), 1)
 		else:
-			setInfoVisible(False)
-		
+			setInfoVisible(False, None)
+	else:
+		setInfoVisible(False, None)
+		'''
 
 # Main ----------------------------------------------------------
 # initialize database
@@ -103,7 +109,6 @@ getData()
 
 
 # lights for each system
-
 
 for system in systemList:
 	light = Light.create()
@@ -141,7 +146,6 @@ for name,model in lightsDict.iteritems():
 		color = colorK
 	lightsDict[name].setColor(color)
 
-
 # initialize camera
 initCam()
 
@@ -155,7 +159,7 @@ if isCave == True: getDefaultCamera().addChild(thingsOnTheWall)
 initializeScene()
 
 # initialize and set skybox
-setSkyBox()
+#setSkyBox()
 
 # load sphere into the scene
 loadSphereModel()
@@ -176,8 +180,10 @@ initButtons()
 #initInput(scene, cam)
 
 # create info display
-createInfoDisplay()
+#createInfoDisplay()
 
+# init sound module
+initSound()
 
 # set update function
 setUpdateFunction(onUpdate)
