@@ -9,8 +9,14 @@
 
 package main;
 
-import utils.Util;
+import java.io.FileNotFoundException;
+import java.util.Hashtable;
 
+import db.DataManager;
+import types.TypeNameIdPair;
+import utils.Colors;
+import utils.Files;
+import utils.Util;
 import processing.core.*;
 import omicronAPI.OmicronAPI;
 
@@ -34,16 +40,28 @@ public class Project3 extends PApplet {
 	TouchListener touchListener;
 	
 	Map map;
+	DataManager dm;
+	
+	
+	Hashtable<String, TypeNameIdPair> generalPowersPair;
 	
 	/**
 	 * initialize the application
+	 * @throws FileNotFoundException 
 	 */
 	void initApp() {
 		Util.font = this.loadFont("Helvetica-Bold-100.vlw");
 		System.out.println("Font set");
 		
+		dm = new DataManager();
+		
+		generalPowersPair = new Hashtable<String, TypeNameIdPair>();
+		generalPowersPair = dm.readPairFile(sketchPath + Files.POWERS_GENERAL);
+		System.out.println("Reading Database 1 Done");
+		
 		map = new Map(this, "WorldMap.svg");
 		System.out.println("map set");
+		map.plotMapColor(generalPowersPair);
 	}
 	
 	public void initOmicron() {
@@ -87,7 +105,7 @@ public class Project3 extends PApplet {
 	public void setup(){
 		
 		size((int)Util.screenW, (int)Util.screenH, JAVA2D);
-		background(0);
+		background(Colors.BACKGROUND_COLOR);
 		
 		if (Util.isWall) {
 			initOmicron();
@@ -104,8 +122,10 @@ public class Project3 extends PApplet {
 	 * @see processing.core.PApplet#draw()
 	 */
 	public void draw(){
-		map.draw();
 		
+		if (Util.isMapOnTop) {
+			map.draw();
+		}
 		
 		if (Util.isWall) {
 			omicronManager.process();
@@ -122,7 +142,8 @@ public class Project3 extends PApplet {
 	 * 	Interaction methods
 	 */
 	public void myPressed(int id, float mx, float my) {
-		
+		System.out.println("mouse Pressed : " + id);
+		//map.plotMapColor(generalPowersPair);
 	}
 	
 	public void myDragged(int id, float mx, float my) {
