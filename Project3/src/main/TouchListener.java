@@ -8,7 +8,7 @@ import omicronAPI.*;
  */
 public class TouchListener implements OmicronTouchListener {
 
-	PApplet parent;
+	private PApplet parent;
 
 	public void setThings(PApplet parent) {this.parent=parent;}
 	

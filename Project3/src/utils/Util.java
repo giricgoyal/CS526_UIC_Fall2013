@@ -52,7 +52,53 @@ public class Util {
 	public static String SOVIET = "Soviet Union";
 	public static String BELLIGERENTS = "Co-Belligerents";
 	
+	public static int fontSmall = (int)scale(4);
 	public static int fontRegular = (int)scale(5);
 	public static int fontMedium = (int)scale(7f);
 	
+	public static float INVALID_LATLON = -999f;
+	
+	public static int monthIndex(String month) {
+		if (month.compareTo("Jan") == 0)
+			return 1;
+		else if (month.compareTo("Feb") == 0) 
+			return 2;
+		else if (month.compareTo("March") == 0)
+			return 3;
+		else if (month.compareTo("April") == 0)
+			return 4;
+		else if (month.compareTo("May") == 0)
+			return 5;
+		else if (month.compareTo("June") == 0)
+			return 6;
+		else if (month.compareTo("July") == 0) 
+			return 7;
+		else if (month.compareTo("Aug") == 0)
+			return 8;
+		else if (month.compareTo("Sept") == 0) 
+			return 9;
+		else if (month.compareTo("Oct") == 0)
+			return 10;
+		else if (month.compareTo("Nov") == 0)
+			return 11;
+		else if (month.compareTo("Dec") == 0)
+			return 12;
+		return 0;
+	}
+	
+	
+	public static boolean isMenuOn = false;
+	public static boolean isConfirm = false;
+	public static boolean isDataButtonsOn = false;
+	public static boolean isMapButtonsOn = false;
+	public static float buttonW = scale(26);
+	public static float buttonH = scale(26);
+	public static float menuH = scale(40);
+	public static float menuW = scale(40);
+	
+	
+	public static boolean isDataOn = false;
+	public static float dataWindowWidth = scale(180);
+	public static float dataWindowHeight = scale(180);
+	public static float dataWindowRadius = scale(1.5f);
 }

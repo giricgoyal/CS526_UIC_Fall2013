@@ -9,10 +9,13 @@
 
 package main;
 
+import java.awt.ScrollPaneAdjustable;
 import java.io.FileNotFoundException;
 import java.util.Hashtable;
 
 import db.DataManager;
+import types.TypeCasualtyData;
+import types.TypeEventsData;
 import types.TypeNameIdPair;
 import utils.Colors;
 import utils.Files;
@@ -36,14 +39,21 @@ public class Project3 extends PApplet {
 	/**
 	 * Variable and object declarations
 	 */	
-	OmicronAPI omicronManager;
-	TouchListener touchListener;
+	private OmicronAPI omicronManager;
+	private TouchListener touchListener;
 	
-	Map map;
-	DataManager dm;
+	private Map map;
+	private DataManager dm;
+	private MenuManager menu;
+	private Data data;
 	
 	
-	Hashtable<String, TypeNameIdPair> generalPowersPair;
+	private Hashtable<String, TypeNameIdPair> generalPowersPair;
+	private Hashtable<String, TypeEventsData> eventsDataPair;
+	private Hashtable<String, TypeCasualtyData> casualtyData;
+	
+	float currentX, currentY;
+	
 	
 	/**
 	 * initialize the application
@@ -57,11 +67,27 @@ public class Project3 extends PApplet {
 		
 		generalPowersPair = new Hashtable<String, TypeNameIdPair>();
 		generalPowersPair = dm.readPairFile(sketchPath + Files.POWERS_GENERAL);
-		System.out.println("Reading Database 1 Done");
+		System.out.println("Reading File " + Files.POWERS_GENERAL + " Done");
+		
+		eventsDataPair = new Hashtable<String, TypeEventsData>();
+		eventsDataPair = dm.readEvents(sketchPath + Files.EVENTS);
+		System.out.println("Reading File " + Files.EVENTS + " Done");
+		
+		casualtyData = new Hashtable<String, TypeCasualtyData>();
+		casualtyData = dm.readDataFile(sketchPath + Files.CASUALTY_DATA);
+		System.out.println("Reading File" + Files.CASUALTY_DATA + " Done");
+		
+		
+		data = new Data(this, 10f, 10f, Util.dataWindowWidth, Util.dataWindowHeight);
+		data.setCasualtyData(casualtyData);
+		
+		menu = new MenuManager(this, 0f, 0f, Util.buttonW, Util.buttonH);
+		menu.setDataVars(data);
 		
 		map = new Map(this, "WorldMap.svg");
 		System.out.println("map set");
 		map.plotMapColor(generalPowersPair);
+		map.setEventsMap(eventsDataPair);
 	}
 	
 	public void initOmicron() {
@@ -83,19 +109,27 @@ public class Project3 extends PApplet {
 		System.out.println("Omicron Initiated");
 	}
 	
+	void clearScreen() {
+		pushStyle();
+		fill(Colors.BACKGROUND_COLOR);
+		rect(0,0,Util.screenW, Util.screenH);
+		popStyle();
+	}
 	
 	void drawGridLines() {
-		pushStyle();
-		stroke(255, 0, 0);
-		strokeWeight(1);
-		line(Util.screenW/6, 0, Util.screenW/6, Util.screenH);
-		line(Util.screenW * 2/6, 0, Util.screenW * 2/6, Util.screenH);
-		line(Util.screenW * 3/6, 0, Util.screenW * 3/6, Util.screenH);
-		line(Util.screenW * 4/6, 0, Util.screenW * 4/6, Util.screenH);
-		line(Util.screenW * 5/6, 0, Util.screenW * 5/6, Util.screenH);
-		line(0, Util.screenH/3, Util.screenW, Util.screenH/3);
-		line(0, Util.screenH * 2/3, Util.screenW, Util.screenH * 2/3);
-		popStyle();
+		if (!Util.isWall) {
+			pushStyle();
+			stroke(255, 0, 0);
+			strokeWeight(1);
+			line(Util.screenW/6, 0, Util.screenW/6, Util.screenH);
+			line(Util.screenW * 2/6, 0, Util.screenW * 2/6, Util.screenH);
+			line(Util.screenW * 3/6, 0, Util.screenW * 3/6, Util.screenH);
+			line(Util.screenW * 4/6, 0, Util.screenW * 4/6, Util.screenH);
+			line(Util.screenW * 5/6, 0, Util.screenW * 5/6, Util.screenH);
+			line(0, Util.screenH/3, Util.screenW, Util.screenH/3);
+			line(0, Util.screenH * 2/3, Util.screenW, Util.screenH * 2/3);
+			popStyle();
+		}
 	}
 	
 	/**
@@ -122,17 +156,17 @@ public class Project3 extends PApplet {
 	 * @see processing.core.PApplet#draw()
 	 */
 	public void draw(){
+		clearScreen();
 		
-		if (Util.isMapOnTop) {
-			map.draw();
-		}
+		//map.draw();
+		data.draw();
 		
+		menu.draw();
+		drawGridLines();
+		
+		// PROCESS OMICRON
 		if (Util.isWall) {
 			omicronManager.process();
-		}
-		
-		if (!Util.isWall) {
-			drawGridLines();
 		}
 	}
 	
@@ -141,13 +175,42 @@ public class Project3 extends PApplet {
 	/**	
 	 * 	Interaction methods
 	 */
+	
+	public void keyPressed() {
+		if (key == 'a'){
+			System.out.println("Menu On");
+			Util.isMenuOn = true;
+			menu.setXY(random(Util.scale(20), Util.scale(600)), random(Util.scale(20), Util.scale(150)));
+		}
+	}
+	
 	public void myPressed(int id, float mx, float my) {
-		System.out.println("mouse Pressed : " + id);
-		//map.plotMapColor(generalPowersPair);
+		System.out.println("mouse Pressed : " + id + " at : " + mx + "," + my);
+		currentX = mx;
+		currentY = my;
+		if (id == 5) {
+			/*
+			if (Util.isMenuOn) {
+				System.out.println("Menu Off");
+				Util.isMenuOn = false;
+			}
+			*/
+			//if (!Util.isMenuOn) {
+				System.out.println("Menu On");
+				Util.isMenuOn = true;
+				menu.setXY(mx, my);
+			//}
+		}
+		if (id == 1 || id == -1) {
+			menu.isInMenu(mx, my);
+		}
+		redraw();
 	}
 	
 	public void myDragged(int id, float mx, float my) {
-		
+		data.isInWindow(mx, my, currentX, currentY);
+		currentX = mx;
+		currentY = my;
 	}
 	
 	public void myClicked(int id, float mx, float my){

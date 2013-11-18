@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="Project3">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../../Applications/eclipse Java"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="Project3.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="lib/core.jar"/>
+        <pathelement location="external-libs/OmicronAPI/library/OmicronAPI.jar"/>
+        <pathelement location="external-libs/processing-libs/core.jar"/>
+        <pathelement location="external-libs/processing-libs/gluegen-rt-natives-linux-amd64.jar"/>
+        <pathelement location="external-libs/processing-libs/gluegen-rt-natives-linux-i586.jar"/>
+        <pathelement location="external-libs/processing-libs/gluegen-rt-natives-macosx-universal.jar"/>
+        <pathelement location="external-libs/processing-libs/gluegen-rt-natives-windows-amd64.jar"/>
+        <pathelement location="external-libs/processing-libs/gluegen-rt-natives-windows-i586.jar"/>
+        <pathelement location="external-libs/processing-libs/gluegen-rt.jar"/>
+        <pathelement location="external-libs/processing-libs/jogl-all-natives-linux-amd64.jar"/>
+        <pathelement location="external-libs/processing-libs/jogl-all-natives-linux-i586.jar"/>
+        <pathelement location="external-libs/processing-libs/jogl-all-natives-macosx-universal.jar"/>
+        <pathelement location="external-libs/processing-libs/jogl-all-natives-windows-amd64.jar"/>
+        <pathelement location="external-libs/processing-libs/jogl-all-natives-windows-i586.jar"/>
+        <pathelement location="external-libs/processing-libs/jogl-all.jar"/>
+        <pathelement location="external-libs/processing-net-libs/library/net.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="Project3.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="Project3 Applet">
+        <java classname="sun.applet.AppletViewer" dir="." failonerror="true" fork="yes">
+            <arg line="Project3 Applet.html"/>
+            <classpath refid="Project3.classpath"/>
+        </java>
+    </target>
+    <target name="Project3">
+        <java classname="main.Project3" failonerror="true" fork="yes">
+            <classpath refid="Project3.classpath"/>
+        </java>
+    </target>
+</project>

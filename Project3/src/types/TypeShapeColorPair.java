@@ -10,9 +10,9 @@ import processing.core.PShape;
  *
  */
 public class TypeShapeColorPair {
-	PShape shape;
-	int color;
-	String name;
+	private PShape shape;
+	private int color;
+	private String name;
 	
 	TypeShapeColorPair() {
 		shape = new PShape();

@@ -8,9 +8,9 @@ package types;
  *
  */
 public class TypeNameIdPair {
-	String name;
-	String id;
-	String side;
+	private String name;
+	private String id;
+	private String side;
 	
 	TypeNameIdPair(){
 		name = null;
