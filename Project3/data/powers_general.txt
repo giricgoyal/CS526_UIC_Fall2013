@@ -1,0 +1,65 @@
+// Allies
+
+Soviet Union	path4123,path3921,path3919,path3923,path4139,path3917,path3881,path3883,path3811,path3809,path3807,path3803,path3801,path3799,path3797,path3795
+United States	path4301,path4295
+United Kingdom	path3953
+France	path4253
+China	path3691
+Poland	path3925
+Canada	path4163
+Australia	path3845
+Yugoslavia	path3913,path3909,path3907,path3903,path3905,path3899
+Greece	path3889,path3891
+Belgium	path3947
+Netherlands	path3945
+New Zealand	path3853
+Norway	path3977
+South Africa	path4109
+Brazil	path4259
+Mexico	path4223
+Czechoslovakia	path3927
+Mongolia	path3697
+Argentina	path4265
+Bolivia	path4261
+Chile	path4327
+Columbia	path4239
+Costa Rica	path4235
+Cuba	path4275
+India	path3779,path3791
+Lebanon	path3819
+Paraguay	path4263
+Algeria	path4011
+Tunisia	path4009
+Morocco	path4013
+
+
+
+// Axis
+
+Germany	path3937
+Japan	path3677,path3683,path3679,path3681
+Italy	path3931,path3933
+Hungary	path3911
+Romania	path3885
+Bulgaria	path3887
+Slovakia	path3915
+Croatia	path3909
+
+
+// Axis Co-belligerents
+
+Finland	path3969
+Thailand	path3729
+Iraq	path3813
+
+
+// Neutral
+
+Ireland	path3963
+Portugal	path3985
+Spain	path3991
+Sweden	path3971
+Switzerland	path3935
+Turkey	path3839
+Uruguay	path4331
+

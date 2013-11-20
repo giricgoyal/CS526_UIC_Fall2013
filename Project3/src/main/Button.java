@@ -102,6 +102,10 @@ public class Button extends BasicControl {
 		this.name=name;
 	}
 	
+	public String getName() {
+		return this.name;
+	}
+	
 	public void setShowClick(){
 		this.showClicked=true;
 	}

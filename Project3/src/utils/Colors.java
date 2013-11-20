@@ -17,6 +17,7 @@ public class Colors {
 	public static int transparentGray = 0x99777777;
 	public static int transparentBlack = 0x99101010;
 	public static int transparentBlue = 0x99e3f2ff;
+	public static int transparent = 0x10111111;
 	
 	public static int helpColor = 0xa01e1e1d;
 	
@@ -62,7 +63,7 @@ public class Colors {
 	public static int MEDIUM_GRAY = 0xff767676;
 	public static int LIGHT_GRAY = 0xffa8a8a6;
 	public static int TEXT_GRAY = 0xff757575;
-	public static int BLACK = 0xff000000;
+	public static int BLACK = 0xdd000000;
 	public static int DARK_ORANGE = 0xffCD6519;
 	public static int DARKER_ORANGE = 0xff854210;
 	public static int DARKERER_ORANGE = 0xff62300C;
@@ -74,10 +75,10 @@ public class Colors {
 	public static int LIGHT_GREEN = 0xdd52923C;
 	public static int DARK_GREEN = 0xdd52bb3c;
 	public static int LIGHT_ORANGE = 0xffEBBD61;
-	public static int WHITE = 0xfff7f7f7;
+	public static int WHITE = 0xddf7f7f7;
 	public static int DARK_WHITE = 0xff999999;
 	public static int RED = 0xddd14C41;
-	public static int DARK_RED = 0xddff4c41;
+	public static int DARK_RED = 0xdd9b4c41;
 	public static int DARKER_RED = 0xddaa4c41;
 	public static int BACKGROUND_COLOR = 0xff1f1f1f;
 	public static int GRAPH_COLOR_1 = 0xff8da940;
@@ -111,12 +112,12 @@ public class Colors {
 		return 0;
 	}
 	
-	public static int TOTAL = DARK_BLUE;
-	public static int TOTAL_DARK = DARKER_BLUE;
-	public static int CIVILIAN = RED;
-	public static int CIVILIAN_DARK = DARK_RED;
-	public static int MILITARY = DARK_GREEN;
-	public static int MILITARY_DARK = LIGHT_GREEN;
+	public static int TOTAL = WHITE;
+	public static int TOTAL_DARK = LIGHT_GRAY;
+	public static int CIVILIAN = 0xff3B6DC2;
+	public static int CIVILIAN_DARK = 0xff2a4e8b;
+	public static int MILITARY = 0xff9b4c41;
+	public static int MILITARY_DARK = 0xffaa4c41;
 	public static int HOLOCAUST = RED;
 	public static int HOLOCAUST_DARK = DARK_RED;
 	

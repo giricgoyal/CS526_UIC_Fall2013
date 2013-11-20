@@ -1,0 +1,29 @@
+//Name	Total Casualties	Military Deaths	Civilian	Holocaust
+Soviet Union	23954	9750	14204	1000
+China	15000	3500	11500	0
+Germany	7728	5533	2195	165
+Poland	5720	240	5480	3000
+Japan	2700	2120	580	0
+India	2087	87	2000	0
+Yugoslavia	1027	446	581	60
+Romania	833	300	533	350
+Hungary	580	200	380	250
+France	567.6	217.6	350	65
+Greece	560	60	500	65
+Italy	456	301.4	154.6	8
+Great Britain	449.8	382.7	67.1	0
+United States	428.5	407	21.5	0
+Czechoslovakia	345	7	338	250
+Netherlands	301	21	280	105
+Austria	405	80	325	65
+Finland	97	95	2	0
+Belgium	86.1	12.1	74	25
+Canada	45.3	45.3	0	0
+Australia	40.5	39.8	0.7	0
+Bulgaria	25	22	3	48
+New Zealand	11.9	11.9	0	0
+South Africa	11.9	11.9	0	0
+Norway	9.5	3	6.5	0.9
+Spain	4.5	4.5	0	0
+Denmark	3.2	2.1	1.1	0
+Philippines	118	57	61	0

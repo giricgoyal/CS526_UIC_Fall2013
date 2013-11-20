@@ -8,6 +8,7 @@ import java.util.Hashtable;
 
 import processing.core.PApplet;
 import types.TypeCasualtyData;
+import utils.Colors;
 import utils.Util;
 
 /**
@@ -23,6 +24,9 @@ public class Data {
 	private DataPlot holocaustData;
 	
 	private ArrayList<DataPlot> allPlots;
+	private ArrayList<DataPlot> allPiCharts;
+	
+	public boolean isMoving;
 	
 	/**
 	 * @param parent
@@ -39,12 +43,20 @@ public class Data {
 		this.h = h;
 		
 		allPlots = new ArrayList<DataPlot>();
+		allPiCharts = new ArrayList<DataPlot>();
 		
 		allData = new DataPlot(this.parent, this.x, this.y, this.w, this.h);
 		allPlots.add(allData);
 		
 		holocaustData = new DataPlot(parent, this.x, this.y, this.w, this.h);
 		allPlots.add(holocaustData);
+		
+		for (String s : Util.buttonCountries) {
+			DataPlot tempData = new DataPlot(parent, this.x, this.y, this.w/4.5f, this.h/3);
+			tempData.setPiChart(true);
+			tempData.setDataName(s);
+			allPiCharts.add(tempData);
+		}
 		
 		System.out.println("Data Setup Done");
 	}
@@ -54,6 +66,9 @@ public class Data {
 		allData.setDataName("all Data");
 		holocaustData.setData(casualtyData);
 		holocaustData.setDataName("holocaust");
+		for (DataPlot dp : allPiCharts) {
+			dp.setData(casualtyData);
+		}
 	}
 	
 	public void draw() {
@@ -63,28 +78,74 @@ public class Data {
 					d.draw();
 				}
 			}
+			for (DataPlot dp : allPiCharts) {
+				if (dp.isVisible) {
+					dp.draw();
+				}
+			}
+			if (this.isMoving) {
+				this.parent.pushStyle();
+				this.parent.fill(Colors.transparent);
+				this.parent.stroke(Colors.RED);
+				this.parent.strokeWeight(Util.scale(3));
+				this.parent.rect(0,0,Util.screenW, Util.screenH);
+				this.parent.popStyle();
+			}
 		}
 	}
 	
 	public void setVisible(boolean val, String str) {
 		if (str.compareToIgnoreCase("allData") == 0) {
-			allData.isVisible = true;
-			allData.myX = Util.scale(10);
-			allData.myY = Util.scale(10);
+			if (!allData.isVisible) {
+				allData.isVisible = val;
+				allData.myX = Util.scale(10);
+				allData.myY = Util.scale(10);
+			}
 		}
 		if (str.compareToIgnoreCase("holocaust") == 0) {
-			holocaustData.isVisible = true;
-			holocaustData.myX = Util.scale(10);
-			holocaustData.myY = Util.scale(10);
+			if (!holocaustData.isVisible) {
+				holocaustData.isVisible = val;
+				holocaustData.myX = Util.scale(450);
+				holocaustData.myY = Util.scale(10);
+			}
+		}
+		if (str.compareToIgnoreCase("") == 0) {
+			allData.isVisible = val;
+			holocaustData.isVisible = val;
+			for (DataPlot d: allPiCharts) {
+				d.isVisible = val;
+			}
+		}
+		for (DataPlot s : allPiCharts) {
+			if (str.compareToIgnoreCase(s.getDataName()) == 0) {
+				if (!s.isVisible) {
+					s.isVisible = val;
+					s.myX = parent.random(Util.screenW * 2 / 6, Util.screenW * 4 / 6);
+					s.myY = parent.random(0, Util.screenH * 2 / 3);
+				}
+			}
 		}
 	}
 	
-	public void isInWindow(float posX, float posY, float currentX, float currentY) {
+	public boolean isInWindow(float posX, float posY, float currentX, float currentY) {
 		if (allData.isInRectangle(posX, posY)) {
 			allData.moveWindow(posX, posY, currentX, currentY);
+			this.isMoving = true;
+			return true;
 		}
 		if (holocaustData.isInRectangle(posX, posY)) {
 			holocaustData.moveWindow(posX, posY, currentX, currentY);
+			this.isMoving = true;
+			return true;
 		}
+		for (DataPlot dp : allPiCharts) {
+			if (dp.isInRectangle(posX, posY)) {
+				System.out.println("In : "  + dp.getDataName());
+				dp.moveWindow(posX, posY, currentX, currentY);
+				this.isMoving = true;
+				return true;
+			}
+		}
+		return false;
 	}
 }

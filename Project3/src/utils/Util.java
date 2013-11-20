@@ -9,6 +9,7 @@ package utils;
  */
 
 
+import main.Map;
 import main.Project3;
 import processing.core.*;
 
@@ -16,7 +17,7 @@ import processing.core.*;
 public class Util {
 	PApplet parent;
 	
-	public static boolean isWall = false;
+	public static boolean isWall = true;
 	
 	Util(PApplet p){
 		this.parent = p;
@@ -24,7 +25,7 @@ public class Util {
 	
 	public static float scale(float pixel) {
 		if (isWall) {
-			return pixel*12;
+			return pixel*6;
 		}
 		else {
 			return pixel*2;
@@ -91,14 +92,20 @@ public class Util {
 	public static boolean isConfirm = false;
 	public static boolean isDataButtonsOn = false;
 	public static boolean isMapButtonsOn = false;
+	public static boolean isCompareOptionsOn = false;
+	public static int listNo = 0;
 	public static float buttonW = scale(26);
 	public static float buttonH = scale(26);
-	public static float menuH = scale(40);
-	public static float menuW = scale(40);
+	public static float menuH = scale(35);
+	public static float menuW = scale(50);
 	
 	
 	public static boolean isDataOn = false;
 	public static float dataWindowWidth = scale(180);
 	public static float dataWindowHeight = scale(180);
 	public static float dataWindowRadius = scale(1.5f);
+
+	public static String buttonCountries[] = {"Australia","Austria","Belgium","Bulgaria","Canada","China","Czechoslovakia","Denmark","Finland","France","Germany","Great Britain","Greece","Hungary","India","Italy","Japan","Netherlands","New Zealand","Norway","Philippines","Poland","Romania","South Africa","Soviet Union","Spain","United States","Yugoslavia"};
+	
+	public static Map mapObj;
 }

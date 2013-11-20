@@ -17,10 +17,12 @@ import db.DataManager;
 import types.TypeCasualtyData;
 import types.TypeEventsData;
 import types.TypeNameIdPair;
+import types.TypeTouch;
 import utils.Colors;
 import utils.Files;
 import utils.Util;
 import processing.core.*;
+import processing.net.*;
 import omicronAPI.OmicronAPI;
 
 @SuppressWarnings("serial")
@@ -42,7 +44,7 @@ public class Project3 extends PApplet {
 	private OmicronAPI omicronManager;
 	private TouchListener touchListener;
 	
-	private Map map;
+	private Map mapObj;
 	private DataManager dm;
 	private MenuManager menu;
 	private Data data;
@@ -60,7 +62,8 @@ public class Project3 extends PApplet {
 	 * @throws FileNotFoundException 
 	 */
 	void initApp() {
-		Util.font = this.loadFont("Helvetica-Bold-100.vlw");
+		Util.font = this.loadFont(sketchPath + "/data/Helvetica-Bold-100.vlw");
+		System.out.println(sketchPath + "/data/Helvetica-Bold-100.vlw");
 		System.out.println("Font set");
 		
 		dm = new DataManager();
@@ -84,10 +87,11 @@ public class Project3 extends PApplet {
 		menu = new MenuManager(this, 0f, 0f, Util.buttonW, Util.buttonH);
 		menu.setDataVars(data);
 		
-		map = new Map(this, "WorldMap.svg");
+		mapObj = new Map(this, "WorldMap.svg");
 		System.out.println("map set");
-		map.plotMapColor(generalPowersPair);
-		map.setEventsMap(eventsDataPair);
+		mapObj.plotMapColor(generalPowersPair);
+		mapObj.setEventsMap(eventsDataPair);
+		Util.mapObj = mapObj;
 	}
 	
 	public void initOmicron() {
@@ -100,7 +104,7 @@ public class Project3 extends PApplet {
 		omicronManager.setFullscreen(true);
 
 		// Make the connection to the tracker machine
-		omicronManager.ConnectToTracker(7001, 7340, "131.193.77.159");
+		omicronManager.connectToTracker(7001, 7340, "131.193.77.159");
 		// Create a listener to get events
 		touchListener = new TouchListener();
 		touchListener.setThings(this);
@@ -147,7 +151,7 @@ public class Project3 extends PApplet {
 		
 		initApp();
 		System.out.println("App setup DONE");
-		
+		mapObj.draw();
 	}
 	
 	
@@ -156,9 +160,10 @@ public class Project3 extends PApplet {
 	 * @see processing.core.PApplet#draw()
 	 */
 	public void draw(){
-		clearScreen();
-		
-		//map.draw();
+		if (!Util.isMapOnTop) {
+			clearScreen();
+		}
+	
 		data.draw();
 		
 		menu.draw();
@@ -176,6 +181,17 @@ public class Project3 extends PApplet {
 	 * 	Interaction methods
 	 */
 	
+	int touchID1;
+	int touchID2;
+	PVector initTouchPos = new PVector();
+	PVector initTouchPos2 = new PVector();
+	PVector lastTouchPos = new PVector();
+	PVector lastTouchPos2 = new PVector();
+	int mapDragHack=1;
+	
+	@SuppressWarnings("rawtypes")
+	Hashtable touchList;
+	
 	public void keyPressed() {
 		if (key == 'a'){
 			System.out.println("Menu On");
@@ -188,21 +204,29 @@ public class Project3 extends PApplet {
 		System.out.println("mouse Pressed : " + id + " at : " + mx + "," + my);
 		currentX = mx;
 		currentY = my;
-		if (id == 5) {
-			/*
-			if (Util.isMenuOn) {
-				System.out.println("Menu Off");
-				Util.isMenuOn = false;
+		if (Util.isWall) {
+			System.out.println("Touches : " + touchList.size());
+			if (touchList.size() == 5) {
+				/*
+				if (Util.isMenuOn) {
+					System.out.println("Menu Off");
+					Util.isMenuOn = false;
+				}
+				*/
+				//if (!Util.isMenuOn) {
+					System.out.println("Menu On");
+					Util.isMenuOn = true;
+					menu.setXY(mx, my);
+				//}
 			}
-			*/
-			//if (!Util.isMenuOn) {
-				System.out.println("Menu On");
-				Util.isMenuOn = true;
-				menu.setXY(mx, my);
-			//}
+			if (touchList.size() == 1) {
+				menu.isInMenu(mx, my);
+			}
 		}
-		if (id == 1 || id == -1) {
-			menu.isInMenu(mx, my);
+		else {
+			if (id == -1) {
+				menu.isInMenu(mx, my);
+			}
 		}
 		redraw();
 	}
@@ -218,31 +242,49 @@ public class Project3 extends PApplet {
 	}
 	
 	public void myReleased(int id, float mx, float my) {
+		if (Util.isWall)
+			touchList.remove(id);
 		
+		if (data.isMoving) {
+			data.isMoving = false;
+		}
 	}
 	
 	public void mouseDragged() {
-		if (!Util.isWall)
-		myDragged(-1, mouseX, mouseY);
+		if (!Util.isWall) {
+			myDragged(-1, mouseX, mouseY);
+		}
 	}
 
 	public void mousePressed() {
-		if (!Util.isWall)
-		myPressed(-1, mouseX, mouseY);
+		if (!Util.isWall) {
+			myPressed(-1, mouseX, mouseY);
+		}
 	}
 
 	public void mouseClicked() {
-		if (!Util.isWall) 
-		myClicked(-1, mouseX, mouseY);
+		if (!Util.isWall) {
+			myClicked(-1, mouseX, mouseY);
+		}
 	}
 
 	public void mouseReleased() {
-		if (!Util.isWall)
-		myReleased(-1, mouseX, mouseY);
+		if (!Util.isWall) {
+			myReleased(-1, mouseX, mouseY);
+		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void touchDown(int ID, float xPos, float yPos, float xWidth,
 			float yWidth) {
+		TypeTouch t = new TypeTouch(ID, xPos, yPos, xWidth, yWidth);
+		touchList.put(ID,t);
+		System.out.println("Added Touch "+ID);
+		
+		pushStyle();
+		noFill();
+		stroke(255,0,0);
+		ellipse(xPos, yPos, xWidth *2, yWidth * 2);
 		myPressed(ID, xPos, yPos);
 	}
 	
