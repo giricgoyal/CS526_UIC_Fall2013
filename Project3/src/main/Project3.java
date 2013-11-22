@@ -112,6 +112,7 @@ public class Project3 extends PApplet {
 		mapObj.plotMapColor(generalPowersPair);
 		mapObj.setEventsMap(eventsDataPair);
 		mapObj.setFactsList(factsData);
+		mapObj.loadBulletImage(sketchPath + Files.BULLET_HOLE); 
 		Util.mapObj = mapObj;
 	}
 	
@@ -187,6 +188,17 @@ public class Project3 extends PApplet {
 		//drawOnce();
 		Util.timer++;
 		Util.timer2++;
+		if (Util.timer2 % (Util.frameRate) == 0) {
+			if (!Util.isDataOn && !Util.isMenuOn)
+				Util.factIndex++;
+			if (Util.factIndex >= factsData.size()) {
+				Util.factIndex = 0;
+			}
+		}
+		if (!Util.isDataOn && !Util.isMenuOn) {
+			mapObj.drawFacts();
+			mapObj.drawAbout();
+		}
 		if (Util.isMapAnimationOn) {
 			if (Util.isPlaying == Util.PLAY) {
 				if (Util.timer % (Util.frameRate * Util.speed) == 0) {
@@ -198,15 +210,7 @@ public class Project3 extends PApplet {
 			}
 		}
 		
-		if (Util.timer2 % (Util.frameRate) == 0) {
-			if (!Util.isDataOn && !Util.isMenuOn)
-				Util.factIndex++;
-			if (Util.factIndex >= factsData.size()) {
-				Util.factIndex = 0;
-			}
-		}
-		if (!Util.isDataOn && !Util.isMenuOn)
-			mapObj.drawFacts();
+		
 		// PROCESS OMICRON
 		if (Util.isWall) {
 			omicronManager.process();
@@ -224,7 +228,10 @@ public class Project3 extends PApplet {
 		clearScreen();
 		mapObj.draw();
 		data.draw();
-		mapObj.drawFacts();
+		if (!Util.isDataOn) {
+			mapObj.drawFacts();
+			mapObj.drawAbout();
+		}
 		menu.draw();
 		drawGridLines();
 	}
@@ -289,6 +296,7 @@ public class Project3 extends PApplet {
 		if (Util.onScreenData == 0) {
 			Util.isMapAnimationOn = false;
 			Util.isMapOnTop = true;
+			Util.isDataOn = false;
 		}
 		drawOnce();
 		//redraw();

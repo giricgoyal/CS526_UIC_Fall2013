@@ -17,6 +17,7 @@ public class Colors {
 	public static int transparentGray = 0x99777777;
 	public static int transparentBlack = 0x99101010;
 	public static int transparentBlue = 0x99e3f2ff;
+	public static int transparentRed = 0x99ffd3d3;
 	public static int transparent = 0x10111111;
 	
 	public static int helpColor = 0xa01e1e1d;

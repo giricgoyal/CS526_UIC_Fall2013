@@ -16,6 +16,7 @@ import utils.Colors;
 import utils.Util;
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PImage;
 import processing.core.PShape;
 
 /**
@@ -33,6 +34,8 @@ public class Map {
 	private ArrayList<String> factsList;
 	private int keyCounter;
 	
+	private PImage bulletHole;
+	
 	public Map(PApplet p, String file) {
 		this.parent = p;
 		map = this.parent.loadShape(file);
@@ -44,6 +47,8 @@ public class Map {
 		ht = new Hashtable<String, TypeShapeColorPair>();
 		eventsDataHt = new Hashtable<Integer, TypeEventsData>();
 		factsList = new ArrayList<String>();
+		
+		bulletHole = new PImage();
 		keyCounter = 1;
 	}
 	
@@ -191,7 +196,7 @@ public class Map {
 		parent.noStroke();
 		parent.rect(Util.screenW * 5 / 6 + Util.scale(1), 0 + Util.scale(1), Util.screenW / 6 - Util.scale(2), Util.screenH - Util.scale(2), Util.scale(5));
 		
-		parent.fill(Colors.DARK_BLUE);
+		parent.fill(Colors.DARKERER_BLUE);
 		parent.stroke(Colors.DARKER_BLUE);
 		parent.strokeWeight(Util.scale(0.5f));
 		parent.rect(Util.screenW * 5 / 6 + Util.scale(2), 0 + Util.scale(2), Util.screenW / 6 - Util.scale(4), Util.scale(12), Util.scale(5));
@@ -201,17 +206,47 @@ public class Map {
 		parent.textAlign(PConstants.CENTER, PConstants.CENTER);
 		parent.text("Did You Know?", Util.screenW *5/6 + Util.screenW / 12, Util.scale(3) + Util.scale(6f));
 		
-		parent.fill(Colors.DARK_BLUE);
+		parent.fill(Colors.DARKERER_BLUE);
 		parent.stroke(Colors.DARKER_BLUE);
 		parent.strokeWeight(Util.scale(0.5f));
-		parent.rect(Util.screenW * 5 / 6 + Util.scale(2), 0 + Util.scale(15), Util.screenW / 6 - Util.scale(4), Util.screenH - Util.scale(17), Util.scale(5));
+		parent.rect(Util.screenW * 5 / 6 + Util.scale(2), 0 + Util.scale(16), Util.screenW / 6 - Util.scale(4), Util.screenH - Util.scale(18.5f), Util.scale(5));
 		
 		parent.fill(Colors.WHITE);
 		parent.textSize(Util.fontRegular2);
 		parent.textAlign(PConstants.LEFT, PConstants.TOP);
 		parent.text(factsList.get(Util.factIndex), Util.screenW * 5 / 6 + Util.scale(7), Util.scale(20), Util.screenW / 6 - Util.scale(18), Util.screenH - Util.scale(17));
+	
+		parent.image(bulletHole, Util.screenW * 5/6 + Util.screenW /12, Util.screenH - Util.scale(20));
 	}
 	
+	
+	public void drawAbout() {
+		parent.pushStyle();
+		parent.fill(Colors.DARK_GRAY);
+		parent.noStroke();
+		parent.rect(0 + Util.scale(1), 0 + Util.scale(1), Util.screenW / 6 - Util.scale(2), Util.screenH - Util.scale(2), Util.scale(5));
+		
+		parent.fill(Colors.DARKERER_BLUE);
+		parent.stroke(Colors.DARKER_BLUE);
+		parent.strokeWeight(Util.scale(0.5f));
+		parent.rect(0 + Util.scale(2), 0 + Util.scale(2), Util.screenW / 6 - Util.scale(4), Util.scale(18), Util.scale(5));
+		
+		parent.fill(Colors.LIGHT_GRAY);
+		parent.textSize(Util.fontMedium);
+		parent.textAlign(PConstants.CENTER, PConstants.CENTER);
+		parent.text("I Can See Clearly Now:\nWorld War II",Util.screenW / 12, Util.scale(3) + Util.scale(9f));
+		
+		parent.fill(Colors.DARKERER_BLUE);
+		parent.stroke(Colors.DARKER_BLUE);
+		parent.strokeWeight(Util.scale(0.5f));
+		parent.rect(0 + Util.scale(2), 0 + Util.scale(22), Util.screenW / 6 - Util.scale(4), Util.screenH - Util.scale(24.5f), Util.scale(5));
+		
+		parent.fill(Colors.WHITE);
+		parent.textSize(Util.fontRegular2);
+		parent.textAlign(PConstants.LEFT, PConstants.TOP);
+		parent.text(factsList.get(Util.factIndex), Util.scale(7), Util.scale(25), Util.screenW / 6 - Util.scale(18), Util.screenH - Util.scale(17));
+		parent.popStyle();
+	}
 	
 	@SuppressWarnings("static-access")
 	public void draw() {
@@ -347,6 +382,10 @@ public class Map {
 				this.eventsDataHt.put(key, new TypeEventsData(id, dd, mm, yyyy, date, name, description, file, lat, lon, tempShapeColorPairHt, tempNameIdHt));
 			}
 		}
+	}
+	
+	public void loadBulletImage(String file) {
+		this.bulletHole = parent.loadImage(file);
 	}
 	
 	public void setFactsList(ArrayList<String> factsList) {

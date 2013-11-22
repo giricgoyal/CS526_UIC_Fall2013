@@ -17,7 +17,7 @@ import processing.core.*;
 public class Util {
 	PApplet parent;
 	
-	public static boolean isWall = false;
+	public static boolean isWall = true;
 	
 	Util(PApplet p){
 		this.parent = p;
