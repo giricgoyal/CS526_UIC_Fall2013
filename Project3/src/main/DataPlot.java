@@ -374,6 +374,8 @@ public class DataPlot extends BasicControl {
 
 			if (centerX < 0 || centerX > Util.screenW || centerY < 0 || centerY > Util.screenH) {
 				this.isVisible = false;
+				Util.onScreenData--;
+				System.out.println("On screen objects : " + Util.onScreenData);
 				return false;
 			}
 			return true;

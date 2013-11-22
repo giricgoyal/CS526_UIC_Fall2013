@@ -100,6 +100,8 @@ public class Data {
 				allData.isVisible = val;
 				allData.myX = Util.scale(10);
 				allData.myY = Util.scale(10);
+				Util.onScreenData++;
+				System.out.println("On screen objects : " + Util.onScreenData);
 			}
 		}
 		if (str.compareToIgnoreCase("holocaust") == 0) {
@@ -107,6 +109,8 @@ public class Data {
 				holocaustData.isVisible = val;
 				holocaustData.myX = Util.scale(450);
 				holocaustData.myY = Util.scale(10);
+				Util.onScreenData++;
+				System.out.println("On screen objects : " + Util.onScreenData);
 			}
 		}
 		if (str.compareToIgnoreCase("") == 0) {
@@ -115,6 +119,10 @@ public class Data {
 			for (DataPlot d: allPiCharts) {
 				d.isVisible = val;
 			}
+			if (!val){
+				Util.onScreenData = 0;
+				System.out.println("On screen objects : " + Util.onScreenData);
+			}
 		}
 		for (DataPlot s : allPiCharts) {
 			if (str.compareToIgnoreCase(s.getDataName()) == 0) {
@@ -122,6 +130,9 @@ public class Data {
 					s.isVisible = val;
 					s.myX = parent.random(Util.screenW * 2 / 6, Util.screenW * 4 / 6);
 					s.myY = parent.random(0, Util.screenH * 2 / 3);
+					Util.onScreenData++;
+					System.out.println("On screen objects : " + Util.onScreenData);
+					break;
 				}
 			}
 		}
@@ -129,20 +140,19 @@ public class Data {
 	
 	public boolean isInWindow(float posX, float posY, float currentX, float currentY) {
 		if (allData.isInRectangle(posX, posY)) {
-			allData.moveWindow(posX, posY, currentX, currentY);
-			this.isMoving = true;
+			boolean val = allData.moveWindow(posX, posY, currentX, currentY);
+			this.isMoving = val;
 			return true;
 		}
 		if (holocaustData.isInRectangle(posX, posY)) {
-			holocaustData.moveWindow(posX, posY, currentX, currentY);
-			this.isMoving = true;
+			boolean val = holocaustData.moveWindow(posX, posY, currentX, currentY);
+			this.isMoving = val;
 			return true;
 		}
 		for (DataPlot dp : allPiCharts) {
 			if (dp.isInRectangle(posX, posY)) {
-				System.out.println("In : "  + dp.getDataName());
-				dp.moveWindow(posX, posY, currentX, currentY);
-				this.isMoving = true;
+				boolean val = dp.moveWindow(posX, posY, currentX, currentY);
+				this.isMoving = val;
 				return true;
 			}
 		}

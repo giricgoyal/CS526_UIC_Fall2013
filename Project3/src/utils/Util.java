@@ -17,7 +17,7 @@ import processing.core.*;
 public class Util {
 	PApplet parent;
 	
-	public static boolean isWall = true;
+	public static boolean isWall = false;
 	
 	Util(PApplet p){
 		this.parent = p;
@@ -25,7 +25,7 @@ public class Util {
 	
 	public static float scale(float pixel) {
 		if (isWall) {
-			return pixel*6;
+			return pixel*12;
 		}
 		else {
 			return pixel*2;
@@ -44,8 +44,6 @@ public class Util {
 	
 	
 	public static PFont font;
-	
-	public static boolean isMapOnTop = true;
 	
 	public static String ALLIES = "Allies";
 	public static String AXIS = "Axis";
@@ -88,10 +86,12 @@ public class Util {
 	}
 	
 	
+	public static boolean isMapOnTop = true;
 	public static boolean isMenuOn = false;
 	public static boolean isConfirm = false;
 	public static boolean isDataButtonsOn = false;
 	public static boolean isMapButtonsOn = false;
+	public static boolean isMapAnimationOn = false;
 	public static boolean isCompareOptionsOn = false;
 	public static int listNo = 0;
 	public static float buttonW = scale(26);
@@ -108,4 +108,13 @@ public class Util {
 	public static String buttonCountries[] = {"Australia","Austria","Belgium","Bulgaria","Canada","China","Czechoslovakia","Denmark","Finland","France","Germany","Great Britain","Greece","Hungary","India","Italy","Japan","Netherlands","New Zealand","Norway","Philippines","Poland","Romania","South Africa","Soviet Union","Spain","United States","Yugoslavia"};
 	
 	public static Map mapObj;
+	
+	public static int onScreenData = 0;
+	
+	public static int STOP = 0;
+	public static int PLAY = 1;
+	public static int PAUSE = 2;
+	public static int isPlaying = STOP;
+	public static int frameRate = 60;
+	public static int timer = 0;
 }

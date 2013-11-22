@@ -197,10 +197,10 @@ public class Map {
 			parent.shape(map, Util.screenW/6, 0);
 			map.enableStyle();
 			
-			if (!this.ht.isEmpty()) {
+			if (!Util.isMapAnimationOn) {
 				drawOverViewMap();
 			}
-			else if (!this.eventsDataHt.isEmpty()){
+			else {
 				drawEventsMap();
 			}
 			/*

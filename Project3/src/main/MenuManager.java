@@ -48,6 +48,9 @@ public class MenuManager {
 	private Button list3;
 	private Button list4;
 	private Button showMap;
+	private Button timelineButton;
+	private PlayButton playButton;
+	private StopButton stopButton;
 	
 	private Data dataVar;
 	
@@ -126,6 +129,14 @@ public class MenuManager {
 		showMap.setButton(Colors.button_green, true, true, Colors.button_background, "Show Map");
 		buttonsUpperMap.add(showMap);
 		
+		timelineButton = new Button(parent, this.x, this.y, this.buttonW, this.buttonH);
+		timelineButton.setButton(Colors.button_green, true, true, Colors.button_background, "Timeline");
+		buttonsUpperMap.add(timelineButton);
+		
+		playButton = new PlayButton(parent, this.x, this.y, this.buttonW, this.buttonH);
+		stopButton = new StopButton(parent, this.x, this.y, this.buttonW, this.buttonH);
+		
+		
 		for (int i=0; i<Util.buttonCountries.length; i++) {
 			Button tempButton = new Button(parent, this.x, this.y, this.buttonW, this.buttonH);
 			tempButton.setButton(Colors.button_green, true, true, Colors.button_background, Util.buttonCountries[i]);
@@ -184,6 +195,8 @@ public class MenuManager {
 		
 		connectionsUpperMap.add(new ConnectObjects(this.parent, cancelButton, removeAllMap, Colors.button_background, Colors.button_background));
 		connectionsUpperMap.add(new ConnectObjects(this.parent, cancelButton, showMap, Colors.button_background, Colors.button_background));
+		connectionsUpperMap.add(new ConnectObjects(this.parent, cancelButton, timelineButton, Colors.button_background, Colors.button_background));
+		
 		
 		System.out.println("Menu setup Done");
 	}
@@ -209,6 +222,7 @@ public class MenuManager {
 		
 		removeAllMap.setXY(this.x +(Util.menuW * PApplet.cos(PApplet.radians((++upperMapCount) * buttonsUpperMapAngle))), this.y - (Util.menuH * PApplet.sin(PApplet.radians(upperMapCount * buttonsUpperMapAngle))));
 		showMap.setXY(this.x +(Util.menuW * PApplet.cos(PApplet.radians((++upperMapCount) * buttonsUpperMapAngle))), this.y - (Util.menuH * PApplet.sin(PApplet.radians(upperMapCount * buttonsUpperMapAngle))));
+		timelineButton.setXY(this.x +(Util.menuW * PApplet.cos(PApplet.radians((++upperMapCount) * buttonsUpperMapAngle))), this.y - (Util.menuH * PApplet.sin(PApplet.radians(upperMapCount * buttonsUpperMapAngle))));
 		
 		
 		for (int i=0; i<compareButtonList.size(); i++) {
@@ -226,6 +240,13 @@ public class MenuManager {
 	}
 	
 	public void draw() {
+		if (Util.isMapAnimationOn && !Util.isDataOn) {
+			this.parent.pushStyle();
+			this.parent.fill(Colors.transparentBlack);
+			this.parent.rect(Util.screenW / 6, 0, Util.screenW * 4 /6, Util.screenH);
+			this.parent.popStyle();
+			playButton.draw();
+		}
 		if (Util.isMenuOn) {
 			parent.pushStyle();
 			parent.fill(Colors.transparentGray);
@@ -301,6 +322,22 @@ public class MenuManager {
 		this.parent.popStyle();
 	}
 	
+	void resetEverySwitch(boolean val) {
+		clear();
+		Util.isMapOnTop = val;
+		Util.isMenuOn = val;
+		dataVar.setVisible(val, "");
+		Util.isCompareOptionsOn = val;
+		Util.isConfirm = val;
+		Util.isMapButtonsOn = val;
+		Util.isConfirm = val;
+		Util.isDataButtonsOn = val;
+		Util.listNo = 0;
+		Util.isMapAnimationOn = val;
+		quitButton.setName("Quit");
+		cancelButton.setName("Close");
+	}
+	
 	public void isInMenu(float posX, float posY) {
 		if (Util.isMenuOn && Util.listNo == 0) {
 			if (cancelButton.checkIn(posX, posY)) {
@@ -324,7 +361,8 @@ public class MenuManager {
 						cancelButton.setName("Close");
 						if (Util.isMapOnTop) {
 							clear();
-							Util.mapObj.draw();
+							//Util.mapObj.draw();
+							//this.parent.redraw();
 						}
 					}
 			}
@@ -367,6 +405,10 @@ public class MenuManager {
 					Util.isDataOn = false;
 					Util.isCompareOptionsOn = false;
 					dataVar.setVisible(false, "");
+					clear();
+					Util.isMapOnTop = true;
+					//Util.mapObj.draw();
+					//this.parent.redraw();
 				}
 				if (holocaustDataButton.checkIn(posX, posY)) {
 					dataVar.setVisible(true, "holocaust");
@@ -384,16 +426,16 @@ public class MenuManager {
 			}
 			if (Util.isMapButtonsOn) {
 				if (showMap.checkIn(posX, posY)) {
-					clear();
+					resetEverySwitch(false);
 					Util.isMapOnTop = true;
-					Util.isMenuOn = false;
-					Util.mapObj.draw();
-					dataVar.setVisible(false, "");
-					Util.isCompareOptionsOn = false;
-					Util.isConfirm = false;
-					Util.isDataButtonsOn = false;
-					Util.isMapButtonsOn = false;
-					Util.listNo = 0;
+					//this.parent.redraw();
+				}
+				if (timelineButton.checkIn(posX, posY)) {
+					resetEverySwitch(false);
+					Util.isMapAnimationOn = true;
+					Util.isMapOnTop = true;
+					playButton.setXY(Util.screenW/2-this.buttonW/2, Util.screenH/2-this.buttonH/2);
+					//this.parent.redraw();
 				}
 			}
 		}
@@ -458,6 +500,16 @@ public class MenuManager {
 						Util.isMapOnTop = false;
 						clear();
 					}
+				}
+			}
+		}
+		else if (Util.isMapAnimationOn) {
+			// if in Play button are (whole map screen)
+			if (posX >= Util.screenW/6 && posX <= Util.screenW * 5/6) {
+				if (posY >= 0 && posY <= Util.screenH){
+					Util.isPlaying = Util.PLAY;
+					playButton.setXY(Util.screenW * 5 /6 - (2 * this.buttonW) - Util.scale(5), Util.screenH - this.buttonH - Util.scale(2.5f));
+					this.parent.loop();
 				}
 			}
 		}

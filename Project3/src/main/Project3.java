@@ -57,6 +57,19 @@ public class Project3 extends PApplet {
 	float currentX, currentY;
 	
 	
+	int touchID1;
+	int touchID2;
+	PVector initTouchPos = new PVector();
+	PVector initTouchPos2 = new PVector();
+	PVector lastTouchPos = new PVector();
+	PVector lastTouchPos2 = new PVector();
+	int mapDragHack=1;
+	
+	Hashtable<Integer, TypeTouch> touchList;
+	
+	int test = 0;
+	
+	
 	/**
 	 * initialize the application
 	 * @throws FileNotFoundException 
@@ -67,6 +80,8 @@ public class Project3 extends PApplet {
 		System.out.println("Font set");
 		
 		dm = new DataManager();
+		
+		touchList = new Hashtable<Integer, TypeTouch>();
 		
 		generalPowersPair = new Hashtable<String, TypeNameIdPair>();
 		generalPowersPair = dm.readPairFile(sketchPath + Files.POWERS_GENERAL);
@@ -141,6 +156,7 @@ public class Project3 extends PApplet {
 	 * @see processing.core.PApplet#setup()
 	 */
 	public void setup(){
+		frameRate(Util.frameRate);
 		
 		size((int)Util.screenW, (int)Util.screenH, JAVA2D);
 		background(Colors.BACKGROUND_COLOR);
@@ -151,7 +167,9 @@ public class Project3 extends PApplet {
 		
 		initApp();
 		System.out.println("App setup DONE");
-		mapObj.draw();
+		drawOnce();
+		//noLoop();
+		//redraw();
 	}
 	
 	
@@ -160,15 +178,8 @@ public class Project3 extends PApplet {
 	 * @see processing.core.PApplet#draw()
 	 */
 	public void draw(){
-		if (!Util.isMapOnTop) {
-			clearScreen();
-		}
+		//drawOnce();
 	
-		data.draw();
-		
-		menu.draw();
-		drawGridLines();
-		
 		// PROCESS OMICRON
 		if (Util.isWall) {
 			omicronManager.process();
@@ -181,22 +192,37 @@ public class Project3 extends PApplet {
 	 * 	Interaction methods
 	 */
 	
-	int touchID1;
-	int touchID2;
-	PVector initTouchPos = new PVector();
-	PVector initTouchPos2 = new PVector();
-	PVector lastTouchPos = new PVector();
-	PVector lastTouchPos2 = new PVector();
-	int mapDragHack=1;
+	public void drawOnce() {
+		System.out.println("Drawing everything!");
+		clearScreen();
+		mapObj.draw();
+		data.draw();
+		menu.draw();
+		drawGridLines();
+	}
 	
-	@SuppressWarnings("rawtypes")
-	Hashtable touchList;
+	
 	
 	public void keyPressed() {
 		if (key == 'a'){
 			System.out.println("Menu On");
 			Util.isMenuOn = true;
+			Util.isPlaying = Util.STOP;
+			//Util.isMapAnimationOn = false;
 			menu.setXY(random(Util.scale(20), Util.scale(600)), random(Util.scale(20), Util.scale(150)));
+			//redraw();
+			drawOnce();
+		}
+		if (key == 'p') {
+			System.out.println("TEsting play");
+			Util.isPlaying = Util.PLAY;
+			loop();
+		}
+		if (key == 's') {
+			System.out.println("Testing stop");
+			Util.isPlaying = Util.STOP;
+			test = 0;
+			noLoop();
 		}
 	}
 	
@@ -207,34 +233,37 @@ public class Project3 extends PApplet {
 		if (Util.isWall) {
 			System.out.println("Touches : " + touchList.size());
 			if (touchList.size() == 5) {
-				/*
-				if (Util.isMenuOn) {
-					System.out.println("Menu Off");
-					Util.isMenuOn = false;
-				}
-				*/
-				//if (!Util.isMenuOn) {
-					System.out.println("Menu On");
-					Util.isMenuOn = true;
-					menu.setXY(mx, my);
-				//}
+				System.out.println("Menu On");
+				Util.isMenuOn = true;
+				menu.setXY(mx, my);
+				drawOnce();
+				//redraw();
 			}
 			if (touchList.size() == 1) {
 				menu.isInMenu(mx, my);
+				drawOnce();
+				//redraw();
 			}
 		}
 		else {
 			if (id == -1) {
 				menu.isInMenu(mx, my);
+				drawOnce();
+				//redraw();
 			}
 		}
-		redraw();
 	}
 	
 	public void myDragged(int id, float mx, float my) {
-		data.isInWindow(mx, my, currentX, currentY);
+		boolean val= data.isInWindow(mx, my, currentX, currentY);
 		currentX = mx;
 		currentY = my;
+		if (Util.onScreenData == 0) {
+			Util.isMapAnimationOn = false;
+			Util.isMapOnTop = true;
+		}
+		drawOnce();
+		//redraw();
 	}
 	
 	public void myClicked(int id, float mx, float my){
@@ -274,16 +303,18 @@ public class Project3 extends PApplet {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void touchDown(int ID, float xPos, float yPos, float xWidth,
 			float yWidth) {
-		TypeTouch t = new TypeTouch(ID, xPos, yPos, xWidth, yWidth);
-		touchList.put(ID,t);
-		System.out.println("Added Touch "+ID);
-		
+		try {
+			TypeTouch t = new TypeTouch(ID, xPos, yPos, xWidth, yWidth);
+			System.out.println("Added Touch "+ID + " : " + t.toString());
+			touchList.put(ID,t);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		pushStyle();
 		noFill();
-		stroke(255,0,0);
+		stroke(random(0,255),random(0,255),random(0,255));
 		ellipse(xPos, yPos, xWidth *2, yWidth * 2);
 		myPressed(ID, xPos, yPos);
 	}
@@ -295,6 +326,8 @@ public class Project3 extends PApplet {
 
 	public void touchUp(int ID, float xPos, float yPos, float xWidth,
 			float yWidth) {
+		touchList.remove(ID);
+		System.out.println("Released Touch "+ID);
 		myReleased(ID, xPos, yPos);
 	}
 }
