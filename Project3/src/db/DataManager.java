@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -22,8 +23,25 @@ import utils.Util;
  */
 public class DataManager {
 	private Hashtable<String, TypeNameIdPair> nameIdPair = new Hashtable<String, TypeNameIdPair>();
-	private Hashtable<String, TypeEventsData> eventsDataPair = new Hashtable<String, TypeEventsData>();
+	private Hashtable<Integer, TypeEventsData> eventsDataPair = new Hashtable<Integer, TypeEventsData>();
 	private Hashtable<String, TypeCasualtyData> casualtyData = new Hashtable<String, TypeCasualtyData>();
+	private ArrayList<String> factsData = new ArrayList<String>();
+	
+	public ArrayList<String> readFacts(String file) {
+		try {
+			BufferedReader fileIn = new BufferedReader(new FileReader(file));
+			String aLine;
+			while((aLine = fileIn.readLine()) != null) {
+				if (aLine != "" || aLine != null) {
+					factsData.add(aLine);
+				}
+			}
+			return factsData;
+		}	catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	public Hashtable<String, TypeCasualtyData> readDataFile(String file) {
 		try {
@@ -88,7 +106,7 @@ public class DataManager {
 		return null;
 	}
 	
-	public Hashtable<String, TypeEventsData> readEvents(String file){
+	public Hashtable<Integer, TypeEventsData> readEvents(String file){
 		try{
 			BufferedReader fileIn = new BufferedReader(new FileReader(file));
 			String aLine;
@@ -167,7 +185,7 @@ public class DataManager {
 						}
 					}
 				}
-				eventsDataPair.put(date, new TypeEventsData(id, dd, mm, yyyy, date, name, description, "", lat, lon, ht, nameIdHt));
+				eventsDataPair.put(id, new TypeEventsData(id, dd, mm, yyyy, date, name, description, "", lat, lon, ht, nameIdHt));
 			}
 			return this.eventsDataPair;
 		}	catch(Exception e){

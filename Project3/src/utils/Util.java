@@ -53,7 +53,9 @@ public class Util {
 	
 	public static int fontSmall = (int)scale(4);
 	public static int fontRegular = (int)scale(5);
-	public static int fontMedium = (int)scale(7f);
+	public static int fontRegular2 = (int)scale(6);
+	public static int fontMedium = (int)scale(7);
+	public static int fontLarge = (int)scale(8);
 	
 	public static float INVALID_LATLON = -999f;
 	
@@ -117,4 +119,10 @@ public class Util {
 	public static int isPlaying = STOP;
 	public static int frameRate = 60;
 	public static int timer = 0;
+	public static int speed = 1;
+	
+	public static int factIndex = 0;
+	public static int timer2 = 0;
+	
+	public static String keyList[] = {};
 }

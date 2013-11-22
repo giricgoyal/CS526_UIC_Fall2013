@@ -507,9 +507,17 @@ public class MenuManager {
 			// if in Play button are (whole map screen)
 			if (posX >= Util.screenW/6 && posX <= Util.screenW * 5/6) {
 				if (posY >= 0 && posY <= Util.screenH){
-					Util.isPlaying = Util.PLAY;
-					playButton.setXY(Util.screenW * 5 /6 - (2 * this.buttonW) - Util.scale(5), Util.screenH - this.buttonH - Util.scale(2.5f));
-					this.parent.loop();
+					if (Util.isPlaying == Util.STOP) {
+						Util.isPlaying = Util.PLAY;
+						playButton.setXY(Util.screenW * 5 /6 - (2 * this.buttonW) - Util.scale(5), Util.screenH - this.buttonH - Util.scale(2.5f));
+						Util.timer = 0;
+					}
+					else if (Util.isPlaying == Util.PLAY) {
+						Util.isPlaying = Util.PAUSE;
+					}
+					else if (Util.isPlaying == Util.PAUSE) {
+						Util.isPlaying = Util.PLAY;
+					}
 				}
 			}
 		}

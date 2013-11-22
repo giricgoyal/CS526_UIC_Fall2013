@@ -11,6 +11,7 @@ package main;
 
 import java.awt.ScrollPaneAdjustable;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import db.DataManager;
@@ -51,8 +52,9 @@ public class Project3 extends PApplet {
 	
 	
 	private Hashtable<String, TypeNameIdPair> generalPowersPair;
-	private Hashtable<String, TypeEventsData> eventsDataPair;
+	private Hashtable<Integer, TypeEventsData> eventsDataPair;
 	private Hashtable<String, TypeCasualtyData> casualtyData;
+	private ArrayList<String> factsData;
 	
 	float currentX, currentY;
 	
@@ -87,14 +89,17 @@ public class Project3 extends PApplet {
 		generalPowersPair = dm.readPairFile(sketchPath + Files.POWERS_GENERAL);
 		System.out.println("Reading File " + Files.POWERS_GENERAL + " Done");
 		
-		eventsDataPair = new Hashtable<String, TypeEventsData>();
+		eventsDataPair = new Hashtable<Integer, TypeEventsData>();
 		eventsDataPair = dm.readEvents(sketchPath + Files.EVENTS);
 		System.out.println("Reading File " + Files.EVENTS + " Done");
 		
 		casualtyData = new Hashtable<String, TypeCasualtyData>();
 		casualtyData = dm.readDataFile(sketchPath + Files.CASUALTY_DATA);
-		System.out.println("Reading File" + Files.CASUALTY_DATA + " Done");
+		System.out.println("Reading File " + Files.CASUALTY_DATA + " Done");
 		
+		factsData = new ArrayList<String>();
+		factsData = dm.readFacts(sketchPath + Files.FACTS_DATA);
+		System.out.println("Reading File " + Files.FACTS_DATA + " Done");
 		
 		data = new Data(this, 10f, 10f, Util.dataWindowWidth, Util.dataWindowHeight);
 		data.setCasualtyData(casualtyData);
@@ -106,6 +111,7 @@ public class Project3 extends PApplet {
 		System.out.println("map set");
 		mapObj.plotMapColor(generalPowersPair);
 		mapObj.setEventsMap(eventsDataPair);
+		mapObj.setFactsList(factsData);
 		Util.mapObj = mapObj;
 	}
 	
@@ -179,7 +185,28 @@ public class Project3 extends PApplet {
 	 */
 	public void draw(){
 		//drawOnce();
-	
+		Util.timer++;
+		Util.timer2++;
+		if (Util.isMapAnimationOn) {
+			if (Util.isPlaying == Util.PLAY) {
+				if (Util.timer % (Util.frameRate * Util.speed) == 0) {
+					mapObj.incrementKeyCounter();
+					System.out.println(mapObj.getKeyCounter());
+					clearScreen();
+					drawOnce();
+				}
+			}
+		}
+		
+		if (Util.timer2 % (Util.frameRate) == 0) {
+			if (!Util.isDataOn && !Util.isMenuOn)
+				Util.factIndex++;
+			if (Util.factIndex >= factsData.size()) {
+				Util.factIndex = 0;
+			}
+		}
+		if (!Util.isDataOn && !Util.isMenuOn)
+			mapObj.drawFacts();
 		// PROCESS OMICRON
 		if (Util.isWall) {
 			omicronManager.process();
@@ -197,6 +224,7 @@ public class Project3 extends PApplet {
 		clearScreen();
 		mapObj.draw();
 		data.draw();
+		mapObj.drawFacts();
 		menu.draw();
 		drawGridLines();
 	}
