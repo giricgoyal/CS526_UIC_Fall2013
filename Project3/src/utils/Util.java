@@ -17,7 +17,7 @@ import processing.core.*;
 public class Util {
 	PApplet parent;
 	
-	public static boolean isWall = true;
+	public static boolean isWall = false;
 	
 	Util(PApplet p){
 		this.parent = p;
@@ -117,7 +117,7 @@ public class Util {
 	public static int PLAY = 1;
 	public static int PAUSE = 2;
 	public static int isPlaying = STOP;
-	public static int frameRate = 60;
+	public static int frameRate = 120;
 	public static int timer = 0;
 	public static int speed = 1;
 	

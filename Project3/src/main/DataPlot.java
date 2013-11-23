@@ -29,6 +29,8 @@ public class DataPlot extends BasicControl {
 	private float dataWinX, dataWinY;
 	private float dataWinW, dataWinH;
 	
+	private float outlineX, outlineY;
+	
 	public DataPlot(PApplet parent, float x, float y, float width, float height) {
 		super(parent, x, y, width, height);
 		// TODO Auto-generated constructor stub
@@ -40,6 +42,8 @@ public class DataPlot extends BasicControl {
 		dataWinY = y;
 		dataWinW = width;
 		dataWinH = height;
+		outlineX = dataWinX;
+		outlineY = dataWinY;
 		isPiChart = false;
 	}
 
@@ -337,6 +341,15 @@ public class DataPlot extends BasicControl {
 		this.parent.popStyle();
 	}
 	
+	public void drawOutline() {
+		parent.pushStyle();
+		parent.noFill();
+		parent.stroke(Colors.semiTransparentWhite);
+		parent.strokeWeight(Util.scale(0.5f));
+		parent.rect(myX, myY, myWidth, myHeight, Util.dataWindowRadius);
+		parent.popStyle();
+	}
+	
 	public void setData(Hashtable<String, TypeCasualtyData> casualtyData) {
 		this.casualtyData = casualtyData;
 	}
@@ -351,6 +364,29 @@ public class DataPlot extends BasicControl {
 		}
 		*/
 		return (myX<posX && posX<myX+myWidth && myY<posY && posY<myY+myHeight) ? true: false;
+	}
+	
+	public boolean moveOutline(float posX, float posY, float currentX, float currentY) {
+		if (this.isVisible) {
+			dis.x = posX - currentX;
+			dis.y = posY - currentY;
+			outlineX += dis.x;
+			outlineY += dis.y;
+			
+			float centerX = 0f;
+			float centerY = 0f;
+			
+			centerX = outlineX + myWidth/2;
+			centerY = outlineY + myHeight/2;
+			
+			if (centerX < 0 || centerX > Util.screenW || centerY < 0 || centerY > Util.screenH) {
+				this.isVisible = false;
+				Util.onScreenData--;
+				System.out.println("On screen objects : " + Util.onScreenData);
+				return false;
+			}
+		}
+		return false;
 	}
 	
 	public boolean moveWindow(float posX, float posY, float currentX, float currentY) {
@@ -393,5 +429,14 @@ public class DataPlot extends BasicControl {
 	
 	public String getDataName() {
 		return this.dataName;
+	}
+	
+	public boolean isOutlineMoved() {
+		return ((this.myX == outlineX) && (this.myY == outlineY)) ? false:true;
+	}
+	
+	public void setWindowatOutline() {
+		this.myX = outlineX;
+		this.myY = outlineY;
 	}
 }

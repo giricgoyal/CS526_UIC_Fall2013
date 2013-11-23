@@ -177,6 +177,7 @@ public class Project3 extends PApplet {
 		drawOnce();
 		//noLoop();
 		//redraw();
+		//mapObj.draw();
 	}
 	
 	
@@ -186,19 +187,25 @@ public class Project3 extends PApplet {
 	 */
 	public void draw(){
 		//drawOnce();
+		
 		Util.timer++;
 		Util.timer2++;
-		if (Util.timer2 % (Util.frameRate) == 0) {
-			if (!Util.isDataOn && !Util.isMenuOn)
+		if (!Util.isMenuOn && !Util.isDataOn)
+		if (Util.timer2 % (Util.frameRate * 5) == 0) {
+			if (!Util.isDataOn && !Util.isMenuOn) {
 				Util.factIndex++;
+			}
 			if (Util.factIndex >= factsData.size()) {
 				Util.factIndex = 0;
 			}
-		}
-		if (!Util.isDataOn && !Util.isMenuOn) {
 			mapObj.drawFacts();
 			mapObj.drawAbout();
 		}
+		if (!Util.isDataOn && !Util.isMenuOn) {
+			//mapObj.drawFacts();
+			//mapObj.drawAbout();
+		}
+		/*
 		if (Util.isMapAnimationOn) {
 			if (Util.isPlaying == Util.PLAY) {
 				if (Util.timer % (Util.frameRate * Util.speed) == 0) {
@@ -209,8 +216,7 @@ public class Project3 extends PApplet {
 				}
 			}
 		}
-		
-		
+		*/
 		// PROCESS OMICRON
 		if (Util.isWall) {
 			omicronManager.process();
@@ -224,14 +230,17 @@ public class Project3 extends PApplet {
 	 */
 	
 	public void drawOnce() {
-		System.out.println("Drawing everything!");
-		clearScreen();
+		//if (!Util.isMapOnTop) {
+			clearScreen();
+		//}
 		mapObj.draw();
 		data.draw();
+		
 		if (!Util.isDataOn) {
 			mapObj.drawFacts();
 			mapObj.drawAbout();
 		}
+		
 		menu.draw();
 		drawGridLines();
 	}
@@ -243,21 +252,17 @@ public class Project3 extends PApplet {
 			System.out.println("Menu On");
 			Util.isMenuOn = true;
 			Util.isPlaying = Util.STOP;
-			//Util.isMapAnimationOn = false;
 			menu.setXY(random(Util.scale(20), Util.scale(600)), random(Util.scale(20), Util.scale(150)));
-			//redraw();
 			drawOnce();
 		}
 		if (key == 'p') {
 			System.out.println("TEsting play");
 			Util.isPlaying = Util.PLAY;
-			loop();
 		}
 		if (key == 's') {
 			System.out.println("Testing stop");
 			Util.isPlaying = Util.STOP;
 			test = 0;
-			noLoop();
 		}
 	}
 	
@@ -270,36 +275,37 @@ public class Project3 extends PApplet {
 			if (touchList.size() == 5) {
 				System.out.println("Menu On");
 				Util.isMenuOn = true;
+				Util.isPlaying = Util.STOP;
 				menu.setXY(mx, my);
-				drawOnce();
-				//redraw();
+				//drawOnce();
 			}
 			if (touchList.size() == 1) {
 				menu.isInMenu(mx, my);
-				drawOnce();
-				//redraw();
+				//drawOnce();
 			}
 		}
 		else {
 			if (id == -1) {
 				menu.isInMenu(mx, my);
-				drawOnce();
-				//redraw();
+				//drawOnce();
 			}
 		}
 	}
 	
 	public void myDragged(int id, float mx, float my) {
-		boolean val= data.isInWindow(mx, my, currentX, currentY);
-		currentX = mx;
-		currentY = my;
-		if (Util.onScreenData == 0) {
-			Util.isMapAnimationOn = false;
-			Util.isMapOnTop = true;
-			Util.isDataOn = false;
+		if (!Util.isMenuOn) {
+			boolean val= data.isInWindow(mx, my, currentX, currentY);
+			currentX = mx;
+			currentY = my;
+			if (Util.onScreenData == 0) {
+				Util.isMapAnimationOn = false;
+				Util.isMapOnTop = true;
+				Util.isDataOn = false;
+				//clearScreen();
+				//mapObj.draw();
+			}
+			//drawOnce();
 		}
-		drawOnce();
-		//redraw();
 	}
 	
 	public void myClicked(int id, float mx, float my){
@@ -311,8 +317,11 @@ public class Project3 extends PApplet {
 			touchList.remove(id);
 		
 		if (data.isMoving) {
+			//data.moveData();
 			data.isMoving = false;
 		}
+		
+		drawOnce();
 	}
 	
 	public void mouseDragged() {
@@ -350,7 +359,7 @@ public class Project3 extends PApplet {
 		}
 		pushStyle();
 		noFill();
-		stroke(random(0,255),random(0,255),random(0,255));
+		stroke(255,0,0);
 		ellipse(xPos, yPos, xWidth *2, yWidth * 2);
 		myPressed(ID, xPos, yPos);
 	}

@@ -83,14 +83,17 @@ public class Data {
 					dp.draw();
 				}
 			}
-			if (this.isMoving) {
-				this.parent.pushStyle();
-				this.parent.fill(Colors.transparent);
-				this.parent.stroke(Colors.RED);
-				this.parent.strokeWeight(Util.scale(3));
-				this.parent.rect(0,0,Util.screenW, Util.screenH);
-				this.parent.popStyle();
-			}
+		}
+	}
+	
+	public void drawRemoveBox() {
+		if (this.isMoving) {
+			this.parent.pushStyle();
+			this.parent.noFill();
+			this.parent.stroke(Colors.RED);
+			this.parent.strokeWeight(Util.scale(3));
+			this.parent.rect(0,0,Util.screenW, Util.screenH);
+			this.parent.popStyle();
 		}
 	}
 	
@@ -140,19 +143,50 @@ public class Data {
 	
 	public boolean isInWindow(float posX, float posY, float currentX, float currentY) {
 		if (allData.isInRectangle(posX, posY)) {
+			//boolean val = allData.moveOutline(posX, posY, currentX, currentY);
 			boolean val = allData.moveWindow(posX, posY, currentX, currentY);
+			drawRemoveBox();
+			allData.drawOutline();
 			this.isMoving = val;
 			return true;
 		}
 		if (holocaustData.isInRectangle(posX, posY)) {
+			//boolean val = holocaustData.moveOutline(posX, posY, currentX, currentY);
 			boolean val = holocaustData.moveWindow(posX, posY, currentX, currentY);
+			drawRemoveBox();
+			holocaustData.drawOutline();
 			this.isMoving = val;
 			return true;
 		}
 		for (DataPlot dp : allPiCharts) {
 			if (dp.isInRectangle(posX, posY)) {
+				//boolean val = holocaustData.moveOutline(posX, posY, currentX, currentY);
 				boolean val = dp.moveWindow(posX, posY, currentX, currentY);
+				drawRemoveBox();
+				dp.drawOutline();
 				this.isMoving = val;
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean moveData() {
+		if (allData.isOutlineMoved()) {
+			allData.setWindowatOutline();
+			this.isMoving = false;
+			return true;
+		}
+		
+		if (holocaustData.isOutlineMoved()) {
+			holocaustData.setWindowatOutline();
+			this.isMoving = false;
+			return true;
+		}
+		for (DataPlot dp: allPiCharts) {
+			if (dp.isOutlineMoved()) {
+				dp.setWindowatOutline();
+				this.isMoving = false;
 				return true;
 			}
 		}

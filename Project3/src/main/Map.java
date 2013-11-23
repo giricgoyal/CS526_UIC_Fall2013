@@ -215,13 +215,18 @@ public class Map {
 		parent.textSize(Util.fontRegular2);
 		parent.textAlign(PConstants.LEFT, PConstants.TOP);
 		parent.text(factsList.get(Util.factIndex), Util.screenW * 5 / 6 + Util.scale(7), Util.scale(20), Util.screenW / 6 - Util.scale(18), Util.screenH - Util.scale(17));
-	
-		parent.image(bulletHole, Util.screenW * 5/6 + Util.screenW /12, Util.screenH - Util.scale(20));
+		
+		bulletHole.resize((int)Util.scale(10), (int)Util.scale(10));
+		parent.tint(Colors.transparentBlue);
+		parent.image(bulletHole, Util.screenW * 5/6 + Util.screenW /12 + Util.scale(20), Util.screenH - Util.scale(22));
+		parent.image(bulletHole, Util.screenW * 5/6 + Util.screenW /12 + Util.scale(45), Util.screenH - Util.scale(23));
+		parent.image(bulletHole, Util.screenW * 5/6 + Util.screenW /12 + Util.scale(25), Util.screenH - Util.scale(10));
+		parent.image(bulletHole, Util.screenW * 5/6 + Util.screenW /12 + Util.scale(30), Util.screenH - Util.scale(20));
+		parent.image(bulletHole, Util.screenW * 5/6 + Util.screenW /12 + Util.scale(40), Util.screenH - Util.scale(15));
 	}
 	
 	
 	public void drawAbout() {
-		parent.pushStyle();
 		parent.fill(Colors.DARK_GRAY);
 		parent.noStroke();
 		parent.rect(0 + Util.scale(1), 0 + Util.scale(1), Util.screenW / 6 - Util.scale(2), Util.screenH - Util.scale(2), Util.scale(5));
@@ -245,7 +250,6 @@ public class Map {
 		parent.textSize(Util.fontRegular2);
 		parent.textAlign(PConstants.LEFT, PConstants.TOP);
 		parent.text(factsList.get(Util.factIndex), Util.scale(7), Util.scale(25), Util.screenW / 6 - Util.scale(18), Util.screenH - Util.scale(17));
-		parent.popStyle();
 	}
 	
 	@SuppressWarnings("static-access")
