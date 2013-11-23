@@ -166,6 +166,126 @@ public class DataPlot extends BasicControl {
 			mapX = mapX + 5;
 		}
 	}
+
+	public void drawCasualties(String what) {
+		dataWinW = myWidth - Util.scale(47);
+		dataWinH = myHeight - Util.scale(25);
+		dataWinX = myX + Util.scale(44);
+		dataWinY = myY + Util.scale(17);
+		
+		// legend
+		this.parent.stroke(Colors.dark);
+		this.parent.strokeWeight(Util.scale(0.5f));
+		this.parent.fill(Colors.dark);
+		this.parent.rect(dataWinX, dataWinY, dataWinW, dataWinH, Util.dataWindowRadius);
+		
+		this.parent.fill(Colors.gray);
+		this.parent.textSize(Util.fontMedium);
+		this.parent.textAlign(PConstants.LEFT, PConstants.CENTER);
+		this.parent.text(what + " Casualties (Million)", myX + Util.scale(3), myY + Util.scale(5));
+		
+//		this.parent.fill(Colors.TOTAL);
+//		this.parent.strokeWeight(Util.scale(0.5f));
+//		this.parent.stroke(Colors.TOTAL_DARK);
+//		this.parent.rect(myX + myWidth/2 - Util.scale(12), myY + Util.scale(3), Util.scale(5), Util.scale(5), Util.dataWindowRadius);
+//		
+//		this.parent.fill(Colors.gray);
+//		this.parent.textSize(Util.fontRegular);
+//		this.parent.textAlign(PConstants.LEFT, PConstants.CENTER);
+//		this.parent.text("Total", myX + myWidth/2 - Util.scale(5), myY + Util.scale(6));
+//		
+		this.parent.fill(Colors.TOTAL);
+		this.parent.strokeWeight(Util.scale(0.5f));
+		this.parent.stroke(Colors.CIVILIAN_DARK);
+		this.parent.rect(myX + myWidth/2 + Util.scale(12), myY + Util.scale(3), Util.scale(5), Util.scale(5), Util.dataWindowRadius);
+		
+		this.parent.fill(Colors.gray);
+		this.parent.textSize(Util.fontRegular);
+		this.parent.textAlign(PConstants.LEFT, PConstants.CENTER);
+		this.parent.text("Total", myX + myWidth/2 + Util.scale(20), myY + Util.scale(6));
+		
+		if (what.compareToIgnoreCase(Util.CIVILIAN) == 0) {
+			this.parent.fill(Colors.CIVILIAN);
+			this.parent.strokeWeight(Util.scale(0.5f));
+			this.parent.stroke(Colors.CIVILIAN_DARK);
+			this.parent.rect(myX + myWidth/2 + Util.scale(42), myY + Util.scale(3), Util.scale(5), Util.scale(5), Util.dataWindowRadius);
+			
+		}
+		else if (what.compareToIgnoreCase(Util.MILITARY) == 0) {
+			this.parent.fill(Colors.MILITARY);
+			this.parent.strokeWeight(Util.scale(0.5f));
+			this.parent.stroke(Colors.MILITARY_DARK);
+			this.parent.rect(myX + myWidth/2 + Util.scale(42), myY + Util.scale(3), Util.scale(5), Util.scale(5), Util.dataWindowRadius);
+		}
+		
+		this.parent.fill(Colors.gray);
+		this.parent.textSize(Util.fontRegular);
+		this.parent.textAlign(PConstants.LEFT, PConstants.CENTER);
+		this.parent.text(what, myX + myWidth/2 + Util.scale(50), myY + Util.scale(6));
+		
+		// data bars
+		Enumeration<String> keys = casualtyData.keys();
+		String key;
+		float delta_y = (float)dataWinH / (float)(casualtyData.size());
+		float y = dataWinY;
+		while(keys.hasMoreElements()) {
+			key = (String)keys.nextElement();
+			String name = casualtyData.get(key).getCountryName();
+			float total = casualtyData.get(key).getTotalCasualties();
+			float military = casualtyData.get(key).getMilitaryCasualties();
+			float civilian = casualtyData.get(key).getCivilianCasualties();
+			
+			float x_total = PApplet.map(total, 0f, 25000f, 0, dataWinW);
+			float x_civilian = PApplet.map(civilian, 0f, 25000f, 0, dataWinW);
+			float x_military = PApplet.map(military, 0f, 25000f, 0f, dataWinW);
+			
+			this.parent.fill(Colors.white);
+			this.parent.textAlign(PConstants.RIGHT, PConstants.CENTER);
+			this.parent.textSize(Util.fontRegular);
+			this.parent.text(name, dataWinX - Util.scale(2), y + Util.scale(3f));
+			
+
+			this.parent.fill(Colors.BACKGROUND_COLOR);
+			this.parent.stroke(Colors.BACKGROUND_COLOR);
+			this.parent.strokeWeight(Util.scale(0.5f));
+			this.parent.rect(dataWinX, y + Util.scale(1.5f), dataWinW, Util.scale(3));
+			
+			
+			this.parent.fill(Colors.TOTAL);
+			this.parent.stroke(Colors.TOTAL);
+			this.parent.strokeWeight(Util.scale(0.5f));
+			this.parent.rect(dataWinX, y + Util.scale(1.5f), x_total, Util.scale(3));
+			
+			if (what.compareToIgnoreCase(Util.MILITARY) == 0) {
+				this.parent.fill(Colors.MILITARY);
+				this.parent.stroke(Colors.MILITARY);
+				this.parent.strokeWeight(Util.scale(0.5f));
+				this.parent.rect(dataWinX, y + Util.scale(1.5f), x_military, Util.scale(3));
+			}
+			else if (what.compareToIgnoreCase(Util.CIVILIAN) == 0){
+				this.parent.fill(Colors.CIVILIAN);
+				this.parent.stroke(Colors.CIVILIAN);
+				this.parent.strokeWeight(Util.scale(0.5f));
+				this.parent.rect(dataWinX, y + Util.scale(1.5f), x_civilian, Util.scale(3));
+			}
+			y = y + delta_y;
+		}
+		int x = 0;
+		int mapX = 0;
+		while(x <= dataWinW) {
+			//float mapX = PApplet.map(x, 0f, 25000f, 0f, dataWinW);
+			this.parent.textAlign(PConstants.RIGHT, PConstants.UP);
+			this.parent.textSize(Util.fontSmall);
+			this.parent.fill(Colors.white);
+			this.parent.text(String.valueOf(mapX), dataWinX + x, dataWinY - Util.scale(2));
+			this.parent.text(".", dataWinX + x, dataWinY);
+			this.parent.text(String.valueOf(mapX), dataWinX + x, dataWinY + dataWinH + Util.scale(5));
+			this.parent.text(".", dataWinX + x, dataWinY + dataWinH);
+			x = (int)(x + dataWinW/5);
+			mapX = mapX + 5;
+		}
+	}
+
 	
 	public void drawHolocaustData() {
 		dataWinW = myWidth - Util.scale(47);
@@ -326,10 +446,12 @@ public class DataPlot extends BasicControl {
 		this.parent.rect(myX, myY, myWidth, myHeight, Util.dataWindowRadius);
 			
 		if (!isPiChart) {
-			if (dataName.compareToIgnoreCase("all data") == 0) {
-				drawAllCasualties();
+			if (dataName.compareToIgnoreCase(Util.CIVILIAN) == 0) {
+				drawCasualties(Util.CIVILIAN);
 			}
-			
+			if (dataName.compareToIgnoreCase(Util.MILITARY) == 0) {
+				drawCasualties(Util.MILITARY);
+			}
 			if (dataName.compareToIgnoreCase("holocaust") == 0) {
 				drawHolocaustData();
 			}

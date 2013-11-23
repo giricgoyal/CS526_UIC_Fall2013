@@ -71,6 +71,10 @@ public class Project3 extends PApplet {
 	
 	int test = 0;
 	
+	int directionRight = 1;
+	int directionLeft = 0;
+	int moveDirection = -1;
+	
 	
 	/**
 	 * initialize the application
@@ -190,21 +194,19 @@ public class Project3 extends PApplet {
 		
 		Util.timer++;
 		Util.timer2++;
-		if (!Util.isMenuOn && !Util.isDataOn)
-		if (Util.timer2 % (Util.frameRate * 5) == 0) {
-			if (!Util.isDataOn && !Util.isMenuOn) {
-				Util.factIndex++;
+		if (!Util.isMenuOn && !Util.isDataOn) {
+			if (Util.timer2 % (Util.frameRate * 5) == 0) {
+				if (!Util.isDataOn && !Util.isMenuOn) {
+					Util.factIndex++;
+				}
+				if (Util.factIndex >= factsData.size()) {
+					Util.factIndex = 0;
+				}
+				mapObj.drawFacts();
+				//mapObj.drawAbout();
 			}
-			if (Util.factIndex >= factsData.size()) {
-				Util.factIndex = 0;
-			}
-			mapObj.drawFacts();
-			mapObj.drawAbout();
 		}
-		if (!Util.isDataOn && !Util.isMenuOn) {
-			//mapObj.drawFacts();
-			//mapObj.drawAbout();
-		}
+
 		/*
 		if (Util.isMapAnimationOn) {
 			if (Util.isPlaying == Util.PLAY) {
@@ -294,17 +296,33 @@ public class Project3 extends PApplet {
 	
 	public void myDragged(int id, float mx, float my) {
 		if (!Util.isMenuOn) {
-			boolean val= data.isInWindow(mx, my, currentX, currentY);
-			currentX = mx;
-			currentY = my;
-			if (Util.onScreenData == 0) {
-				Util.isMapAnimationOn = false;
-				Util.isMapOnTop = true;
-				Util.isDataOn = false;
-				//clearScreen();
-				//mapObj.draw();
+			if (Util.isDataOn) {
+				boolean val= data.isInWindow(mx, my, currentX, currentY);
+				currentX = mx;
+				currentY = my;
+				if (Util.onScreenData == 0) {
+					Util.isMapAnimationOn = false;
+					Util.isMapOnTop = true;
+					Util.isDataOn = false;
+					//clearScreen();
+					//mapObj.draw();
+				}
+				//drawOnce();
 			}
-			//drawOnce();
+			else {
+				if (mapObj.isInInfoPane(mx, my)) {
+					if (currentX - mx < 0) {
+						
+						moveDirection = directionRight;
+					}
+					else {
+						
+						moveDirection = directionLeft;
+					}
+					currentX = mx;
+					currentY = my;
+				}
+			}
 		}
 	}
 	
@@ -319,6 +337,23 @@ public class Project3 extends PApplet {
 		if (data.isMoving) {
 			//data.moveData();
 			data.isMoving = false;
+		}
+		
+		if (!Util.isDataOn && !Util.isMenuOn) {
+			if (moveDirection != -1) {
+				if (moveDirection == directionLeft) {
+					System.out.println("Right " + Util.infoStringIndex);
+					if (Util.infoStringIndex < Util.infoString.length-1) {
+						Util.infoStringIndex++;
+					}
+				}
+				else {
+					System.out.println("Left " + Util.infoStringIndex);
+					if (Util.infoStringIndex > 0) {
+						Util.infoStringIndex--;
+					}
+				}
+			}
 		}
 		
 		drawOnce();

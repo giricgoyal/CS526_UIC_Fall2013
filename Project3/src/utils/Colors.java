@@ -118,8 +118,8 @@ public class Colors {
 	public static int TOTAL_DARK = LIGHT_GRAY;
 	public static int CIVILIAN = 0xff3B6DC2;
 	public static int CIVILIAN_DARK = 0xff2a4e8b;
-	public static int MILITARY = 0xff9b4c41;
-	public static int MILITARY_DARK = 0xffaa4c41;
+	public static int MILITARY = 0xffC26d3b;
+	public static int MILITARY_DARK = 0xff8b4e2a;
 	public static int HOLOCAUST = RED;
 	public static int HOLOCAUST_DARK = DARK_RED;
 	

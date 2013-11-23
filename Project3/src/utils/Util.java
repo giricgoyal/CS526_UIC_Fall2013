@@ -17,7 +17,7 @@ import processing.core.*;
 public class Util {
 	PApplet parent;
 	
-	public static boolean isWall = false;
+	public static boolean isWall = true;
 	
 	Util(PApplet p){
 		this.parent = p;
@@ -50,6 +50,9 @@ public class Util {
 	public static String NEUTRAL = "Neutral";
 	public static String SOVIET = "Soviet Union";
 	public static String BELLIGERENTS = "Co-Belligerents";
+	
+	public static String MILITARY = "Military";
+	public static String CIVILIAN = "Civilian";
 	
 	public static int fontSmall = (int)scale(4);
 	public static int fontRegular = (int)scale(5);
@@ -125,4 +128,12 @@ public class Util {
 	public static int timer2 = 0;
 	
 	public static String keyList[] = {};
+	
+	
+	public static String infoString1 = "World War 2, also known as the Second World War, was a war fought from 1939 to 1945 in Europe and, during much of the 1930s and 1940s, in Asia.\n\nThe war in Europe began in earnest on September 1, 1939 with the invasion of Poland by Nazi Germany, and concluded on September 2, 1945, with the official surrender of the last Axis nation, Japan.\n\nHowever, in Asia the war began earlier with Japanese interventions in China, and in Europe, the war ended earlier with the unconditional surrender of Germany on May 8, 1945.";
+	public static String infoString2 = "The conflict spilled over into Africa, included a handful of incidents in the Americas, and a series of major naval battles.\n\nIt was the largest armed conflict in history, spanning the entire world and involving more countries than any other war, as well as introducing powerful new weapons, culminating in the first use of nuclear weapons.\n\nHowever, despite the name, not all countries of the world were involved; some through neutrality (such as the Eire - though Eire supplied some important secret information to the Allies;"; 
+	public static String infoString3 = "D-Day's date was decided on the basis of incoming Atlantic weather information supplied from Ireland - Sweden, and Switzerland), others through strategic insignificance (Mexico).\n\nThe war ravaged civilians more severely than any previous conflict and served as a backdrop for genocidal killings by Nazi Germany as well as several other mass slaughters of civilians which, although not technically genocide, were significant.\n\nThese included the massacre of millions of Chinese and Korean nationals by Japan,";
+	public static String infoString4 = "internal mass killings in the Soviet Union, and the bombing of civilian targets in German and Japanese cities by the Allies. In total, World War II produced about 50 million deaths, more than any other war to date.";
+	public static String infoString[] = {infoString1, infoString2, infoString3, infoString4};
+	public static int infoStringIndex = 0;
 }

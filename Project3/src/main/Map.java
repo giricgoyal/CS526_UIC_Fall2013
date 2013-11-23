@@ -220,7 +220,6 @@ public class Map {
 		parent.tint(Colors.transparentBlue);
 		parent.image(bulletHole, Util.screenW * 5/6 + Util.screenW /12 + Util.scale(20), Util.screenH - Util.scale(22));
 		parent.image(bulletHole, Util.screenW * 5/6 + Util.screenW /12 + Util.scale(45), Util.screenH - Util.scale(23));
-		parent.image(bulletHole, Util.screenW * 5/6 + Util.screenW /12 + Util.scale(25), Util.screenH - Util.scale(10));
 		parent.image(bulletHole, Util.screenW * 5/6 + Util.screenW /12 + Util.scale(30), Util.screenH - Util.scale(20));
 		parent.image(bulletHole, Util.screenW * 5/6 + Util.screenW /12 + Util.scale(40), Util.screenH - Util.scale(15));
 	}
@@ -249,7 +248,11 @@ public class Map {
 		parent.fill(Colors.WHITE);
 		parent.textSize(Util.fontRegular2);
 		parent.textAlign(PConstants.LEFT, PConstants.TOP);
-		parent.text(factsList.get(Util.factIndex), Util.scale(7), Util.scale(25), Util.screenW / 6 - Util.scale(18), Util.screenH - Util.scale(17));
+		parent.text(Util.infoString[Util.infoStringIndex], Util.scale(9), Util.scale(28), Util.screenW / 6 - Util.scale(18), Util.screenH - Util.scale(20));
+	
+		bulletHole.resize((int)Util.scale(10), (int)Util.scale(10));
+		parent.tint(Colors.transparentBlue);
+		parent.image(bulletHole, Util.scale(5),  Util.scale(5));
 	}
 	
 	@SuppressWarnings("static-access")
@@ -406,5 +409,14 @@ public class Map {
 	
 	public void incrementKeyCounter() {
 		this.keyCounter++;
+	}
+	
+	public boolean isInInfoPane(float mx, float my) {
+		return ((mx >= Util.scale(2) && mx <= Util.screenW / 6 - Util.scale(2) && my >= Util.scale(22) && my <= Util.screenH - Util.scale(2f))) ? true : false;
+	}
+	
+	public boolean changeInfo(float mx, float my, float currentX, float currentY) {
+		
+		return false;
 	}
 }

@@ -33,12 +33,14 @@ public class MenuManager {
 	private ArrayList<Button> compareButtonList3;
 	private ArrayList<Button> compareButtonList4;
 	private	ArrayList<Button> listList;
+	private ArrayList<Button> infoPaneButtonList;
 	
 	private Button cancelButton;
 	private Button quitButton;
 	private Button mapButton;
 	private Button dataButton;
-	private Button allDataButton;
+	private Button allDataButtonC;
+	private Button allDataButtonM;
 	private Button removeAllData;
 	private Button removeAllMap;
 	private Button holocaustDataButton;
@@ -84,6 +86,7 @@ public class MenuManager {
 		compareButtonList3 = new ArrayList<Button>();
 		compareButtonList4 = new ArrayList<Button>();
 		listList = new ArrayList<Button>();
+		infoPaneButtonList = new ArrayList<Button>();
 		
 		cancelButton = new Button(parent, this.x, this.y, this.buttonW, this.buttonH);
 		cancelButton.setButton(Colors.button_red, true, true, Colors.button_background, "Close");
@@ -102,12 +105,16 @@ public class MenuManager {
 		buttonsLower.add(mapButton);
 		
 		dataButton = new Button(parent, this.x, this.y, this.buttonW, this.buttonH);
-		dataButton.setButton(Colors.button_blue, true, true, Colors.button_background, "Data");
+		dataButton.setButton(Colors.button_blue, true, true, Colors.button_background, "Casualties");
 		buttonsLower.add(dataButton);
 		
-		allDataButton = new Button(parent, this.x, this.y, this.buttonW, this.buttonH);
-		allDataButton.setButton(Colors.button_green, true, true, Colors.button_background, "Casualties");
-		buttonsUpperData.add(allDataButton);
+		allDataButtonC = new Button(parent, this.x, this.y, this.buttonW, this.buttonH);
+		allDataButtonC.setButton(Colors.button_green, true, true, Colors.button_background, "Civilian\nCasualties");
+		buttonsUpperData.add(allDataButtonC);
+		
+		allDataButtonM = new Button(parent, this.x, this.y, this.buttonW, this.buttonH);
+		allDataButtonM.setButton(Colors.button_green, true, true, Colors.button_background, "Military\nCasualties");
+		buttonsUpperData.add(allDataButtonM);
 		
 		holocaustDataButton = new Button(parent, this.x, this.y, this.buttonW, this.buttonH);
 		holocaustDataButton.setButton(Colors.button_green, true, true, Colors.button_background, "Holocaust");
@@ -155,6 +162,12 @@ public class MenuManager {
 			}
 		}
 		
+		for (int i=0; i<Util.infoString.length; i++) {
+			Button tempButton = new Button(parent, Util.screenW/12 + Util.scale(10) - (i*Util.scale(8)), Util.screenH - Util.scale(10), this.buttonW/5, this.buttonH/5);
+			tempButton.setButton(Colors.gray, true, false, Colors.button_background, "");
+			infoPaneButtonList.add(tempButton);
+		}
+		
 		list1 = new Button(parent, this.x, this.y, this.buttonW - Util.scale(15), this.buttonH - Util.scale(15));
 		list1.setButton(Colors.DARK_GRAY, true, true, Colors.button_background, "1");
 		listList.add(list1);
@@ -188,7 +201,8 @@ public class MenuManager {
 		connections.add(new ConnectObjects(this.parent, cancelButton, mapButton, Colors.button_background, Colors.button_background));
 		connections.add(new ConnectObjects(this.parent, cancelButton, dataButton, Colors.button_background, Colors.button_background));
 		
-		connectionsUpperData.add(new ConnectObjects(this.parent, cancelButton, allDataButton, Colors.button_background, Colors.button_background));
+		connectionsUpperData.add(new ConnectObjects(this.parent, cancelButton, allDataButtonC, Colors.button_background, Colors.button_background));
+		connectionsUpperData.add(new ConnectObjects(this.parent, cancelButton, allDataButtonM, Colors.button_background, Colors.button_background));
 		connectionsUpperData.add(new ConnectObjects(this.parent, cancelButton, holocaustDataButton, Colors.button_background, Colors.button_background));
 		connectionsUpperData.add(new ConnectObjects(this.parent, cancelButton, removeAllData, Colors.button_background, Colors.button_background));
 		connectionsUpperData.add(new ConnectObjects(this.parent, cancelButton, compareButton, Colors.button_background, Colors.button_background));
@@ -218,7 +232,8 @@ public class MenuManager {
 		removeAllData.setXY(this.x +(Util.menuW * PApplet.cos(PApplet.radians((++upperDataCount) * buttonsUpperDataAngle))), this.y - (Util.menuH * PApplet.sin(PApplet.radians(upperDataCount * buttonsUpperDataAngle))));
 		compareButton.setXY(this.x +(Util.menuW * PApplet.cos(PApplet.radians((++upperDataCount) * buttonsUpperDataAngle))), this.y - (Util.menuH * PApplet.sin(PApplet.radians(upperDataCount * buttonsUpperDataAngle))));
 		holocaustDataButton.setXY(this.x +(Util.menuW * PApplet.cos(PApplet.radians((++upperDataCount) * buttonsUpperDataAngle))), this.y - (Util.menuH * PApplet.sin(PApplet.radians(upperDataCount * buttonsUpperDataAngle))));
-		allDataButton.setXY(this.x +(Util.menuW * PApplet.cos(PApplet.radians((++upperDataCount) * buttonsUpperDataAngle))), this.y - (Util.menuH * PApplet.sin(PApplet.radians(upperDataCount * buttonsUpperDataAngle))));
+		allDataButtonC.setXY(this.x +(Util.menuW * PApplet.cos(PApplet.radians((++upperDataCount) * buttonsUpperDataAngle))), this.y - (Util.menuH * PApplet.sin(PApplet.radians(upperDataCount * buttonsUpperDataAngle))));
+		allDataButtonM.setXY(this.x +(Util.menuW * PApplet.cos(PApplet.radians((++upperDataCount) * buttonsUpperDataAngle))), this.y - (Util.menuH * PApplet.sin(PApplet.radians(upperDataCount * buttonsUpperDataAngle))));
 		
 		removeAllMap.setXY(this.x +(Util.menuW * PApplet.cos(PApplet.radians((++upperMapCount) * buttonsUpperMapAngle))), this.y - (Util.menuH * PApplet.sin(PApplet.radians(upperMapCount * buttonsUpperMapAngle))));
 		showMap.setXY(this.x +(Util.menuW * PApplet.cos(PApplet.radians((++upperMapCount) * buttonsUpperMapAngle))), this.y - (Util.menuH * PApplet.sin(PApplet.radians(upperMapCount * buttonsUpperMapAngle))));
@@ -303,6 +318,18 @@ public class MenuManager {
 				b.draw();
 			}
 			parent.popStyle();
+		}
+		if (!Util.isDataOn) {
+			for (int i=0; i<infoPaneButtonList.size(); i++) {
+				Button b = infoPaneButtonList.get(i);
+				if (infoPaneButtonList.size()-i-1 == Util.infoStringIndex) {
+					b.setColor(Colors.transparentGray);
+				}
+				else {
+					b.setColor(Colors.transparentWhite);
+				}
+				b.draw();
+			}
 		}
 	}
 	
@@ -394,8 +421,17 @@ public class MenuManager {
 				System.out.println("Data Selected");
 			}
 			if (Util.isDataButtonsOn) {
-				if (allDataButton.checkIn(posX, posY)) {
-					dataVar.setVisible(true, "allData");
+				if (allDataButtonC.checkIn(posX, posY)) {
+					//dataVar.setVisible(true, "allData");
+					dataVar.setVisible(true, Util.CIVILIAN);
+					clear();
+					Util.isDataOn = true;
+					Util.isCompareOptionsOn = false;
+					Util.isMapOnTop = false;
+				}
+				if (allDataButtonM.checkIn(posX, posY)) {
+					//dataVar.setVisible(true, "allData");
+					dataVar.setVisible(true, Util.MILITARY);
 					clear();
 					Util.isDataOn = true;
 					Util.isCompareOptionsOn = false;

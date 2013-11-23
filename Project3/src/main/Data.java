@@ -20,7 +20,8 @@ public class Data {
 	private float x, y;
 	private float w, h;
 	
-	private DataPlot allData;
+	private DataPlot allDataC;
+	private DataPlot allDataM;
 	private DataPlot holocaustData;
 	
 	private ArrayList<DataPlot> allPlots;
@@ -45,10 +46,13 @@ public class Data {
 		allPlots = new ArrayList<DataPlot>();
 		allPiCharts = new ArrayList<DataPlot>();
 		
-		allData = new DataPlot(this.parent, this.x, this.y, this.w, this.h);
-		allPlots.add(allData);
+		allDataC = new DataPlot(this.parent, this.x, this.y, this.w, this.h);
+		allPlots.add(allDataC);
+
+		allDataM = new DataPlot(this.parent, this.x, this.y, this.w, this.h);
+		allPlots.add(allDataM);
 		
-		holocaustData = new DataPlot(parent, this.x, this.y, this.w, this.h);
+		holocaustData = new DataPlot(this.parent, this.x, this.y, this.w, this.h);
 		allPlots.add(holocaustData);
 		
 		for (String s : Util.buttonCountries) {
@@ -62,8 +66,10 @@ public class Data {
 	}
 	
 	public void setCasualtyData(Hashtable<String, TypeCasualtyData> casualtyData) {
-		allData.setData(casualtyData);
-		allData.setDataName("all Data");
+		allDataC.setData(casualtyData);
+		allDataC.setDataName(Util.CIVILIAN);
+		allDataM.setData(casualtyData);
+		allDataM.setDataName(Util.MILITARY);
 		holocaustData.setData(casualtyData);
 		holocaustData.setDataName("holocaust");
 		for (DataPlot dp : allPiCharts) {
@@ -98,11 +104,20 @@ public class Data {
 	}
 	
 	public void setVisible(boolean val, String str) {
-		if (str.compareToIgnoreCase("allData") == 0) {
-			if (!allData.isVisible) {
-				allData.isVisible = val;
-				allData.myX = Util.scale(10);
-				allData.myY = Util.scale(10);
+		if (str.compareToIgnoreCase(Util.CIVILIAN) == 0) {
+			if (!allDataC.isVisible) {
+				allDataC.isVisible = val;
+				allDataC.myX = Util.scale(10);
+				allDataC.myY = Util.scale(10);
+				Util.onScreenData++;
+				System.out.println("On screen objects : " + Util.onScreenData);
+			}
+		}
+		if (str.compareToIgnoreCase(Util.MILITARY) == 0) {
+			if (!allDataM.isVisible) {
+				allDataM.isVisible = val;
+				allDataM.myX = Util.screenW * 2/6 + Util.scale(10);
+				allDataM.myY = Util.scale(10);
 				Util.onScreenData++;
 				System.out.println("On screen objects : " + Util.onScreenData);
 			}
@@ -110,14 +125,15 @@ public class Data {
 		if (str.compareToIgnoreCase("holocaust") == 0) {
 			if (!holocaustData.isVisible) {
 				holocaustData.isVisible = val;
-				holocaustData.myX = Util.scale(450);
+				holocaustData.myX =Util.screenW * 4/6 + Util.scale(10);
 				holocaustData.myY = Util.scale(10);
 				Util.onScreenData++;
 				System.out.println("On screen objects : " + Util.onScreenData);
 			}
 		}
 		if (str.compareToIgnoreCase("") == 0) {
-			allData.isVisible = val;
+			allDataC.isVisible = val;
+			allDataM.isVisible = val;
 			holocaustData.isVisible = val;
 			for (DataPlot d: allPiCharts) {
 				d.isVisible = val;
@@ -142,11 +158,29 @@ public class Data {
 	}
 	
 	public boolean isInWindow(float posX, float posY, float currentX, float currentY) {
-		if (allData.isInRectangle(posX, posY)) {
+		for (DataPlot dp : allPiCharts) {
+			if (dp.isInRectangle(posX, posY)) {
+				//boolean val = holocaustData.moveOutline(posX, posY, currentX, currentY);
+				boolean val = dp.moveWindow(posX, posY, currentX, currentY);
+				drawRemoveBox();
+				dp.drawOutline();	
+				this.isMoving = val;
+				return true;
+			}
+		}
+		if (allDataC.isInRectangle(posX, posY)) {
 			//boolean val = allData.moveOutline(posX, posY, currentX, currentY);
-			boolean val = allData.moveWindow(posX, posY, currentX, currentY);
+			boolean val = allDataC.moveWindow(posX, posY, currentX, currentY);
 			drawRemoveBox();
-			allData.drawOutline();
+			allDataC.drawOutline();
+			this.isMoving = val;
+			return true;
+		}
+		if (allDataM.isInRectangle(posX, posY)) {
+			//boolean val = allData.moveOutline(posX, posY, currentX, currentY);
+			boolean val = allDataM.moveWindow(posX, posY, currentX, currentY);
+			drawRemoveBox();
+			allDataM.drawOutline();
 			this.isMoving = val;
 			return true;
 		}
@@ -158,22 +192,17 @@ public class Data {
 			this.isMoving = val;
 			return true;
 		}
-		for (DataPlot dp : allPiCharts) {
-			if (dp.isInRectangle(posX, posY)) {
-				//boolean val = holocaustData.moveOutline(posX, posY, currentX, currentY);
-				boolean val = dp.moveWindow(posX, posY, currentX, currentY);
-				drawRemoveBox();
-				dp.drawOutline();
-				this.isMoving = val;
-				return true;
-			}
-		}
 		return false;
 	}
 	
 	public boolean moveData() {
-		if (allData.isOutlineMoved()) {
-			allData.setWindowatOutline();
+		if (allDataC.isOutlineMoved()) {
+			allDataC.setWindowatOutline();
+			this.isMoving = false;
+			return true;
+		}
+		if (allDataM.isOutlineMoved()) {
+			allDataM.setWindowatOutline();
 			this.isMoving = false;
 			return true;
 		}
