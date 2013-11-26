@@ -73,7 +73,10 @@ public class Project3 extends PApplet {
 	
 	int directionRight = 1;
 	int directionLeft = 0;
-	int moveDirection = -1;
+	int moveDirectionAbout = -1;
+	int moveDirectionInfoOnMap = -1;
+	boolean touchedAbout = false;
+	boolean touchedInfoOnMap = false;
 	
 	
 	/**
@@ -118,6 +121,7 @@ public class Project3 extends PApplet {
 		mapObj.setFactsList(factsData);
 		mapObj.loadBulletImage(sketchPath + Files.BULLET_HOLE); 
 		Util.mapObj = mapObj;
+		Util.menuObj = menu;
 	}
 	
 	public void initOmicron() {
@@ -169,7 +173,7 @@ public class Project3 extends PApplet {
 	public void setup(){
 		frameRate(Util.frameRate);
 		
-		size((int)Util.screenW, (int)Util.screenH, JAVA2D);
+		size((int)Util.screenW, (int)Util.screenH);
 		background(Colors.BACKGROUND_COLOR);
 		
 		if (Util.isWall) {
@@ -179,9 +183,6 @@ public class Project3 extends PApplet {
 		initApp();
 		System.out.println("App setup DONE");
 		drawOnce();
-		//noLoop();
-		//redraw();
-		//mapObj.draw();
 	}
 	
 	
@@ -190,12 +191,10 @@ public class Project3 extends PApplet {
 	 * @see processing.core.PApplet#draw()
 	 */
 	public void draw(){
-		//drawOnce();
-		
 		Util.timer++;
 		Util.timer2++;
 		if (!Util.isMenuOn && !Util.isDataOn) {
-			if (Util.timer2 % (Util.frameRate * 5) == 0) {
+			if (Util.timer2 % (Util.frameRate * 1) == 0) {
 				if (!Util.isDataOn && !Util.isMenuOn) {
 					Util.factIndex++;
 				}
@@ -232,9 +231,11 @@ public class Project3 extends PApplet {
 	 */
 	
 	public void drawOnce() {
-		//if (!Util.isMapOnTop) {
-			clearScreen();
-		//}
+//		if (!Util.isMapOnTop) {
+//			clearScreen();
+//		}
+		
+		clearScreen();
 		mapObj.draw();
 		data.draw();
 		
@@ -245,6 +246,7 @@ public class Project3 extends PApplet {
 		
 		menu.draw();
 		drawGridLines();
+		System.out.println("Drawn");
 	}
 	
 	
@@ -256,15 +258,6 @@ public class Project3 extends PApplet {
 			Util.isPlaying = Util.STOP;
 			menu.setXY(random(Util.scale(20), Util.scale(600)), random(Util.scale(20), Util.scale(150)));
 			drawOnce();
-		}
-		if (key == 'p') {
-			System.out.println("TEsting play");
-			Util.isPlaying = Util.PLAY;
-		}
-		if (key == 's') {
-			System.out.println("Testing stop");
-			Util.isPlaying = Util.STOP;
-			test = 0;
 		}
 	}
 	
@@ -295,7 +288,7 @@ public class Project3 extends PApplet {
 	}
 	
 	public void myDragged(int id, float mx, float my) {
-		if (!Util.isMenuOn) {
+		if (!Util.isMenuOn && !Util.isCompareOptionsOn) {
 			if (Util.isDataOn) {
 				boolean val= data.isInWindow(mx, my, currentX, currentY);
 				currentX = mx;
@@ -309,15 +302,27 @@ public class Project3 extends PApplet {
 				}
 				//drawOnce();
 			}
-			else {
+			if (!Util.isDataOn) {
 				if (mapObj.isInInfoPane(mx, my)) {
+					touchedAbout = true;
 					if (currentX - mx < 0) {
-						
-						moveDirection = directionRight;
+						moveDirectionAbout = directionRight;
 					}
 					else {
-						
-						moveDirection = directionLeft;
+						moveDirectionAbout = directionLeft;
+					}
+					currentX = mx;
+					currentY = my;
+				}
+			}
+			if (Util.isMapAnimationOn && Util.isInfoOn) {
+				if (mapObj.isInInfoPaneOnMap(mx, my)) {
+					touchedInfoOnMap = true;
+					if (currentX - mx < 0) {
+						moveDirectionInfoOnMap = directionRight;
+					}
+					else {
+						moveDirectionInfoOnMap = directionLeft;
 					}
 					currentX = mx;
 					currentY = my;
@@ -336,26 +341,50 @@ public class Project3 extends PApplet {
 		
 		if (data.isMoving) {
 			//data.moveData();
+			clearScreen();
 			data.isMoving = false;
+		}
+		if (Util.somethingRemoved) {
+			Util.somethingRemoved = false;
+			clearScreen();
 		}
 		
 		if (!Util.isDataOn && !Util.isMenuOn) {
-			if (moveDirection != -1) {
-				if (moveDirection == directionLeft) {
-					System.out.println("Right " + Util.infoStringIndex);
-					if (Util.infoStringIndex < Util.infoString.length-1) {
-						Util.infoStringIndex++;
+			if (touchedAbout) {
+				if (moveDirectionAbout != -1) {
+					if (moveDirectionAbout == directionLeft) {
+						System.out.println("Right " + Util.infoStringIndex);
+						if (Util.infoStringIndex < Util.infoString.length-1) {
+							Util.infoStringIndex++;
+						}
+					}
+					else {
+						System.out.println("Left " + Util.infoStringIndex);
+						if (Util.infoStringIndex > 0) {
+							Util.infoStringIndex--;
+						}
 					}
 				}
-				else {
-					System.out.println("Left " + Util.infoStringIndex);
-					if (Util.infoStringIndex > 0) {
-						Util.infoStringIndex--;
+			}
+			if (touchedInfoOnMap) {
+				if (Util.isMapAnimationOn) {
+					if (moveDirectionInfoOnMap == directionLeft) {
+						System.out.println("Right " + Util.selectedInfoPane);
+						if (Util.selectedInfoPane < Util.maxPanels -1) {
+							Util.selectedInfoPane++;
+						}
+					}
+					else {
+						System.out.println("Left " + Util.selectedInfoPane);
+						if (Util.selectedInfoPane > 0) {
+							Util.selectedInfoPane--;
+						}
 					}
 				}
 			}
 		}
-		
+		touchedInfoOnMap = false;
+		touchedAbout = false;
 		drawOnce();
 	}
 	
@@ -406,7 +435,6 @@ public class Project3 extends PApplet {
 
 	public void touchUp(int ID, float xPos, float yPos, float xWidth,
 			float yWidth) {
-		touchList.remove(ID);
 		System.out.println("Released Touch "+ID);
 		myReleased(ID, xPos, yPos);
 	}

@@ -34,6 +34,7 @@ public class MenuManager {
 	private ArrayList<Button> compareButtonList4;
 	private	ArrayList<Button> listList;
 	private ArrayList<Button> infoPaneButtonList;
+	private ArrayList<Button> timeLineList;
 	
 	private Button cancelButton;
 	private Button quitButton;
@@ -87,6 +88,7 @@ public class MenuManager {
 		compareButtonList4 = new ArrayList<Button>();
 		listList = new ArrayList<Button>();
 		infoPaneButtonList = new ArrayList<Button>();
+		timeLineList = new ArrayList<Button>();
 		
 		cancelButton = new Button(parent, this.x, this.y, this.buttonW, this.buttonH);
 		cancelButton.setButton(Colors.button_red, true, true, Colors.button_background, "Close");
@@ -256,13 +258,13 @@ public class MenuManager {
 	
 	public void draw() {
 		if (Util.isMapAnimationOn && !Util.isDataOn) {
-			this.parent.pushStyle();
-			this.parent.fill(Colors.transparentBlack);
-			this.parent.rect(Util.screenW / 6, 0, Util.screenW * 4 /6, Util.screenH);
-			this.parent.popStyle();
-			playButton.draw();
+//			this.parent.pushStyle();
+//			this.parent.fill(Colors.transparentBlack);
+//			this.parent.rect(Util.screenW / 6, 0, Util.screenW * 4 /6, Util.screenH);
+//			this.parent.popStyle();
+//			playButton.draw();
 		}
-		if (Util.isMenuOn) {
+		if (Util.isMenuOn && !Util.isCompareOptionsOn) {
 			parent.pushStyle();
 			parent.fill(Colors.transparentGray);
 			parent.rect(0,0,Util.screenW, Util.screenH);
@@ -405,6 +407,7 @@ public class MenuManager {
 			if (mapButton.checkIn(posX, posY)) {
 				Util.isDataButtonsOn = false;
 				Util.isConfirm = false;
+				Util.isInfoOn = false;
 				Util.isMapButtonsOn = Util.isMapButtonsOn? false:true;
 				Util.isCompareOptionsOn = false;
 				quitButton.setName("Quit");
@@ -415,6 +418,7 @@ public class MenuManager {
 				Util.isDataButtonsOn = Util.isDataButtonsOn? false:true;
 				Util.isMapButtonsOn = false;
 				Util.isConfirm = false;
+				Util.isInfoOn = false;
 				Util.isCompareOptionsOn = false;
 				quitButton.setName("Quit");
 				cancelButton.setName("Close");
@@ -424,7 +428,7 @@ public class MenuManager {
 				if (allDataButtonC.checkIn(posX, posY)) {
 					//dataVar.setVisible(true, "allData");
 					dataVar.setVisible(true, Util.CIVILIAN);
-					clear();
+					//clear();
 					Util.isDataOn = true;
 					Util.isCompareOptionsOn = false;
 					Util.isMapOnTop = false;
@@ -432,7 +436,7 @@ public class MenuManager {
 				if (allDataButtonM.checkIn(posX, posY)) {
 					//dataVar.setVisible(true, "allData");
 					dataVar.setVisible(true, Util.MILITARY);
-					clear();
+					//clear();
 					Util.isDataOn = true;
 					Util.isCompareOptionsOn = false;
 					Util.isMapOnTop = false;
@@ -450,7 +454,7 @@ public class MenuManager {
 					dataVar.setVisible(true, "holocaust");
 					Util.isDataOn = true;
 					Util.isCompareOptionsOn = false;
-					clear();
+					//clear();
 					Util.isMapOnTop = false;
 				}
 				if (compareButton.checkIn(posX, posY)) {
@@ -470,7 +474,7 @@ public class MenuManager {
 					resetEverySwitch(false);
 					Util.isMapAnimationOn = true;
 					Util.isMapOnTop = true;
-					playButton.setXY(Util.screenW/2-this.buttonW/2, Util.screenH/2-this.buttonH/2);
+					Util.mapObj.initializeTimeLine();
 					//this.parent.redraw();
 				}
 			}
@@ -512,7 +516,7 @@ public class MenuManager {
 						dataVar.setVisible(true, b.getName());
 						Util.isDataOn = true;
 						Util.isMapOnTop = false;
-						clear();
+						//clear();
 					}
 				}
 			}
@@ -540,26 +544,37 @@ public class MenuManager {
 			}
 		}
 		else if (Util.isMapAnimationOn) {
-			// if in Play button are (whole map screen)
-			if (posX >= Util.screenW/6 && posX <= Util.screenW * 5/6) {
-				if (posY >= 0 && posY <= Util.screenH){
-					if (Util.isPlaying == Util.STOP) {
-						Util.isPlaying = Util.PLAY;
-						playButton.setXY(Util.screenW * 5 /6 - (2 * this.buttonW) - Util.scale(5), Util.screenH - this.buttonH - Util.scale(2.5f));
-						Util.timer = 0;
-					}
-					else if (Util.isPlaying == Util.PLAY) {
-						Util.isPlaying = Util.PAUSE;
-					}
-					else if (Util.isPlaying == Util.PAUSE) {
-						Util.isPlaying = Util.PLAY;
-					}
+			ArrayList<Integer> temp = new ArrayList<Integer>();
+			float x = 0, y = 0, w = 0, h = 0;
+			for (Button b : timeLineList) {
+				if (b.checkIn(posX, posY)) {
+					temp.add(Integer.valueOf(b.getName()));
+					x = b.myX;
+					y = b.myY;
+					w = b.myWidth;
+					h = b.myHeight;
+					Util.isInfoOn = true;
+					Util.selectedInfoPane = 0;
 				}
+			}
+			if (temp.size() != 0) {
+				Util.mapObj.setTimeLineInfo(x, y, w, h, temp);
+				Util.maxPanels = temp.size();
 			}
 		}
 	}
 	
 	public void setDataVars(Data dataVar) {
 		this.dataVar = dataVar;
+	}
+	
+	public void addButtonToTimeLineList(float x, float y, float w, float h, String name) {
+		Button b = new Button(parent, x, y, w, h);
+		b.setButton(Colors.RED, false, true, Colors.DARK_RED, name);
+		timeLineList.add(b);
+	}
+	
+	public void emptyTimeLineList() {
+		timeLineList = new ArrayList<Button>();
 	}
 }

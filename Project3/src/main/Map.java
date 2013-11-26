@@ -28,6 +28,7 @@ public class Map {
 	private PApplet parent;
 	private PShape x, y;
 	private PShape child;
+	PShape china;
 	private Hashtable<String,TypeShapeColorPair> ht;
 	//private Hashtable<String,TypeShapeColorPair> allChildren;
 	private Hashtable<Integer, TypeEventsData> eventsDataHt;
@@ -35,6 +36,14 @@ public class Map {
 	private int keyCounter;
 	
 	private PImage bulletHole;
+	
+	
+	private float tl_x;
+	private float tl_y;
+	private float tl_w;
+	private float tl_h;
+	private ArrayList<Integer> tl_idList;
+	
 	
 	public Map(PApplet p, String file) {
 		this.parent = p;
@@ -47,9 +56,13 @@ public class Map {
 		ht = new Hashtable<String, TypeShapeColorPair>();
 		eventsDataHt = new Hashtable<Integer, TypeEventsData>();
 		factsList = new ArrayList<String>();
+		tl_idList = new ArrayList<Integer>();
 		
 		bulletHole = new PImage();
 		keyCounter = 1;
+		
+		china = map.getChild("path3691");
+		china.scale(Util.scale(0.55f/2f), Util.scale(0.35f/2f));
 	}
 	
 	void drawOverViewMap() {
@@ -67,8 +80,16 @@ public class Map {
 			//System.out.println(tp.getName() + tp.getColor());
 			tempShape.disableStyle();
 			parent.fill(color);
+			parent.noStroke();
 			parent.shape(tempShape, Util.screenW/6, 0);
 		}
+		
+		
+		china.disableStyle();
+		parent.fill(Colors.ALLIES);
+		//parent.shape(china, -894,-7);
+		parent.shape(china, -Util.scale(447),-Util.scale(3.5f));
+		china.enableStyle();
 		
 		parent.noStroke();
 		parent.smooth();
@@ -143,8 +164,165 @@ public class Map {
 		parent.stroke(Colors.DARK_GRAY);
 	}
 	
+	public void drawTimeline() {
+		try {
+			drawOverViewMap();
+			Util.menuObj.emptyTimeLineList();
+			
+			parent.pushStyle();
+			parent.fill(Colors.transparentBlack);
+			parent.rect(Util.screenW / 6, 0, Util.screenW * 4 /6, Util.screenH);
+			parent.fill(Colors.DARK_WHITE);
+			parent.stroke(Colors.DARK_WHITE);
+			parent.stroke(Util.scale(0.5f));
+			parent.rect(Util.screenW/6 + Util.scale(30), Util.screenH - Util.scale(30), Util.screenW * 4/6 - Util.scale(60), Util.scale(10));
+			parent.popStyle();
+			
+			int start = 1937;
+			int end = 1945;
+			int counter = 0;
+			float x = Util.screenW / 6 + Util.scale(30);
+			while(start+counter < end) {
+				parent.pushStyle();
+				float xPrime = x;
+				counter++;
+				x = PApplet.map(start + counter, start, end, Util.screenW / 6 + Util.scale(30), Util.screenW * 5/6 - Util.scale(30));
+				parent.stroke(Colors.BLACK);
+				parent.line(x, Util.screenH - Util.scale(30), x, Util.screenH - Util.scale(20));
+				parent.fill(Colors.WHITE);
+				parent.textSize(Util.fontMedium);
+				parent.textAlign(PConstants.CENTER, PConstants.CENTER);
+				parent.text(start + counter, x-(x-xPrime)/2, Util.screenH - Util.scale(10));
+				
+				int monS = 0;
+				int monE = 12;
+				int monCounter = 0;
+				float monX;
+				while(monS + monCounter < monE) {
+					monCounter++;
+					monX = PApplet.map(monS+monCounter, monS, monE, xPrime, x);
+					parent.stroke(Colors.white);
+					parent.line(monX, Util.screenH - Util.scale(27), monX, Util.screenH - Util.scale(23));
+				}
+				
+				parent.popStyle();
+			}
+			
+			Enumeration keys = eventsDataHt.keys();
+			int key;
+			while(keys.hasMoreElements()) {
+				key = (Integer)keys.nextElement();
+				int dd = this.eventsDataHt.get(key).getDd();
+				int mm = this.eventsDataHt.get(key).getMm();
+				int yyyy = this.eventsDataHt.get(key).getYyyy();
+				int id = this.eventsDataHt.get(key).getId();
+				float mapYear = PApplet.map(yyyy, start, end, Util.screenW / 6 + Util.scale(30), Util.screenW * 5/6 - Util.scale(30));
+				float mapYearPrev = PApplet.map(yyyy-1, start, end, Util.screenW / 6 + Util.scale(30), Util.screenW * 5/6 - Util.scale(30));
+				float mapMonth = PApplet.map(mm-1, 0, 12, mapYearPrev, mapYear);
+				float mapMonthPrev = PApplet.map(mm-2, 0, 12, mapYearPrev, mapYear);
+				
+				parent.fill(Colors.RED);
+				parent.rect(mapMonth, Util.screenH - Util.scale(27), mapMonth - mapMonthPrev, Util.scale(4));
+				
+				Util.menuObj.addButtonToTimeLineList(mapMonth, Util.screenH - Util.scale(30), mapMonth - mapMonthPrev, Util.scale(10), String.valueOf(id));
+			
+			}
+		
+			if (Util.isInfoOn) {
+				drawTimeLineInfo();
+			}
+			else {
+				parent.pushStyle();
+				parent.fill(Colors.DARKER_BLUE);
+				parent.stroke(Colors.DARKER_BLUE);
+				parent.strokeWeight(Util.scale(0.5f));
+				parent.rect(Util.screenW/6 + Util.scale(30), Util.screenH/3 + Util.scale(10), Util.screenW *4/6 - Util.scale(60), Util.screenH/3 - Util.scale(20), Util.dataWindowRadius);
+				parent.fill(Colors.WHITE);
+				parent.textAlign(PConstants.CENTER, PConstants.BOTTOM);
+				parent.textSize(Util.fontLarge);
+				parent.text(Util.timelingTag, Util.screenW/2, Util.screenH/2);
+				parent.textAlign(PConstants.CENTER, PConstants.TOP);
+				parent.textSize(Util.fontRegular2);
+				parent.text(Util.timelingTag2, Util.screenW/2, Util.screenH/2);
+				parent.popStyle();
+			}
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
-	public void drawEventsMap() {
+	
+	public void setTimeLineInfo(float x, float y, float w, float h, ArrayList<Integer> id_list) {
+		
+		this.tl_x = x;
+		this.tl_y = y;
+		this.tl_w = w;
+		this.tl_h = h;
+		this.tl_idList = id_list;
+		
+	}
+	
+	public void drawTimeLineInfo() {
+		
+		parent.pushStyle();
+		parent.fill(Colors.DARKERER_BLUE);
+		parent.stroke(Colors.DARKER_BLUE);
+		parent.strokeWeight(Util.scale(0.5f));
+		parent.rect(tl_x, Util.screenH - Util.scale(27), tl_w, Util.scale(4));
+		
+		parent.beginShape();
+			parent.vertex(tl_x, tl_y);
+			parent.vertex(tl_x + tl_w, tl_y);
+			parent.vertex(tl_x + tl_w, tl_y - Util.scale(20));
+			parent.vertex(Util.screenW * 5/6 - Util.scale(30), tl_y - Util.scale(20));
+			parent.vertex(Util.screenW * 5/6 - Util.scale(30), Util.scale(30));
+			parent.vertex(Util.screenW /6 + Util.scale(30), Util.scale(30));
+			parent.vertex(Util.screenW /6 + Util.scale(30), tl_y - Util.scale(20));
+			parent.vertex(tl_x, tl_y - Util.scale(20));
+			parent.vertex(tl_x, tl_y);
+		parent.endShape();
+		
+		parent.popStyle();
+		
+		parent.pushStyle();
+		parent.fill(Colors.DARKER_BLUE);
+		parent.stroke(Colors.DARKER_BLUE);
+		parent.strokeWeight(Util.scale(0.5f));
+		parent.rect(Util.screenW / 6 + Util.scale(32), Util.scale(42), Util.screenW * 4 / 6 - Util.scale(64), Util.screenH - Util.scale(94), Util.dataWindowRadius);
+		parent.popStyle();
+		
+		float tabX = Util.screenW / 6 + Util.scale(32);
+		float tabY = Util.scale(32);
+		float tabW = (Util.screenW * 4/6 - Util.scale(60))/3 - Util.scale(1.5f);
+		float tabH = Util.scale(10);
+		
+		for (int i=0; i < tl_idList.size(); i++) {
+			parent.pushStyle();
+			if (Util.selectedInfoPane == i) {
+				parent.fill(Colors.DARKER_BLUE);
+				parent.stroke(Colors.DARKER_BLUE);
+			}
+			else {
+				parent.fill(Colors.DARKERER_BLUE);
+				parent.stroke(Colors.DARKER_BLUE);
+			}
+			parent.strokeWeight(Util.scale(0.5f));
+			parent.rect(tabX + tabW*i, tabY, tabW, tabH, Util.dataWindowRadius);
+			if (Util.selectedInfoPane == i) {
+				parent.fill(Colors.transparentBlue);
+			}
+			else {
+				parent.fill(Colors.DARKER_BLUE);
+			}
+			
+			parent.textSize(Util.fontRegular2);
+			parent.textAlign(PConstants.LEFT, PConstants.CENTER);
+			parent.text(eventsDataHt.get(tl_idList.get(tl_idList.size() - i -1)).getDate(), tabX + tabW*i + Util.scale(2), tabY + tabH/2);
+			parent.popStyle();
+		}
+		System.out.println("Selected : " + Util.selectedInfoPane + " : " + eventsDataHt.get(tl_idList.get(tl_idList.size() - Util.selectedInfoPane -1)).getName());
+		
 		int id;
 		int dd;
 		int mm;
@@ -158,36 +336,92 @@ public class Map {
 		Hashtable<String, TypeNameIdPair> tempNameIdHt;
 		Hashtable<String, TypeShapeColorPair> tempShapeColorHt;
 		
-		id = this.eventsDataHt.get(keyCounter).getId();
-		dd = this.eventsDataHt.get(keyCounter).getDd();
-		mm = this.eventsDataHt.get(keyCounter).getMm();
-		yyyy = this.eventsDataHt.get(keyCounter).getYyyy();
-		date = this.eventsDataHt.get(keyCounter).getDate();
-		name = this.eventsDataHt.get(keyCounter).getName();
-		description = this.eventsDataHt.get(keyCounter).getDescription();
-		file = this.eventsDataHt.get(keyCounter).getFile();
-		lat = this.eventsDataHt.get(keyCounter).getLat();
-		lon = this.eventsDataHt.get(keyCounter).getLon();
-		tempNameIdHt = this.eventsDataHt.get(keyCounter).getNameIdHt();
-		tempShapeColorHt = this.eventsDataHt.get(keyCounter).getHt();
-		if (tempShapeColorHt.isEmpty())
-			System.out.println("Empty");
-		Enumeration<String> keys2 = tempShapeColorHt.keys();
-		String key2;
-		while(keys2.hasMoreElements()){
-			key2 = (String)keys2.nextElement();
-			PShape tempShape = tempShapeColorHt.get(key2).getShape();
-			//System.out.println(tempShape);
-			int tempColor = tempShapeColorHt.get(key2).getColor();
-			tempShape.disableStyle();
-			parent.fill(tempColor);
-			parent.shape(tempShape, Util.screenW/6, 0);
-			//System.out.println(tempColor);
-		}
+		int index = tl_idList.get(tl_idList.size() - Util.selectedInfoPane - 1);
 		
-		if (keyCounter >= eventsDataHt.size()) {
-			Util.isPlaying = Util.STOP;
-			System.out.println("Stop");
+		id = this.eventsDataHt.get(index).getId();
+		dd = this.eventsDataHt.get(index).getDd();
+		mm = this.eventsDataHt.get(index).getMm();
+		yyyy = this.eventsDataHt.get(index).getYyyy();
+		date = this.eventsDataHt.get(index).getDate();
+		name = this.eventsDataHt.get(index).getName();
+		description = this.eventsDataHt.get(index).getDescription();
+		file = this.eventsDataHt.get(index).getFile();
+		lat = this.eventsDataHt.get(index).getLat();
+		lon = this.eventsDataHt.get(index).getLon();
+		tempNameIdHt = this.eventsDataHt.get(index).getNameIdHt();
+		tempShapeColorHt = this.eventsDataHt.get(index).getHt();
+		
+		parent.pushStyle();
+		parent.fill(Colors.gray);
+		parent.textSize(Util.fontLarge);
+		parent.textAlign(PConstants.LEFT, PConstants.CENTER);
+		parent.text(name, tabX + Util.scale(2), tabY + tabH + Util.scale(5));
+		parent.stroke(Colors.gray);
+		parent.line(tabX + Util.scale(2), tabY + tabH + Util.scale(10), tabX + Util.scale(387), tabY + tabH + Util.scale(10));
+		parent.fill(Colors.transparentBlue);
+		parent.textSize(Util.fontRegular2);
+		parent.textAlign(PConstants.LEFT, PConstants.TOP);
+		parent.noStroke();
+		parent.text(description, tabX + Util.scale(2), tabY + tabH + Util.scale(16), Util.scale(200), Util.screenH/2);
+		PImage image = parent.loadImage(parent.sketchPath + "/data/images/" + id + ".jpg");
+		parent.imageMode(PConstants.CENTER);
+		image.resize((int)(Util.scale(80)), (int)Util.scale(80));
+		parent.image(image,Util.screenW /2 + Util.screenW / 6, Util.screenH/2);
+		parent.popStyle();
+		
+	}
+	
+	
+	public void drawEventsMap() {
+		try {
+			int id;
+			int dd;
+			int mm;
+			int yyyy;
+			String date;
+			String name;
+			String description;
+			String file;
+			float lat;
+			float lon;
+			Hashtable<String, TypeNameIdPair> tempNameIdHt;
+			Hashtable<String, TypeShapeColorPair> tempShapeColorHt;
+			keyCounter = 1;
+			id = this.eventsDataHt.get(keyCounter).getId();
+			dd = this.eventsDataHt.get(keyCounter).getDd();
+			mm = this.eventsDataHt.get(keyCounter).getMm();
+			yyyy = this.eventsDataHt.get(keyCounter).getYyyy();
+			date = this.eventsDataHt.get(keyCounter).getDate();
+			name = this.eventsDataHt.get(keyCounter).getName();
+			description = this.eventsDataHt.get(keyCounter).getDescription();
+			file = this.eventsDataHt.get(keyCounter).getFile();
+			lat = this.eventsDataHt.get(keyCounter).getLat();
+			lon = this.eventsDataHt.get(keyCounter).getLon();
+			tempNameIdHt = this.eventsDataHt.get(keyCounter).getNameIdHt();
+			tempShapeColorHt = this.eventsDataHt.get(keyCounter).getHt();
+	//		if (tempShapeColorHt.isEmpty())
+	//			System.out.println("Empty");
+			Enumeration<String> keys2 = tempShapeColorHt.keys();
+			String key2;
+			PShape tempShape;
+			while(keys2.hasMoreElements()){
+				key2 = (String)keys2.nextElement();
+				tempShape = tempShapeColorHt.get(key2).getShape();
+				int tempColor = tempShapeColorHt.get(key2).getColor();
+				//tempShape = y.getChild(key2);
+				tempShape.disableStyle();
+				//
+				parent.fill(tempColor);
+				parent.shape(tempShape, Util.screenW/6, 0);
+				System.out.println(key2);
+			}
+			
+			if (keyCounter >= eventsDataHt.size()) {
+				Util.isPlaying = Util.STOP;
+				System.out.println("Stop");
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -273,7 +507,8 @@ public class Map {
 				drawOverViewMap();
 			}
 			else {
-				drawEventsMap();
+				//drawEventsMap();
+				drawTimeline();
 			}
 			//drawFacts();
 			/*
@@ -371,7 +606,7 @@ public class Map {
 					String name2 = tempNameIdHt.get(key2).getName();
 					String side = tempNameIdHt.get(key2).getSide();
 					int color = 0;
-					PShape child = y.getChild(pathId);
+					child = y.getChild(pathId);
 					child.scale(Util.scale(0.55f/2f), Util.scale(0.35f/2f));
 					child.enableStyle();
 					if (side.compareTo(Util.ALLIES) == 0 && name.compareTo("Soviet Union") == 0)
@@ -418,5 +653,16 @@ public class Map {
 	public boolean changeInfo(float mx, float my, float currentX, float currentY) {
 		
 		return false;
+	}
+	
+	public boolean isInInfoPaneOnMap(float mx, float my) {
+		return (mx >= Util.screenW/6 + Util.scale(30) && mx <= Util.screenW *5/6 - Util.scale(30) && my >= Util.scale(30) && my <= Util.screenH - Util.scale(50)) ? true : false;
+	}
+	
+	public void initializeTimeLine() {
+		tl_x = Util.screenW/6 + Util.scale(30);
+		tl_y = Util.scale(30);
+		tl_w = Util.screenW *4/6 - Util.scale(60);
+		tl_h = Util.screenH - Util.scale(80);
 	}
 }

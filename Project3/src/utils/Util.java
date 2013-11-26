@@ -10,6 +10,7 @@ package utils;
 
 
 import main.Map;
+import main.MenuManager;
 import main.Project3;
 import processing.core.*;
 
@@ -113,6 +114,7 @@ public class Util {
 	public static String buttonCountries[] = {"Australia","Austria","Belgium","Bulgaria","Canada","China","Czechoslovakia","Denmark","Finland","France","Germany","Great Britain","Greece","Hungary","India","Italy","Japan","Netherlands","New Zealand","Norway","Philippines","Poland","Romania","South Africa","Soviet Union","Spain","United States","Yugoslavia"};
 	
 	public static Map mapObj;
+	public static MenuManager menuObj;
 	
 	public static int onScreenData = 0;
 	
@@ -120,7 +122,7 @@ public class Util {
 	public static int PLAY = 1;
 	public static int PAUSE = 2;
 	public static int isPlaying = STOP;
-	public static int frameRate = 120;
+	public static int frameRate = 60;
 	public static int timer = 0;
 	public static int speed = 1;
 	
@@ -136,4 +138,11 @@ public class Util {
 	public static String infoString4 = "internal mass killings in the Soviet Union, and the bombing of civilian targets in German and Japanese cities by the Allies. In total, World War II produced about 50 million deaths, more than any other war to date.";
 	public static String infoString[] = {infoString1, infoString2, infoString3, infoString4};
 	public static int infoStringIndex = 0;
+	
+	public static boolean somethingRemoved = false;
+	public static boolean isInfoOn = false;
+	public static int selectedInfoPane = 0;
+	public static int maxPanels = 0;
+	public static String timelingTag = "Timeline of major events during World War II";
+	public static String timelingTag2 = "(Select a month from timeline below to view events)";
 }

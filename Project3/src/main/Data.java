@@ -197,28 +197,39 @@ public class Data {
 	
 	public boolean moveData() {
 		if (allDataC.isOutlineMoved()) {
+			clearScreen();
 			allDataC.setWindowatOutline();
 			this.isMoving = false;
 			return true;
 		}
 		if (allDataM.isOutlineMoved()) {
+			clearScreen();
 			allDataM.setWindowatOutline();
 			this.isMoving = false;
 			return true;
 		}
 		
 		if (holocaustData.isOutlineMoved()) {
+			clearScreen();
 			holocaustData.setWindowatOutline();
 			this.isMoving = false;
 			return true;
 		}
 		for (DataPlot dp: allPiCharts) {
 			if (dp.isOutlineMoved()) {
+				clearScreen();
 				dp.setWindowatOutline();
 				this.isMoving = false;
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	void clearScreen() {
+		parent.pushStyle();
+		parent.fill(Colors.BACKGROUND_COLOR);
+		parent.rect(0,0,Util.screenW, Util.screenH);
+		parent.popStyle();
 	}
 }

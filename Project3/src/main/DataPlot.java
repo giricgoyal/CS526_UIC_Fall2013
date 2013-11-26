@@ -42,8 +42,8 @@ public class DataPlot extends BasicControl {
 		dataWinY = y;
 		dataWinW = width;
 		dataWinH = height;
-		outlineX = dataWinX;
-		outlineY = dataWinY;
+		outlineX = Util.screenW * 2;
+		outlineY = Util.screenH * 2;
 		isPiChart = false;
 	}
 
@@ -505,6 +505,10 @@ public class DataPlot extends BasicControl {
 				this.isVisible = false;
 				Util.onScreenData--;
 				System.out.println("On screen objects : " + Util.onScreenData);
+				outlineX = Util.screenW * 2;
+				outlineY = Util.screenH * 2;
+				myX = outlineX;
+				myY = outlineY;
 				return false;
 			}
 		}
@@ -534,6 +538,12 @@ public class DataPlot extends BasicControl {
 				this.isVisible = false;
 				Util.onScreenData--;
 				System.out.println("On screen objects : " + Util.onScreenData);
+				outlineX = Util.screenW * 2;
+				outlineY = Util.screenH * 2;
+				myX = outlineX;
+				myY = outlineY;
+				Util.somethingRemoved = true;
+				//clearScreen();
 				return false;
 			}
 			return true;
@@ -560,5 +570,12 @@ public class DataPlot extends BasicControl {
 	public void setWindowatOutline() {
 		this.myX = outlineX;
 		this.myY = outlineY;
+	}
+	
+	void clearScreen() {
+		parent.pushStyle();
+		parent.fill(Colors.BACKGROUND_COLOR);
+		parent.rect(0,0,Util.screenW, Util.screenH);
+		parent.popStyle();
 	}
 }
