@@ -12,6 +12,7 @@ from util import *
 from cameraManager import *
 from visualize import *
 from system import *
+from graph import *
 
 # -----------------------------------------------------------------
 # variables
@@ -32,6 +33,28 @@ earthLikeListButton = None
 habitableListButton = None
 sunLikeListButton = None
 userDefinedList = None
+
+removeGraphButton = None
+
+
+radiusMenuXButton = None
+distFromStarMenuXButton = None
+periodMenuXButton = None
+eccentricityMenuXButton = None
+rotationMenuXButton = None
+inclinationMenuXButton = None
+massMenuXButton = None
+
+radiusMenuYButton = None
+distFromStarMenuYButton = None
+periodMenuYButton = None
+eccentricityMenuYButton = None
+rotationMenuYButton = None
+inclinationMenuYButton = None
+massMenuYButton = None
+
+menuButtonsX = []
+menuButtonsY = []
 
 
 
@@ -134,6 +157,67 @@ def setHabitableList(val):
 def setSunLikeList(val):
 	global sunLikeListButton
 	sunLikeListButton.setChecked(val)
+
+
+def showremoveGraph():
+	global removeGraphButton
+	if removeGraphButton.isChecked():
+		showGraph(getxAxisDict(), getyAxisDict())
+	else:
+		removeGraph()
+
+def setGraphAxis():
+	global xAxisDict, yAxisDict
+	for button in menuButtonsX:
+		if button.isChecked():
+			if button.getText() == "Radius":
+				print button.getText()
+				xAxisDict = planetRadiusDict.copy()
+			elif button.getText() == "Distance from Star":
+				print button.getText()
+				xAxisDict = planetDistFromStarDict.copy()
+			elif button.getText() == "Revolution Period":
+				print button.getText()
+				xAxisDict = planetPeriodDict.copy()
+			elif button.getText() == "Eccentricity":
+				print button.getText()
+				xAxisDict = planetEccentricityDict.copy()
+			elif button.getText() == "Rotation":
+				print button.getText()
+				xAxisDict = planetRotationDict.copy()
+			elif button.getText() == "Inclination":
+				print button.getText()
+				xAxisDict = planetInclinationDict.copy()
+			elif button.getText() == "Mass":
+				print button.getText()
+				xAxisDict = planetMassDict.copy()
+	for button in menuButtonsY:
+		if button.isChecked():
+			if button.getText() == "Radius":
+				print button.getText()
+				yAxisDict = planetRadiusDict.copy()
+			elif button.getText() == "Distance from Star":
+				print button.getText()
+				yAxisDict = planetDistFromStarDict.copy()
+			elif button.getText() == "Revolution Period":
+				print button.getText()
+				yAxisDict = planetPeriodDict.copy()
+			elif button.getText() == "Eccentricity":
+				print button.getText()
+				yAxisDict = planetEccentricityDict.copy()
+			elif button.getText() == "Rotation":
+				print button.getText()
+				yAxisDict = planetRotationDict.copy()
+			elif button.getText() == "Inclination":
+				print button.getText()
+				yAxisDict = planetInclinationDict.copy()
+			elif button.getText() == "Mass":
+				print button.getText()
+				yAxisDict = planetMassDict.copy()
+
+	showGraph(xAxisDict, yAxisDict)
+
+
 	
 # -----------------------------------------------------------------
 # main
@@ -148,7 +232,8 @@ scaleMenu = mainMenu.addSubMenu("Scale")
 visitSystemMenu = mainMenu.addSubMenu("Visit")
 listsMenu = mainMenu.addSubMenu("Lists")
 optionsMenu = mainMenu.addSubMenu("Options")
-
+xAxisMenu = mainMenu.addSubMenu("xAxis")
+yAxisMenu = mainMenu.addSubMenu("yAxis")
 
 # level 2
 scaleContainer = scaleMenu.addContainer().getContainer()
@@ -174,6 +259,14 @@ optionsMenuContainer.setLayout(ContainerLayout.LayoutVertical)
 
 listsContainer = listsMenu.addContainer().getContainer()
 listsContainer.setLayout(ContainerLayout.LayoutVertical)
+
+
+graphContainerX = xAxisMenu.addContainer().getContainer()
+graphContainerX.setLayout(ContainerLayout.LayoutVertical)
+
+graphContainerY = yAxisMenu.addContainer().getContainer()
+graphContainerY.setLayout(ContainerLayout.LayoutVertical)
+
 
 
 # buttons
@@ -368,5 +461,130 @@ def initButtons():
 	visualizeButton.setText("Stellar View")
 	visualizeButton.setCheckable(True)
 	visualizeButton.setUIEventCommand('visitVisualization()')
+
+	#removegraph Button
+	global removeGraphButton
+	removeGraphButton = Button.create(optionsMenuContainer)
+	removeGraphButton.setText("Show Graph")
+	removeGraphButton.setCheckable(True)
+	removeGraphButton.setUIEventCommand('showremoveGraph()')
+
+	# menuX
+	global radiusMenuXButton
+	radiusMenuXButton = Button.create(graphContainerX)
+	radiusMenuXButton.setText("Radius")
+	radiusMenuXButton.setCheckable(True)
+	radiusMenuXButton.setRadio(True)
+	menuButtonsX.append(radiusMenuXButton)
+	radiusMenuXButton.setUIEventCommand('setGraphAxis()')
+
+	global distFromStarMenuXButton
+	distFromStarMenuXButton = Button.create(graphContainerX)
+	distFromStarMenuXButton.setText("Distance from Star")
+	distFromStarMenuXButton.setCheckable(True)
+	distFromStarMenuXButton.setRadio(True)
+	distFromStarMenuXButton.setChecked(True)
+	menuButtonsX.append(distFromStarMenuXButton)
+	distFromStarMenuXButton.setUIEventCommand('setGraphAxis()')
+
+	global periodMenuXButton
+	periodMenuXButton = Button.create(graphContainerX)
+	periodMenuXButton.setText("Revolution Period")
+	periodMenuXButton.setCheckable(True)
+	periodMenuXButton.setRadio(True)
+	menuButtonsX.append(periodMenuXButton)
+	periodMenuXButton.setUIEventCommand('setGraphAxis()')
+
+	global eccentricityMenuXButton
+	eccentricityMenuXButton = Button.create(graphContainerX)
+	eccentricityMenuXButton.setText("Eccentricity")
+	eccentricityMenuXButton.setCheckable(True)
+	eccentricityMenuXButton.setRadio(True)
+	menuButtonsX.append(eccentricityMenuXButton)
+	eccentricityMenuXButton.setUIEventCommand('setGraphAxis()')
+
+	global rotationMenuXButton
+	rotationMenuXButton = Button.create(graphContainerX)
+	rotationMenuXButton.setText("Rotation")
+	rotationMenuXButton.setCheckable(True)
+	rotationMenuXButton.setRadio(True)
+	menuButtonsX.append(rotationMenuXButton)
+	rotationMenuXButton.setUIEventCommand('setGraphAxis()')
+
+	global inclinationMenuXButton
+	inclinationMenuXButton = Button.create(graphContainerX)
+	inclinationMenuXButton.setText("Inclination")
+	inclinationMenuXButton.setCheckable(True)
+	inclinationMenuXButton.setRadio(True)
+	menuButtonsX.append(inclinationMenuXButton)
+	inclinationMenuXButton.setUIEventCommand('setGraphAxis()')
+
+	global massMenuXButton
+	massMenuXButton = Button.create(graphContainerX)
+	massMenuXButton.setText("Mass")
+	massMenuXButton.setCheckable(True)
+	massMenuXButton.setRadio(True)
+	menuButtonsX.append(massMenuXButton)
+	massMenuXButton.setUIEventCommand('setGraphAxis()')
+
+	# menuY
+	global radiusMenuYButton
+	radiusMenuYButton = Button.create(graphContainerY)
+	radiusMenuYButton.setText("Radius")
+	radiusMenuYButton.setCheckable(True)
+	radiusMenuYButton.setRadio(True)
+	menuButtonsY.append(radiusMenuYButton)
+	radiusMenuYButton.setUIEventCommand('setGraphAxis()')
+
+	global distFromStarMenuYButton
+	distFromStarMenuYButton = Button.create(graphContainerY)
+	distFromStarMenuYButton.setText("Distance from Star")
+	distFromStarMenuYButton.setCheckable(True)
+	distFromStarMenuYButton.setRadio(True)
+	menuButtonsY.append(distFromStarMenuYButton)
+	distFromStarMenuYButton.setChecked(True)
+	distFromStarMenuYButton.setUIEventCommand('setGraphAxis()')
+
+	global periodMenuYButton
+	periodMenuYButton = Button.create(graphContainerY)
+	periodMenuYButton.setText("Revolution Period")
+	periodMenuYButton.setCheckable(True)
+	periodMenuYButton.setRadio(True)
+	menuButtonsY.append(periodMenuYButton)
+	periodMenuYButton.setUIEventCommand('setGraphAxis()')
+
+	global eccentricityMenuYButton
+	eccentricityMenuYButton = Button.create(graphContainerY)
+	eccentricityMenuYButton.setText("Eccentricity")
+	eccentricityMenuYButton.setCheckable(True)
+	eccentricityMenuYButton.setRadio(True)
+	menuButtonsY.append(eccentricityMenuYButton)
+	eccentricityMenuYButton.setUIEventCommand('setGraphAxis()')
+
+	global rotationMenuYButton
+	rotationMenuYButton = Button.create(graphContainerY)
+	rotationMenuYButton.setText("Rotation")
+	rotationMenuYButton.setCheckable(True)
+	rotationMenuYButton.setRadio(True)
+	menuButtonsY.append(rotationMenuYButton)
+	rotationMenuYButton.setUIEventCommand('setGraphAxis()')
+
+	global inclinationMenuYButton
+	inclinationMenuYButton = Button.create(graphContainerY)
+	inclinationMenuYButton.setText("Inclination")
+	inclinationMenuYButton.setCheckable(True)
+	inclinationMenuYButton.setRadio(True)
+	menuButtonsY.append(inclinationMenuYButton)
+	inclinationMenuYButton.setUIEventCommand('setGraphAxis()')
+
+	global massMenuYButton
+	massMenuYButton = Button.create(graphContainerY)
+	massMenuYButton.setText("Mass")
+	massMenuYButton.setCheckable(True)
+	massMenuYButton.setRadio(True)
+	menuButtonsY.append(massMenuYButton)
+	massMenuYButton.setUIEventCommand('setGraphAxis()')
+
+
 
 

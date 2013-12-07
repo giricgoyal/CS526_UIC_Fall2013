@@ -139,7 +139,7 @@ def createEach2DSystem(system, h, v, panelCounter):
 			# text 
 			text = str(name)
 			
-			t1 = Text3D.create('fonts/verdana.ttf', 1, text)
+			t1 = Text3D.create('data/fonts/helvetica.ttf', 1, text)
 			t1.setPosition(pos2)
 			t1.yaw(pi/2)
 			#t1.setFontResolution(256)
@@ -162,7 +162,7 @@ def createEach2DSystem(system, h, v, panelCounter):
 			if name != "The Sun":
 				text = text + " %.3f light years from you!" % (allSystemsInfo[system][name].starDistance * PCtoLY)
 			
-			t1 = Text3D.create('fonts/verdana.ttf', 1, text)
+			t1 = Text3D.create('data/fonts/helvetica.ttf', 1, text)
 			t1.setPosition(Vector3(0.35,0.075,0))
 			t1.yaw(pi)
 			#t1.setFontResolution(256)
@@ -183,7 +183,7 @@ def createEach2DSystem(system, h, v, panelCounter):
 		sSystem.addChild(model)
 		
 		# set effect for the body spheres
-		model.setEffect("textured -v emissive -d "+theSystem[name].texture)
+		model.setEffect("textured -d "+theSystem[name].texture)
 	
 	# show habitable zones 
 	goldiZone = BoxShape.create(4, 25000, (1.0 * (habitableZones[system].habOuter - habitableZones[system].habInner)) * 10)
@@ -274,7 +274,7 @@ def create3DSystems():
 	theSystem = dict()
 	for system in systemList:
 		# set the system name 
-		lightsDict["Solar System"].setEnabled(True)
+		#lightsDict["Solar System"].setEnabled(True)
 		
 		if system == "Solar System":
 			star = "The Sun"
@@ -295,7 +295,7 @@ def create3DSystems():
 				model.setPosition(pos)
 				# set textures
 				model.getMaterial().setProgram("textured")
-				model.setEffect("textured -d "+theSystem[name].texture)
+				model.setEffect("textured -v emissive -d "+theSystem[name].texture)
 				model.setScale(Vector3(theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor, theSystem[name].radius * planetScaleFactor))
 			elif theSystem[name].isStar == 1:
 				setHabitableZone(system, name, theSystem[name].starType)
@@ -305,7 +305,7 @@ def create3DSystems():
 				sunDot.setPosition(pos)
 				sunDot.setScale(Vector3(1, 1, 1))
 				systemNodeDict[system].addChild(sunDot)
-				lightsDict[system].setPosition(pos2)
+				#lightsDict[system].setPosition(pos2)
 				# set textures
 				model.getMaterial().setProgram("textured")
 				model.setEffect("textured -v emissive -d "+theSystem[name].texture)
@@ -331,8 +331,8 @@ def create3DSystems():
 			tiltCenter = SceneNode.create(str(name) + "TiltCenter")
 			planetCenter.addChild(tiltCenter)
 			tiltCenter.addChild(model)
-			if theSystem[name].isStar == 1:
-				tiltCenter.addChild(lightsDict[system])
+#			if theSystem[name].isStar == 1:
+#				tiltCenter.addChild(lightsDict[system])
 			tiltCenter.roll(theSystem[name].inclination/180.0*pi)
 			
 			
@@ -362,7 +362,7 @@ def create3DSystems():
 			addOrbit(theSystem[name].minorA * orbitScaleFactor * userScaleFactor, 0, 0.001, system, name)
 			
 			# deal with labelling everything
-			v = Text3D.create('fonts/verdana.ttf', 1, str(name))
+			v = Text3D.create('data/fonts/helvetica.ttf', 1, str(name))
 			if system == "Solar System":
 				if theSystem[name].isStar == 0:
 					pos1 = Vector3(0, theSystem[name].radius * planetScaleFactor, - theSystem[name].minorA * orbitScaleFactor * userScaleFactor)
@@ -399,14 +399,14 @@ def create3DSystems():
 		inner.setEffect('colored -e #FF000044')
 		inner.getMaterial().setTransparent(True)
 		inner.pitch(-pi * 0.5)
-		inner.setScale(Vector3(orbitScaleFactor * userScaleFactor,orbitScaleFactor * userScaleFactor,0.3))
+		inner.setScale(Vector3(orbitScaleFactor * userScaleFactor,orbitScaleFactor * userScaleFactor,0.5))
 		habiInnerDict[system] = inner
 		
 		outer = CylinderShape.create(1, habitableZones[system].habOuter, habitableZones[system].habOuter, 10, 128)
 		outer.setEffect('colored -e #00FF0044')
 		outer.getMaterial().setTransparent(True)
 		outer.pitch(-pi * 0.5)
-		outer.setScale(Vector3(orbitScaleFactor * userScaleFactor,orbitScaleFactor * userScaleFactor,0.001))
+		outer.setScale(Vector3(orbitScaleFactor * userScaleFactor,orbitScaleFactor * userScaleFactor,0.1))
 		habiOuterDict[system] = outer
 		
 		
@@ -511,7 +511,7 @@ def setInfoVisible(val, name):
 		list = getTexts()
 		counter = 0
 		for text in list:
-			tObj = Text3D.create('fonts/verdana.ttf', 1, text)
+			tObj = Text3D.create('data/fonts/helvetica.ttf', 1, text)
 			tObj.setPosition(0,counter,0)
 			tObj.yaw(pi/2)
 			tObj.setFontResolution(256)

@@ -256,8 +256,14 @@ class starLoc:
 skyBox = None
 scene = None
 
-isCave = True
+isCave = False
 isMovingTile = False
+show3DSystems = True
+show2DSystems = False
+showVisualization = True
+showGraphs = True
+enableSound = True
+
 
 mSun = "1.989E30 kg"
 
@@ -316,6 +322,7 @@ allSystemsInfo = dict()
 starLocations = dict()
 lightsDict = dict()
 
+
 # Lists
 #systemList = ["Solar System", "HD 209458", "alf Cen B", "nu Oph", "Kepler-75", "ups And", "CoRoT-11", "XO-3", "Kepler-22", "MOA-2007-BLG-192-L", "Kepler-11", "Kepler-10", "GJ 1214", "Gl 581", "WASP-33", "30 Ari B", "Kepler-39", "HR 8799", "Kepler-65", "Fomalhaut", "KOI-142", "HD 10180", "Kepler-68", "Kepler-20", "24 Sex", "Kepler-42", "HD 39194", "HD 134987", "HD 60532", "HD 96700", "HD 142", "HD 134060", "HD 215152", "HD 217107", "HD 99492", "GJ 676A", "HD 20794", "HD 128311", "14 Her", "HD 136352", "HD 113538", "HD 190360", "mu Ara", "47 Uma", "Gl 163", "Gliese 876", "55 Cnc", "HD 20003", "GJ 667C", "61 Vir", "HD 69830", "HD 40307"]
 
@@ -365,6 +372,8 @@ systemInfoDict = dict()
 hitWallDict = dict()
 
 
+
+
 # Colors
 colorBlack = Color("#000000FF") # Black
 colorWhite = Color("#FFFFFFFF") # white
@@ -384,11 +393,13 @@ currentSystem = "Solar System"
 # level 1
 allSystems = SceneNode.create('allSystems')
 vizContainer = SceneNode.create('vizContainer')
+graphContainer = SceneNode.create('graphContainer')
 
 # level 2
 universe = SceneNode.create('universe')
 thingsOnTheWall = SceneNode.create('thingsOnTheWall')
 visualization = SceneNode.create('visualization')
+graph = SceneNode.create('graph')
 
 # level 3
 everything = SceneNode.create('everything')
@@ -409,6 +420,57 @@ midWindowY = 3.5 * 0.29 + 0.41
 midWindowW = 1
 midWindowH = 1
 
+# Graph Parameters
+xLabel = "test"
+yLabel = "test"
+
+maxRadius = 0.0
+maxDistFromStar = 0.0
+maxPeriod = 0.0
+maxEccentricity = 0.0
+maxRotation = 0.0
+maxInclination = 0.0
+maxMass = 0.0
+
+minRadius = 0.0
+minDistFromStar = 0.0
+minPeriod = 0.0
+minEccentricity = 0.0
+minRotation = 0.0
+minInclination = 0.0
+minMass = 0.0
+
+
+CONSTANT_RADIUS = "Radius"
+CONSTANT_DISTFROMSTAR = "Distfromstar"
+CONSTANT_PERIOD = "Period"
+CONSTANT_ECCENTRICITY = "Eccentricity"
+CONSTANT_ROTATION = "Rotation"
+CONSTANT_INCLINATION = "Inclination"
+CONSTANT_MASS = "Mass"
+
+
+# graph dict
+planetRadiusDict = dict()
+planetDistFromStarDict = dict()
+planetPeriodDict = dict()
+planetEccentricityDict = dict()
+planetRotationDict = dict()
+planetInclinationDict = dict()
+planetMassDict = dict()
+
+graphGlyphDict = dict()
+graphGlyphLogDict = dict()
+
+xAxisDict = dict()
+yAxisDict = dict()
+
+xAxisConstant = CONSTANT_DISTFROMSTAR
+yAxisConstant = CONSTANT_PERIOD
+
+planetList = []
+
+
 # -----------------------------------------------------------------
 # method definitions
 # get length of semi major axis using eccentricity and semi major axis
@@ -420,8 +482,10 @@ def initSceneNodes():
 	for system in systemList:
 		universe.addChild(systemNodeDict[system])
 	
+	graph.addChild(graphContainer)
 	visualization.addChild(vizContainer)
 	thingsOnTheWall.addChild(allSystems)
+	everything.addChild(graph)
 	everything.addChild(universe)
 	everything.addChild(thingsOnTheWall)
 	everything.addChild(visualization)
@@ -502,3 +566,122 @@ def setIsMovingTile(val):
 def getIsMovingTile():
 	global isMovingTile
 	return isMovingTile
+
+
+def createDictsForGraph():
+	global planetRadiusDict, planetDistFromStarDict, planetPeriodDict, planetEccentricityDict, planetRotationDict, planetInclinationDict, planetMassDict
+	global maxRadius, maxDistFromStar, maxPeriod, maxEccentricity, maxRotation, maxInclination, maxMass
+	global planetList
+
+	for system in systemList:
+		systemOrbit = allSystemsOrbital[system]
+		systemInfo = allSystemsInfo[system]
+		systemLoc = starLocations[system]
+
+		for name, model in systemOrbit.iteritems():
+			if systemOrbit[name].isStar == 0:
+				radius_Original = systemOrbit[name].radius * planetScaleFactor 
+				distFromStar_Original = systemOrbit[name].minorA * userScaleFactor * orbitScaleFactor
+				period_Original = systemOrbit[name].period
+				eccentricity_Original = systemOrbit[name].eccentricity
+				inclination_Original = systemOrbit[name].inclination
+				rotation_Original = systemOrbit[name].rotation
+				mass_Original = systemInfo[name].mass
+				
+				planetRadiusDict[name] = radius_Original
+				planetDistFromStarDict[name] = distFromStar_Original
+				planetPeriodDict[name] = period_Original
+				planetEccentricityDict[name] = eccentricity_Original
+				planetRotationDict[name] = rotation_Original
+				planetInclinationDict[name] = inclination_Original
+				planetMassDict[name] = mass_Original
+
+				planetList.append(name)
+
+	
+	maxRadius = max(planetRadiusDict.values())
+	minRadius = min(value for value in planetRadiusDict.values() if value > 0.0)
+	planetRadiusDict['max'] = maxRadius
+	planetRadiusDict['min'] = minRadius
+	
+	maxDistFromStar = max(planetDistFromStarDict.values())
+	minDistFromStar = min(value for value in planetDistFromStarDict.values() if value > 0.0)
+	planetDistFromStarDict['max'] = maxDistFromStar
+	planetDistFromStarDict['min'] = minDistFromStar
+
+	maxPeriod = max(planetPeriodDict.values())
+	minPeriod = min(value for value in planetPeriodDict.values() if value > 0.0)
+	planetPeriodDict['max'] = maxPeriod
+	planetPeriodDict['min'] = minPeriod
+
+	maxEccentricity = max(planetEccentricityDict.values())
+	minEccentricity = min(value for value in planetEccentricityDict.values() if value > 0.0) 
+	planetEccentricityDict['max'] = maxEccentricity
+	planetEccentricityDict['min'] = minEccentricity
+
+	maxRotation = max(planetRotationDict.values())
+	minRotation = min(value for value in planetRotationDict.values() if value > 0.0)
+	planetRotationDict['max'] = maxRotation
+	planetRotationDict['min'] = minRotation
+
+	maxInclination = max(planetInclinationDict.values())
+	minInclination = min(value for value in planetInclinationDict.values() if value > 0.0)
+	planetInclinationDict['max'] = maxInclination
+	planetInclinationDict['min'] = minInclination
+
+	maxMass = max(planetMassDict.values())
+	minMass = min(value for value in planetMassDict.values() if value > 0.0)
+	planetMassDict['max'] = maxMass
+	planetMassDict['min'] = minMass
+
+	global xAxisDict, yAxisDict
+
+	xAxisDict = planetDistFromStarDict.copy()
+	yAxisDict = planetDistFromStarDict.copy()
+
+
+	print "planets added "
+
+
+
+
+def translate(value, leftMin, leftMax, rightMin, rightMax):
+    # Figure out how 'wide' each range is
+    leftSpan = leftMax - leftMin
+    rightSpan = rightMax - rightMin
+
+    # Convert the left range into a 0-1 range (float)
+    valueScaled = float(value - leftMin) / float(leftSpan)
+
+    # Convert the 0-1 range into a value in the right range.
+    return rightMin + (valueScaled * rightSpan)
+
+
+
+def getxAxisDict():
+	global xAxisDict
+	return xAxisDict
+
+def getyAxisDict():
+	global yAxisDict
+	return yAxisDict
+
+
+def checkInSolarSystem(planet):
+	if planet == "Mercury":
+		return True
+	if planet == "Venus":
+		return True
+	if planet == "Earth":
+		return True
+	if planet == "Mars":
+		return True
+	if planet == "Jupiter":
+		return True
+	if planet == "Saturn":
+		return True
+	if planet == "Uranus":
+		return True
+	if planet == "Neptune":
+		return True
+	return False

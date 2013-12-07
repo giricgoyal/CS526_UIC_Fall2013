@@ -67,15 +67,16 @@ def loadSphereModel():
 
 
 def onUpdate(frame, t, dt):
-	for system in systemList:
-		for name,model in allSystemsOrbital[system].iteritems():
-			timeF = getTimeFactor()
-			activeRotCenters[name].yaw(dt/timeF*(1.0 / allSystemsOrbital[system][name].period)) #revolution (year)
-			activeBodies[name].yaw(dt/timeF*365*(1.0 / allSystemsOrbital[system][name].rotation)) #rotation (day) 
-	
-	for obj in orientObjects:
-		obj.setFacingCamera(getCam())
-		#caveutil.orientWithHead(getCam(), obj)
+	if show3DSystems:
+		for system in systemList:
+			for name,model in allSystemsOrbital[system].iteritems():
+				timeF = getTimeFactor()
+				activeRotCenters[name].yaw(dt/timeF*(1.0 / allSystemsOrbital[system][name].period)) #revolution (year)
+				activeBodies[name].yaw(dt/timeF*365*(1.0 / allSystemsOrbital[system][name].rotation)) #rotation (day) 
+		
+		for obj in orientObjects:
+			obj.setFacingCamera(getCam())
+			#caveutil.orientWithHead(getCam(), obj)
 		
 	'''
 	if getIsMovingTile() == True:
@@ -166,17 +167,24 @@ initializeScene()
 # load sphere into the scene
 loadSphereModel()
 
+# setup graph dicts
+createDictsForGraph()
+
 # now create the systems in 3D space
-#create3DSystems()
+if show3DSystems:
+	create3DSystems()
 
 # create the systems in 2D space
-#create2DSystems()
+if show2DSystems:
+	create2DSystems()
 
 # create visualization of stars 
-createVisualization()
+if showVisualization:
+	createVisualization()
 
 # create graphs
-createGraph()
+if showGraphs:
+	createGraphs()
 
 # initialize menu 
 initButtons()
@@ -188,7 +196,8 @@ initButtons()
 #---createInfoDisplay()
 
 # init sound module
-initSound()
+if enableSound:
+	initSound()
 
 # set update function
 setUpdateFunction(onUpdate)
