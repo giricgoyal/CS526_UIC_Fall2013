@@ -258,8 +258,10 @@ scene = None
 
 isCave = False
 isMovingTile = False
+
+
 show3DSystems = True
-show2DSystems = False
+show2DSystems = True
 showVisualization = True
 showGraphs = True
 enableSound = True
@@ -421,8 +423,8 @@ midWindowW = 1
 midWindowH = 1
 
 # Graph Parameters
-xLabel = "test"
-yLabel = "test"
+xLabel = "Distance from its Star"
+yLabel = "Distance from its Star"
 
 maxRadius = 0.0
 maxDistFromStar = 0.0
@@ -571,6 +573,7 @@ def getIsMovingTile():
 def createDictsForGraph():
 	global planetRadiusDict, planetDistFromStarDict, planetPeriodDict, planetEccentricityDict, planetRotationDict, planetInclinationDict, planetMassDict
 	global maxRadius, maxDistFromStar, maxPeriod, maxEccentricity, maxRotation, maxInclination, maxMass
+	global minRadius, minDistFromStar, minPeriod, minEccentricity, minRotation, minInclination, minMass
 	global planetList
 
 	for system in systemList:
@@ -580,8 +583,8 @@ def createDictsForGraph():
 
 		for name, model in systemOrbit.iteritems():
 			if systemOrbit[name].isStar == 0:
-				radius_Original = systemOrbit[name].radius * planetScaleFactor 
-				distFromStar_Original = systemOrbit[name].minorA * userScaleFactor * orbitScaleFactor
+				radius_Original = systemOrbit[name].radius
+				distFromStar_Original = systemOrbit[name].minorA
 				period_Original = systemOrbit[name].period
 				eccentricity_Original = systemOrbit[name].eccentricity
 				inclination_Original = systemOrbit[name].inclination
@@ -599,37 +602,49 @@ def createDictsForGraph():
 				planetList.append(name)
 
 	
-	maxRadius = max(planetRadiusDict.values())
+	maxRadius = getMax(max(planetRadiusDict.values()))
 	minRadius = min(value for value in planetRadiusDict.values() if value > 0.0)
+	print str(maxRadius) + " : " + str(max(planetRadiusDict.values()))
+	print minRadius
 	planetRadiusDict['max'] = maxRadius
 	planetRadiusDict['min'] = minRadius
 	
-	maxDistFromStar = max(planetDistFromStarDict.values())
+	maxDistFromStar = getMax(max(planetDistFromStarDict.values()))
 	minDistFromStar = min(value for value in planetDistFromStarDict.values() if value > 0.0)
+	print str(maxDistFromStar) + " : " + str(max(planetDistFromStarDict.values()))
+	print minDistFromStar
 	planetDistFromStarDict['max'] = maxDistFromStar
 	planetDistFromStarDict['min'] = minDistFromStar
 
-	maxPeriod = max(planetPeriodDict.values())
+	maxPeriod = getMax(max(planetPeriodDict.values()))
 	minPeriod = min(value for value in planetPeriodDict.values() if value > 0.0)
+	print str(maxPeriod) + " : " + str(max(planetPeriodDict.values()))
+	print minPeriod
 	planetPeriodDict['max'] = maxPeriod
 	planetPeriodDict['min'] = minPeriod
 
-	maxEccentricity = max(planetEccentricityDict.values())
+	maxEccentricity = getMax(max(planetEccentricityDict.values()))
 	minEccentricity = min(value for value in planetEccentricityDict.values() if value > 0.0) 
+	print str(maxEccentricity) + " : " + str(max(planetEccentricityDict.values()))
+	print minEccentricity
 	planetEccentricityDict['max'] = maxEccentricity
 	planetEccentricityDict['min'] = minEccentricity
 
-	maxRotation = max(planetRotationDict.values())
+	maxRotation = getMax(max(planetRotationDict.values()))
 	minRotation = min(value for value in planetRotationDict.values() if value > 0.0)
+	print str(maxRotation) + " : " + str(max(planetRotationDict.values()))
+	print minRotation
 	planetRotationDict['max'] = maxRotation
 	planetRotationDict['min'] = minRotation
 
-	maxInclination = max(planetInclinationDict.values())
+	maxInclination = getMax(max(planetInclinationDict.values()))
 	minInclination = min(value for value in planetInclinationDict.values() if value > 0.0)
+	print str(maxInclination) + " : " + str(max(planetInclinationDict.values()))
+	print minInclination
 	planetInclinationDict['max'] = maxInclination
 	planetInclinationDict['min'] = minInclination
 
-	maxMass = max(planetMassDict.values())
+	#maxMass = getMax(max(planetMassDict.values()))
 	minMass = min(value for value in planetMassDict.values() if value > 0.0)
 	planetMassDict['max'] = maxMass
 	planetMassDict['min'] = minMass
@@ -643,6 +658,14 @@ def createDictsForGraph():
 	print "planets added "
 
 
+def getMax(val):
+	ceiling = str(int(ceil(val)))
+	length = len(ceiling) - 1
+	factor = pow(10,length)
+	for i in range(1,11):
+		v = int(i*factor)
+		if (v > int(val)):
+			return i*factor
 
 
 def translate(value, leftMin, leftMax, rightMin, rightMax):
@@ -666,6 +689,13 @@ def getyAxisDict():
 	global yAxisDict
 	return yAxisDict
 
+def getxLabel():
+	global xLabel
+	return xLabel
+
+def getyLabel():
+	global yLabel
+	return yLabel
 
 def checkInSolarSystem(planet):
 	if planet == "Mercury":
@@ -685,3 +715,40 @@ def checkInSolarSystem(planet):
 	if planet == "Neptune":
 		return True
 	return False
+
+def checkInActiveSystem(planet, system):
+	theSystem = allSystemsInfo[system]
+	for name, model in theSystem.iteritems():
+		if name == planet:
+			return True
+	return False
+
+
+def getMins():
+	return minRadius, minDistFromStar, minPeriod, minEccentricity, minRotation, minInclination, minMass
+
+def getMaxs():
+	return maxRadius, maxDistFromStar, maxPeriod, maxEccentricity, maxRotation, maxInclination, maxMass
+
+
+def checkInDisplayList(planet):
+	list = getDisplayList()
+	val = False
+	for system in list:
+		val = checkInActiveSystem(planet, system)
+		if val == True:
+			return True
+	return False
+
+def getAxisDicts():
+	global xAxisDict, yAxisDict
+	return xAxisDict, yAxisDict
+
+def getAxisLabels():
+	global xLabel, yLabel
+	return xLabel, yLabel
+
+def setAxisLabel(xL, yL):
+	global xLabel, yLabel
+	xLabel = xL
+	yLabel = yL

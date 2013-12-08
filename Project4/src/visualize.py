@@ -51,7 +51,7 @@ def createVisualization():
 			
 				visualizeDict[system] = dot
 				
-				t1 = Text3D.create('fonts/verdana.ttf', 1, str(name))
+				t1 = Text3D.create('data/fonts/helvetica.ttf', 1, str(name))
 				t1.setPosition(Vector3(pos.x, pos.y, pos.z))
 				t1.yaw(pi)
 				t1.setFontResolution(256)

@@ -53,6 +53,9 @@ rotationMenuYButton = None
 inclinationMenuYButton = None
 massMenuYButton = None
 
+glyphSliderText = None
+glyphSlider = None
+
 menuButtonsX = []
 menuButtonsY = []
 
@@ -61,16 +64,21 @@ menuButtonsY = []
 #------------------------------------------------------------------
 # method definitions
 def visitSystem(tempSys = "-"):
+	global isGraphShown, xAxisDict, yAxisDict, xLabel, yLabel
+
 	if tempSys == "-":
 		for system, button in visitSystemButtonList.iteritems():
-			lightsDict[system].setEnabled(False)
+			#lightsDict[system].setEnabled(False)
 			if button.isChecked():
 				pos = starLocations[system].pos * orbitScaleFactor * userScaleFactor
 				setCamPosition(pos)
-				lightsDict[system].setEnabled(True)
+				#lightsDict[system].setEnabled(True)
 				setActiveSystem(button.getText())
 				visualizeButton.setChecked(False)
 				#print activeSystem
+				if getIsGraphShown() == True:
+					showGraph(getxAxisDict(), getyAxisDict(), getxLabel(), getyLabel())
+
 	else:
 		for system, button in visitSystemButtonList.iteritems():
 			if button.getText() == tempSys:
@@ -79,8 +87,16 @@ def visitSystem(tempSys = "-"):
 				setActiveSystem(button.getText())
 				button.setChecked(True)
 				visualizeButton.setChecked(False)
+				if getIsGraphShown() == True:
+					showGraph(getxAxisDict(), getyAxisDict(), getxLabel(), getyLabel())
 			else:
 				button.setChecked(False)
+
+def setGlyphSlider():
+	glyphSliderText.setText("Glyph Scale: " + str(glyphSlider.getValue() + 1))
+	if (glyphSlider.getValue() == 2):
+		glyphSliderText.setText("Glyph Scale: " + str(glyphSlider.getValue() + 1) + " (default)")
+	updateGlyphScale(glyphSlider.getValue())
 
 def setOrbitSlider():
 	orbitScaleSliderText.setText("Orbit Scale: " + str(orbitScaleSlider.getValue() + 1))
@@ -133,6 +149,9 @@ def updateList(number):
 	setDisplayList(number)
 	reorderAuto2D()
 	changeColor()
+	if getIsGraphShown() == True:
+		print "graphhing"
+		showGraph(getxAxisDict(), getyAxisDict(), getxLabel(), getyLabel())
 	
 def setUserDefinedList(val):
 	global userDefinedList
@@ -160,62 +179,77 @@ def setSunLikeList(val):
 
 
 def showremoveGraph():
-	global removeGraphButton
+	global removeGraphButton, xLabel, yLabel
 	if removeGraphButton.isChecked():
-		showGraph(getxAxisDict(), getyAxisDict())
+		showGraph(getxAxisDict(), getyAxisDict(), getxLabel(), getyLabel())
 	else:
 		removeGraph()
 
 def setGraphAxis():
-	global xAxisDict, yAxisDict
+	global xAxisDict, yAxisDict, xLabel, yLabel
 	for button in menuButtonsX:
 		if button.isChecked():
 			if button.getText() == "Radius":
 				print button.getText()
 				xAxisDict = planetRadiusDict.copy()
+				xLabel = "Radius"
 			elif button.getText() == "Distance from Star":
 				print button.getText()
 				xAxisDict = planetDistFromStarDict.copy()
+				xLabel = "Distance from its Star"
 			elif button.getText() == "Revolution Period":
 				print button.getText()
 				xAxisDict = planetPeriodDict.copy()
+				xLabel = "Revolution Period"
 			elif button.getText() == "Eccentricity":
 				print button.getText()
 				xAxisDict = planetEccentricityDict.copy()
+				xLabel = "Eccentricity"
 			elif button.getText() == "Rotation":
 				print button.getText()
 				xAxisDict = planetRotationDict.copy()
+				xLabel = "Rotation"
 			elif button.getText() == "Inclination":
 				print button.getText()
 				xAxisDict = planetInclinationDict.copy()
+				xLabel = "Inclination"
 			elif button.getText() == "Mass":
 				print button.getText()
 				xAxisDict = planetMassDict.copy()
+				xLabel = "Mass"
+
 	for button in menuButtonsY:
 		if button.isChecked():
 			if button.getText() == "Radius":
 				print button.getText()
 				yAxisDict = planetRadiusDict.copy()
+				yLabel = "Radius"
 			elif button.getText() == "Distance from Star":
 				print button.getText()
 				yAxisDict = planetDistFromStarDict.copy()
+				yLabel = "Distance from its Star"
 			elif button.getText() == "Revolution Period":
 				print button.getText()
 				yAxisDict = planetPeriodDict.copy()
+				yLabel = "Revolution Period"
 			elif button.getText() == "Eccentricity":
 				print button.getText()
 				yAxisDict = planetEccentricityDict.copy()
+				yLabel = "Eccentricity"
 			elif button.getText() == "Rotation":
 				print button.getText()
 				yAxisDict = planetRotationDict.copy()
+				yLabel = "Rotation"
 			elif button.getText() == "Inclination":
 				print button.getText()
 				yAxisDict = planetInclinationDict.copy()
+				yLabel = "Inclination"
 			elif button.getText() == "Mass":
 				print button.getText()
 				yAxisDict = planetMassDict.copy()
-
-	showGraph(xAxisDict, yAxisDict)
+				yLabel = "Mass"
+	setAxisLabel(xLabel, yLabel)
+	showGraph(xAxisDict, yAxisDict, getxLabel(), getyLabel())
 
 
 	
@@ -468,6 +502,16 @@ def initButtons():
 	removeGraphButton.setText("Show Graph")
 	removeGraphButton.setCheckable(True)
 	removeGraphButton.setUIEventCommand('showremoveGraph()')
+
+	# glyph slider
+	global glyphSlider, glyphSliderText
+	glyphSliderText = Label.create(optionsMenuContainer)
+	glyphSlider = Slider.create(optionsMenuContainer)
+	glyphSlider.setTicks(5)
+	glyphSlider.setValue(2)
+	glyphSlider.setUIEventCommand('setGlyphSlider()')
+	glyphSliderText.setText("Glyph Scale: " + str(glyphSlider.getValue() + 1) + " (default)" )
+	
 
 	# menuX
 	global radiusMenuXButton

@@ -156,8 +156,10 @@ initCam()
 initSceneNodes()
 
 # make wall systems static. Add "thingsOnTheWall" to the cam
-if isCave == True: getDefaultCamera().addChild(thingsOnTheWall)
-
+if isCave == True: 
+	getDefaultCamera().addChild(thingsOnTheWall)
+	getDefaultCamera().addChild(graph)
+	
 # initialize the scene
 initializeScene()
 

@@ -183,7 +183,7 @@ def createEach2DSystem(system, h, v, panelCounter):
 		sSystem.addChild(model)
 		
 		# set effect for the body spheres
-		model.setEffect("textured -d "+theSystem[name].texture)
+		model.setEffect("textured -v emissive -d "+theSystem[name].texture)
 	
 	# show habitable zones 
 	goldiZone = BoxShape.create(4, 25000, (1.0 * (habitableZones[system].habOuter - habitableZones[system].habInner)) * 10)
