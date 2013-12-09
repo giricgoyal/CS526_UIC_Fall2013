@@ -73,9 +73,9 @@ def setPlanetSlider():
 	updatePlanetScale(planetScaleSlider.getValue())
 	
 def setSunSlider():
-	sunScaleSliderText.setText("Sun Scale: " + str(sunScaleSlider.getValue() + 1))
+	sunScaleSliderText.setText("Star Scale: " + str(sunScaleSlider.getValue() + 1))
 	if sunScaleSlider.getValue() == 3:
-		sunScaleSliderText.setText("Sun Scale: " + str(sunScaleSlider.getValue() + 1) + "(default)")
+		sunScaleSliderText.setText("Star Scale: " + str(sunScaleSlider.getValue() + 1) + "(default)")
 	updateSunScale(sunScaleSlider.getValue())
 	
 def setTimeFactor():
@@ -208,7 +208,7 @@ def initButtons():
 	sunScaleSlider.setTicks(5)
 	sunScaleSlider.setValue(3)
 	sunScaleSlider.setUIEventCommand('setSunSlider()')
-	sunScaleSliderText.setText("Sun Scale: " + str(sunScaleSlider.getValue() + 1) + " (default)" )
+	sunScaleSliderText.setText("Star Scale: " + str(sunScaleSlider.getValue() + 1) + " (default)" )
 	
 	# time slider
 	timeText = Label.create(scaleContainer)

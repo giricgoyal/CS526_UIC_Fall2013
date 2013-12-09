@@ -56,8 +56,17 @@ massMenuYButton = None
 glyphSliderText = None
 glyphSlider = None
 
+glyphColorSliderText = None
+glyphColorSlider = None
+glyphColorSliderText1 = None
+glyphColorSlider1 = None
+glyphColorSliderText2 = None
+glyphColorSlider2 = None
+
 menuButtonsX = []
 menuButtonsY = []
+
+colorList = ["#FF2222FF", "#22FF22FF", "#7777DDFF", "#22FFFFFF", "#FFFF22FF", "#662266FF", "#DDDDDDFF"]
 
 
 
@@ -249,10 +258,23 @@ def setGraphAxis():
 				yAxisDict = planetMassDict.copy()
 				yLabel = "Mass"
 	setAxisLabel(xLabel, yLabel)
-	showGraph(xAxisDict, yAxisDict, getxLabel(), getyLabel())
+	setAxisDict(xAxisDict, yAxisDict)
+	showGraph(getxAxisDict(), getyAxisDict(), getxLabel(), getyLabel())
 
+def setGlyphColorSlider(val):
+	if val == 1:
+		print glyphColorSlider.getValue()
+		glyphColorSliderText.setColor(Color(colorList[glyphColorSlider.getValue()]))
+	elif val == 2:
+		print glyphColorSlider1.getValue()
+		glyphColorSliderText1.setColor(Color(colorList[glyphColorSlider1.getValue()]))
+	elif val == 3:
+		print glyphColorSlider2.getValue()
+		glyphColorSliderText2.setColor(Color(colorList[glyphColorSlider2.getValue()]))
 
-	
+	updateGraphColors(colorList[glyphColorSlider.getValue()],colorList[glyphColorSlider1.getValue()],colorList[glyphColorSlider2.getValue()])
+	if getIsGraphShown() == True:
+		showGraph(getxAxisDict(), getyAxisDict(), getxLabel(), getyLabel())
 # -----------------------------------------------------------------
 # main
 
@@ -511,7 +533,32 @@ def initButtons():
 	glyphSlider.setValue(2)
 	glyphSlider.setUIEventCommand('setGlyphSlider()')
 	glyphSliderText.setText("Glyph Scale: " + str(glyphSlider.getValue() + 1) + " (default)" )
-	
+
+	global glyphColorSlider, glyphColorSliderText
+	glyphColorSliderText = Label.create(optionsMenuContainer)
+	glyphColorSlider = Slider.create(optionsMenuContainer)
+	glyphColorSlider.setTicks(len(colorList))
+	glyphColorSlider.setValue(0)
+	glyphColorSliderText.setColor(Color(colorList[glyphColorSlider.getValue()]))
+	glyphColorSlider.setUIEventCommand('setGlyphColorSlider(1)')
+	glyphColorSliderText.setText("Other Systems Color")
+	global glyphColorSlider1, glyphColorSliderText1
+	glyphColorSliderText1 = Label.create(optionsMenuContainer)
+	glyphColorSlider1 = Slider.create(optionsMenuContainer)
+	glyphColorSlider1.setTicks(len(colorList))
+	glyphColorSlider1.setValue(1)
+	glyphColorSliderText1.setColor(Color(colorList[glyphColorSlider1.getValue()]))
+	glyphColorSlider1.setUIEventCommand('setGlyphColorSlider(2)')
+	glyphColorSliderText1.setText("Solar System Glyph")
+	global glyphColorSlider2, glyphColorSliderText2
+	glyphColorSliderText2 = Label.create(optionsMenuContainer)
+	glyphColorSlider2 = Slider.create(optionsMenuContainer)
+	glyphColorSlider2.setTicks(len(colorList))
+	glyphColorSlider2.setValue(2)
+	glyphColorSliderText2.setColor(Color(colorList[glyphColorSlider2.getValue()]))
+	glyphColorSlider2.setUIEventCommand('setGlyphColorSlider(3)')
+	glyphColorSliderText2.setText("3D System Color")
+
 
 	# menuX
 	global radiusMenuXButton

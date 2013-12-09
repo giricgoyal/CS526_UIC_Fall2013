@@ -39,6 +39,11 @@ ylog2 = "yl2"
 ylog3 = "yl3"
 ylog4 = "yl4"
 
+color1 = "#FF2222FF"
+color2 = "#22FF22FF"
+color3 = "#7777DDFF"
+
+
 # ------------------------------------------------------
 # methods
 
@@ -60,7 +65,7 @@ def createGraphs():
 	print "creating graphs"
 
 	# first pane
-	outlineBox = BoxShape.create(1.0, 2.1, 0.001)
+	outlineBox = BoxShape.create(1.0, 2.3, 0.001)
 	outlineBox.setPosition(Vector3(-0.5, 0, 0.01))
 	outlineBox.setEffect('colored -e #22222288')
 	outlineBox.getMaterial().setTransparent(True)
@@ -324,7 +329,7 @@ def createGraphs():
 	v = 3.5 * 0.29 + 0.51
 	degreeConvert = 36.0/360.0 * 2 * pi 
 	caveRadius = 3.25
-	screenCenterGraph.setPosition(Vector3(0,0,1000))
+	screenCenterGraph.setPosition(Vector3(0,-0.2,1000))
 	#screenCenterGraph.setPosition(Vector3(sin(hLoc * degreeConvert) * caveRadius, v, cos(hLoc * degreeConvert) * caveRadius))
 	screenCenterGraph.yaw(hLoc * degreeConvert)
 
@@ -450,7 +455,7 @@ def removeGraph():
 	isGraphShown = False
 
 
-def showGraph(xAxisDict, yAxisDict, xL, yL):
+def showGraph(xAD, yAD, xL, yL):
 	global screenCenterGraph
 	global screenCenterGraph, planetList
 	global isGraphShown
@@ -464,8 +469,13 @@ def showGraph(xAxisDict, yAxisDict, xL, yL):
 
 	x1, x2, x3, x4, y1, y2, y3, y4, xlog0, xlog1, xlog2, xlog3, xlog4, ylog0, ylog1, ylog2, ylog3, ylog4 = setLabels(xLabel, yLabel)
 
-	xLabel = xL
-	yLabel = yL
+	xLabel = getxLabel()
+	yLabel = getyLabel()
+
+	xAxisDict = xAD.copy()
+	yAxisDict = yAD.copy()
+
+	print xLabel + " : " + yLabel
 	xLabelN = xLabel
 	yLabelN = yLabel
 	if xLabel == "Distance from its Star":
@@ -546,15 +556,15 @@ def showGraph(xAxisDict, yAxisDict, xL, yL):
 		x_Original = xAxisDict[planet]
 		y_Original = yAxisDict[planet]
 
-		color = '#FF7777FF'
+		color = color1
 
 		if (x_Original > 0 and y_Original > 0):
 			if checkInDisplayList(planet) == True:
 				if checkInSolarSystem(planet) == True:
-					color = '#8888FFFF'
+					color = color2
 
 				if checkInActiveSystem(planet, getActiveSystem()) == True:
-					color = "#EEEEEEFF"
+					color = color3
 
 
 				x_map = translate(x_Original, 0, xAxisDict['max'], 0.0, 0.8)
@@ -568,15 +578,15 @@ def showGraph(xAxisDict, yAxisDict, xL, yL):
 				graphGlyphLogDict[planet].setEffect('colored -e ' + color)
 			
 			else:
-				graphGlyphDict[planet].setPosition(-0.1-x_map, y_map, -10)
-				graphGlyphLogDict[planet].setPosition(-0.1-x_logmap, y_logmap, -10)
+				graphGlyphDict[planet].setPosition(-0.1, 0, -10)
+				graphGlyphLogDict[planet].setPosition(-0.1, 0, -10)
 
 
 		else:
 			graphGlyphDict[planet].setEffect('colored -e #22222288')
 			graphGlyphLogDict[planet].setEffect('colored -e #22222288')
-			graphGlyphDict[planet].setPosition(-0.1-x_map, y_map, -10)
-			graphGlyphLogDict[planet].setPosition(-0.1-x_logmap, y_logmap, -10)
+			graphGlyphDict[planet].setPosition(-0.1, 0, -10)
+			graphGlyphLogDict[planet].setPosition(-0.1, 0, -10)
 		
 
 
@@ -694,19 +704,14 @@ def setLabels(xLabel, yLabel):
 	return x1, x2, x3, x4, y1, y2, y3, y4, xlog0, xlog1, xlog2, xlog3, xlog4, ylog0, ylog1, ylog2, ylog3, ylog4
 
 
-def updateGraphColors():
-	global graphGlyphDict, graphGlyphLogDict
+def updateGraphColors(c1, c2, c3):
+	global color1, color2, color3
 
-	for planet in planetList:
-		color = '#FF7777FF'
-		if checkInSolarSystem(planet) == True:
-			color = '#8888FFFF'
+	color1 = c1
+	color2 = c2
+	color3 = c3
 
-		if checkInActiveSystem(planet) == True:
-			color = "#EEEEEEFF"
-
-		graphGlyphDict[planet].setEffect('colored -e ' + color)
-		graphGlyphLogDict[planet].setEffect('colored -e ' + color)
+	
 			
 			
 def getIsGraphShown():

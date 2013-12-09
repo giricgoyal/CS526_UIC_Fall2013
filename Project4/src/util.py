@@ -256,7 +256,7 @@ class starLoc:
 skyBox = None
 scene = None
 
-isCave = False
+isCave = True
 isMovingTile = False
 
 
@@ -680,6 +680,10 @@ def translate(value, leftMin, leftMax, rightMin, rightMax):
     return rightMin + (valueScaled * rightSpan)
 
 
+def setAxisDict(x, y):
+	global xAxisDict, yAxisDict
+	xAxisDict = x.copy()
+	yAxisDict = y.copy()
 
 def getxAxisDict():
 	global xAxisDict
@@ -752,3 +756,5 @@ def setAxisLabel(xL, yL):
 	global xLabel, yLabel
 	xLabel = xL
 	yLabel = yL
+	print xLabel
+	print yLabel
